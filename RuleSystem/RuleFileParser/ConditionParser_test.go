@@ -53,7 +53,7 @@ func TestParseString(t *testing.T) {
 
 	parser := ConditionParser{jsonData, false}
 	for _, data := range ParseStringData {
-		actual, err := parser.ParseString(data.input)
+		actual, err := parser.ParseString(data.input, jsonData)
 		if actual != data.output && err != nil {
 			t.Errorf("ParseStringData(%s): expected: %t, actual: %t. Err: %s", data.input, data.output, actual, err)
 		}
@@ -81,7 +81,7 @@ func TestParseStringChannel(t *testing.T) {
 		e := make(chan error, 1)
 		outputData = append(outputData, c)
 		outputErr = append(outputErr, e)
-		go parser.ParseStringChannel(data.input, c, e)
+		go parser.ParseStringChannel(data.input, jsonData, c, e)
 	}
 	for i, data := range ParseStringData {
 		actual := <-outputData[i]

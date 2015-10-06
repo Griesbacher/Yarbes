@@ -27,7 +27,7 @@ func (d *dataStore) appendToStack(node ast.Node) {
 func (d *dataStore) popFromStack() ast.Node {
 	var last ast.Node
 	if len(d.stack) > 0 {
-		last, d.stack = d.stack[len(d.stack)-1], d.stack[:len(d.stack)-1]
+		last, d.stack = d.stack[len(d.stack) - 1], d.stack[:len(d.stack) - 1]
 	}
 	return last
 }
@@ -40,7 +40,7 @@ func (d *dataStore) appendToResult(result bool) {
 }
 
 func (d *dataStore) evaluateResultQueue() {
-	switch d.stack[len(d.stack)-1].(*ast.BinaryExpr).Op.String() {
+	switch d.stack[len(d.stack) - 1].(*ast.BinaryExpr).Op.String() {
 	case "&&":
 		d.result = []bool{d.result[0] && d.result[1]}
 	case "||":
@@ -53,7 +53,7 @@ func (d *dataStore) returnResult() bool {
 	if len(d.result) == 1 {
 		return d.result[0]
 	} else {
-		switch lastToken := d.stack[len(d.stack)-1].(type) {
+		switch lastToken := d.stack[len(d.stack) - 1].(type) {
 		case *ast.BasicLit:
 			if lastToken.Kind == token.ILLEGAL {
 				return false
@@ -65,13 +65,12 @@ func (d *dataStore) returnResult() bool {
 }
 
 type ConditionParser struct {
-	Jsondata interface{}
-	Debug    bool
+	Debug bool
 }
 
-func (p ConditionParser) ParseStringChannel(input string, output chan bool, errors chan error) {
-	result, err := p.ParseString(input)
-	for i := 0; i<2; i++ {
+func (p ConditionParser) ParseStringChannel(condition string, jsonData interface{}, output chan bool, errors chan error) {
+	result, err := p.ParseString(condition, jsonData)
+	for i := 0; i < 2; i++ {
 		select {
 		case output <- result:
 		case errors <- err:
@@ -79,8 +78,8 @@ func (p ConditionParser) ParseStringChannel(input string, output chan bool, erro
 	}
 }
 
-func (p ConditionParser) ParseString(condition string) (bool, error) {
-	data := &dataStore{data: p.Jsondata, stack: []ast.Node{}, result: []bool{}, ignoreNextX: 0}
+func (p ConditionParser) ParseString(condition string, jsonData interface{}) (bool, error) {
+	data := &dataStore{data: jsonData, stack: []ast.Node{}, result: []bool{}, ignoreNextX: 0}
 	tree, err := parser.ParseExpr(condition)
 	if err != nil {
 		panic(err)
@@ -122,7 +121,7 @@ func (v myVisitor) Visit(node ast.Node) ast.Visitor {
 	} else {
 		switch n := node.(type) { //Current element
 		case *ast.BasicLit:
-			switch nstack := v.store.stack[len(v.store.stack)-1].(type) { //Last element
+			switch nstack := v.store.stack[len(v.store.stack) - 1].(type) { //Last element
 			case *ast.BasicLit:
 				v.store.popFromStack()
 				op := v.store.popFromStack().(*ast.BinaryExpr).Op.String()
@@ -137,7 +136,7 @@ func (v myVisitor) Visit(node ast.Node) ast.Visitor {
 		case *ast.Ident:
 			if indexExpr := v.genBasicLitFromIndexExpr(n); indexExpr != nil {
 				if len(v.store.stack) > 0 {
-					switch nstack := v.store.stack[len(v.store.stack)-1].(type) { //Last element
+					switch nstack := v.store.stack[len(v.store.stack) - 1].(type) { //Last element
 					case *ast.BasicLit:
 						v.store.popFromStack()
 						op := v.store.popFromStack().(*ast.BinaryExpr).Op.String()
@@ -238,7 +237,7 @@ func (v myVisitor) genBasicLitFromIndexExpr(ident *ast.Ident) *ast.BasicLit {
 						return nil
 					//panic("Got string but it's no map")
 					}
-				case token.INT, token.FLOAT:
+				case token.INT, token.FLOAT: //Should never happen due to json convention
 					key, err := strconv.Atoi(lit.Value)
 					if err != nil {
 						panic(err)
