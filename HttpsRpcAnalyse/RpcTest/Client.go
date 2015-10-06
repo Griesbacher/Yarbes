@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 )
 
-func Client() {
+func Client(amountRequests int) {
 	cert, err := tls.LoadX509KeyPair("certs/client.crt", "certs/client.key")
 	if err != nil {
 		log.Fatalf("client: loadkeys: %s", err)
@@ -34,11 +34,10 @@ func Client() {
 	log.Println("client: connected to: ", conn.RemoteAddr())
 	rpcClient := rpc.NewClient(conn)
 	res := new(Result)
-	if err := rpcClient.Call("Foo.Bar", "twenty-three", &res); err != nil {
-		log.Fatal("Failed to call RPC", err)
+	for i := 0; i < amountRequests; i++ {
+		if err := rpcClient.Call("Foo.Bar", "test string", &res); err != nil {
+			log.Fatal("Failed to call RPC", err)
+		}
 	}
-	if err := rpcClient.Call("Foo.Bar", "twenty-three", &res); err != nil {
-		log.Fatal("Failed to call RPC", err)
-	}
-	log.Printf("Returned result is %d", res.Data)
+	log.Printf("Returned result is %s", res.Data)
 }

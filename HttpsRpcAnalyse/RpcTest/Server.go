@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/rpc"
 	"io/ioutil"
+	"time"
 )
 
 func Server() {
@@ -53,20 +54,23 @@ func Server() {
 }
 
 func handleClient(conn net.Conn) {
-	defer conn.Close()
+	//defer conn.Close()
+	time.Sleep(time.Duration(200)*time.Millisecond)
 	rpc.ServeConn(conn)
+	time.Sleep(time.Duration(400)*time.Millisecond)
+	conn.Close()
 	log.Println("server: conn: closed")
 }
 
 type Foo bool
 
 type Result struct {
-	Data int
+	Data string
 }
 
 func (f *Foo) Bar(args *string, res *Result) error {
-	res.Data = len(*args)
-	log.Printf("Received %q, its length is %d", *args, res.Data)
+	res.Data = *args
+	log.Printf("Received %q, send %s", *args, res.Data)
 	//return fmt.Errorf("Whoops, error happened")
 	return nil
 }
