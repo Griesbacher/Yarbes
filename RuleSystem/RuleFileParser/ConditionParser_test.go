@@ -51,7 +51,7 @@ func TestParseString(t *testing.T) {
 		panic(err)
 	}
 
-	parser := ConditionParser{jsonData, false}
+	parser := ConditionParser{}
 	for _, data := range ParseStringData {
 		actual, err := parser.ParseString(data.input, jsonData)
 		if actual != data.output && err != nil {
@@ -72,7 +72,7 @@ func TestParseStringChannel(t *testing.T) {
 		panic(err)
 	}
 
-	parser := ConditionParser{jsonData, false}
+	parser := ConditionParser{}
 	var outputData []chan bool
 	var outputErr []chan error
 	for _, data := range ParseStringData {
