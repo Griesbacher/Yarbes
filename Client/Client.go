@@ -27,8 +27,10 @@ Commandline Parameter:
 	}`)
 
 	rpcI := Interface.NewRpcInterface(Config.GetClientConfig().Client.RpcInterface)
-	rpcI.Connect()
-
+	err := rpcI.Connect()
+	if err != nil {
+		panic(err)
+	}
 	if rpcClient := rpcI.GenRpcClient(); rpcClient != nil {
 		result := new(Incoming.Result)
 		if err := rpcClient.Call("RpcHandler.CreateEvent", string(b), &result); err != nil {

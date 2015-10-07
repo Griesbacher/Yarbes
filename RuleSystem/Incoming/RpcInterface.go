@@ -41,11 +41,23 @@ func (rpcI RpcInterface) serve() {
 	if err != nil {
 		panic(err)
 	}
+	firstByte := make([]byte, 1)
 	for {
 		conn, err := listener.Accept()
+		log.Printf("server: connection from %s", conn.RemoteAddr())
 		if err != nil {
 			log.Printf("server: accept: %s", err)
 			break
+		}
+		bytesRead, err := conn.Read(firstByte)
+		if err != nil {
+			panic(err)
+		}
+		if tlscon, ok := conn.(*tls.Conn); bytesRead == 1 && ok {
+			state := tlscon.ConnectionState()
+			sub := state.PeerCertificates[0].Subject
+			log.Println(state)
+			log.Println(sub)
 		}
 		go func() {
 			log.Printf("server: accepted from %s", conn.RemoteAddr())

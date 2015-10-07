@@ -25,6 +25,7 @@ func (rpcI *RpcInterface) Connect() error {
 }
 
 func (rpcI RpcInterface) GenRpcClient() *rpc.Client {
+	rpcI.conn.Write([]byte("a"))
 	return rpc.NewClient(rpcI.conn)
 }
 
