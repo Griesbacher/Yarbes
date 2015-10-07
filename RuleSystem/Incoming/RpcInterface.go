@@ -6,7 +6,6 @@ import (
 	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/TLS"
 	"log"
-	"net"
 	"net/rpc"
 )
 
@@ -40,7 +39,7 @@ func (rpcI RpcInterface) serve() {
 	listenTo := Config.GetServerConfig().RuleSystem.RpcInterface
 	listener, err := tls.Listen("tcp", listenTo, &config)
 	if err != nil {
-		log.Fatalf("server: listen: %s", err)
+		panic(err)
 	}
 	for {
 		conn, err := listener.Accept()
@@ -48,11 +47,11 @@ func (rpcI RpcInterface) serve() {
 			log.Printf("server: accept: %s", err)
 			break
 		}
-		go func(con net.Conn) {
+		go func() {
 			log.Printf("server: accepted from %s", conn.RemoteAddr())
 			defer conn.Close()
-			rpc.ServeConn(con)
-		}(conn)
+			rpc.ServeConn(conn)
+		}()
 	}
 }
 
@@ -70,5 +69,5 @@ func (handler *RpcHandler) CreateEvent(args *string, result *Result) error {
 		handler.inter.eventQueue <- *event
 	}
 	result.Err = err
-	return nil
+	return err
 }

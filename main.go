@@ -67,6 +67,5 @@ Commandline Parameter:
 func cleanUp(itemsToStop []StartAndStoppable) {
 	for _, item := range itemsToStop {
 		item.Stop()
-		time.Sleep(500 * time.Millisecond)
 	}
 }
