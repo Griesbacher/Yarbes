@@ -1,3 +1,3 @@
 Regel1;_["k1"]=="v1";echo;false
-Regel2;2==2;echo;true
+Regel2;3==2;echo;true
 Regel3;3==3;echo;true

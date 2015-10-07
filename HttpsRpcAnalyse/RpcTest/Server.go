@@ -4,13 +4,12 @@ import (
 	"crypto/rand"
 	"crypto/tls"
 	"crypto/x509"
-//"fmt"
-
 	"log"
 	"net"
 	"net/rpc"
 	"io/ioutil"
-	"time"
+	"fmt"
+	"reflect"
 )
 
 func Server() {
@@ -49,16 +48,27 @@ func Server() {
 			break
 		}
 		log.Printf("server: accepted from %s", conn.RemoteAddr())
-		go handleClient(conn)
+/*		tlsconn,ok := conn.(*tls.Conn)
+		if ok{
+			buf := make([]byte, 512)
+			conn.Read(buf)
+			fmt.Println(tlsconn.ConnectionState().PeerCertificates[0].Subject)
+		}
+*/		go handleClient(conn)
 	}
 }
 
 func handleClient(conn net.Conn) {
-	//defer conn.Close()
-	time.Sleep(time.Duration(200)*time.Millisecond)
+	defer conn.Close()
 	rpc.ServeConn(conn)
-	time.Sleep(time.Duration(400)*time.Millisecond)
-	conn.Close()
+	fmt.Println("---")
+	fmt.Println(reflect.TypeOf(conn))
+	tlsconn,ok := conn.(*tls.Conn)
+	if ok{
+		//			buf := make([]byte, 512)
+		//			conn.Read(buf)
+		fmt.Println(tlsconn.ConnectionState())
+	}
 	log.Println("server: conn: closed")
 }
 

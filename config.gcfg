@@ -1,0 +1,5 @@
+[RuleSystem]
+    Enabled     = true
+    ModulePath  = "Module"
+    Rulefile    = "ruleFile.rule"
+    Worker      = 1

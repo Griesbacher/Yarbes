@@ -9,7 +9,12 @@ import (
 )
 
 func main() {
-	if len(os.Args != 3) {
+	go RpcTest.Server()
+	time.Sleep(time.Duration(1) * time.Second)
+	RpcTest.Client(1)
+
+	os.Exit(1)
+	if len(os.Args )!= 3 {
 		panic("arg1: http|rpc ,arg2:rounds")
 	}
 	loops, err := strconv.Atoi(os.Args[2])

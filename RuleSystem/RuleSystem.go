@@ -2,6 +2,7 @@ package RuleSystem
 import (
 	"github.com/griesbacher/SystemX/RuleSystem/RuleFileParser"
 	"github.com/griesbacher/SystemX/Event"
+	"github.com/griesbacher/SystemX/Config"
 )
 
 
@@ -11,19 +12,17 @@ type RuleSystem struct {
 	quit       chan bool
 }
 
-func NewRuleSystem() RuleSystem {
+func NewRuleSystem() *RuleSystem {
 	eventQueue := make(chan Event.Event, 1000)
 
-	//TODO: durch Config ersetzen
-	parser := *RuleFileParser.NewRuleFileParser("ruleFile.rule")
+	parser := *RuleFileParser.NewRuleFileParser(Config.GetConfig().RuleSystem.Rulefile)
 
-	//TODO: durch Config ersetzen
-	amountOfWorker := 1
+	amountOfWorker := Config.GetConfig().RuleSystem.Worker
 	workers := []ruleSystemWorker{}
 	for i := 0; i < amountOfWorker; i++ {
 		workers = append(workers, ruleSystemWorker{eventQueue:eventQueue, parser:parser, quit:make(chan bool)})
 	}
-	return RuleSystem{EventQueue:eventQueue, workers:workers}
+	return &RuleSystem{EventQueue:eventQueue, workers:workers}
 }
 
 func (system RuleSystem)Start() {

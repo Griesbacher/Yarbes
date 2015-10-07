@@ -9,6 +9,7 @@ import (
 	"strings"
 	"path/filepath"
 	"github.com/griesbacher/SystemX/Event"
+	"github.com/griesbacher/SystemX/Config"
 )
 
 type ExternalModule struct {
@@ -22,8 +23,8 @@ var mutex = &sync.Mutex{}
 func GetExternalModule() *ExternalModule {
 	mutex.Lock()
 	if singleExternalModule == nil {
-		//TODO: durch Config ersetzen
-		singleExternalModule = &ExternalModule{[]string{"Module"}, map[string]string{}}
+		modulePath := Config.GetConfig().RuleSystem.ModulePath
+		singleExternalModule = &ExternalModule{[]string{modulePath}, map[string]string{}}
 	}
 	mutex.Unlock()
 	return singleExternalModule
