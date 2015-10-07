@@ -1,35 +1,62 @@
 package Config
+
 import (
-	"sync"
 	"gopkg.in/gcfg.v1"
+	"sync"
 )
 
-type ConfigProvider struct {
-	configPath string
-	Cfg        Config
+type ServerConfigProvider struct {
+	Cfg ServerConfig
 }
 
-var singleConfigProvider *ConfigProvider = nil
+type ClientConfigProvider struct {
+	Cfg ClientConfig
+}
+
+var singleServerConfigProvider *ServerConfigProvider = nil
+var singleClientConfigProvider *ClientConfigProvider = nil
 var mutex = &sync.Mutex{}
 
-func InitConfigProvider(configPath string) *ConfigProvider{
-	mutex.Lock()
+func InitServerConfigProvider(configPath string) {
+	InitConfigProvider(configPath, singleServerConfigProvider)
+}
 
-	if singleConfigProvider == nil {
-		var cfg Config
-		err := gcfg.ReadFileInto(&cfg, configPath)
+func InitClientonfigProvider(configPath string) {
+	InitConfigProvider(configPath, singleClientConfigProvider)
+}
+
+func InitConfigProvider(configPath string, provider interface{}) {
+	mutex.Lock()
+	var err error
+	switch provider.(type) {
+	case *ServerConfigProvider:
+		var cfg ServerConfig
+		err = gcfg.ReadFileInto(&cfg, configPath)
 		if err != nil {
 			panic(err)
 		}
-		singleConfigProvider = &ConfigProvider{configPath:configPath, Cfg:cfg}
+		singleServerConfigProvider = &ServerConfigProvider{Cfg: cfg}
+	case *ClientConfigProvider:
+		var cfg ClientConfig
+		err = gcfg.ReadFileInto(&cfg, configPath)
+		if err != nil {
+			panic(err)
+		}
+		singleClientConfigProvider = &ClientConfigProvider{Cfg: cfg}
 	}
 	mutex.Unlock()
-	return singleConfigProvider
 }
 
-func GetConfig() *Config{
-	if singleConfigProvider == nil {
-		panic("Call GetConfigProvider first!")
+func GetServerConfig() ServerConfig {
+	if singleServerConfigProvider == nil {
+		panic("Call InitServerConfigProvider first!")
 	}
-	return singleConfigProvider.Cfg
+	return singleServerConfigProvider.Cfg
+}
+
+func GetClientConfig() ClientConfig {
+	if singleClientConfigProvider == nil {
+		panic("Call InitClientonfigProvider first!")
+	}
+	return singleClientConfigProvider.Cfg
 }

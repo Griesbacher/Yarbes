@@ -59,7 +59,6 @@ func TestParseString(t *testing.T) {
 		}
 	}
 
-
 }
 func TestParseStringChannel(t *testing.T) {
 	b := []byte(`{

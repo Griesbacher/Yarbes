@@ -4,11 +4,11 @@ import (
 	"crypto/rand"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/rpc"
-	"io/ioutil"
-	"fmt"
 	"reflect"
 )
 
@@ -48,13 +48,13 @@ func Server() {
 			break
 		}
 		log.Printf("server: accepted from %s", conn.RemoteAddr())
-/*		tlsconn,ok := conn.(*tls.Conn)
-		if ok{
-			buf := make([]byte, 512)
-			conn.Read(buf)
-			fmt.Println(tlsconn.ConnectionState().PeerCertificates[0].Subject)
-		}
-*/		go handleClient(conn)
+		/*		tlsconn,ok := conn.(*tls.Conn)
+				if ok{
+					buf := make([]byte, 512)
+					conn.Read(buf)
+					fmt.Println(tlsconn.ConnectionState().PeerCertificates[0].Subject)
+				}
+		*/go handleClient(conn)
 	}
 }
 
@@ -63,8 +63,8 @@ func handleClient(conn net.Conn) {
 	rpc.ServeConn(conn)
 	fmt.Println("---")
 	fmt.Println(reflect.TypeOf(conn))
-	tlsconn,ok := conn.(*tls.Conn)
-	if ok{
+	tlsconn, ok := conn.(*tls.Conn)
+	if ok {
 		//			buf := make([]byte, 512)
 		//			conn.Read(buf)
 		fmt.Println(tlsconn.ConnectionState())
@@ -72,11 +72,11 @@ func handleClient(conn net.Conn) {
 	log.Println("server: conn: closed")
 }
 
-type Foo bool
-
 type Result struct {
 	Data string
 }
+
+type Foo bool
 
 func (f *Foo) Bar(args *string, res *Result) error {
 	res.Data = *args

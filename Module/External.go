@@ -1,15 +1,16 @@
 package Module
+
 import (
 	"bytes"
-	"os/exec"
-	"io/ioutil"
-	"path"
 	"fmt"
-	"sync"
-	"strings"
-	"path/filepath"
-	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/Config"
+	"github.com/griesbacher/SystemX/Event"
+	"io/ioutil"
+	"os/exec"
+	"path"
+	"path/filepath"
+	"strings"
+	"sync"
 )
 
 type ExternalModule struct {
@@ -23,7 +24,7 @@ var mutex = &sync.Mutex{}
 func GetExternalModule() *ExternalModule {
 	mutex.Lock()
 	if singleExternalModule == nil {
-		modulePath := Config.GetConfig().RuleSystem.ModulePath
+		modulePath := Config.GetServerConfig().RuleSystem.ModulePath
 		singleExternalModule = &ExternalModule{[]string{modulePath}, map[string]string{}}
 	}
 	mutex.Unlock()
@@ -71,5 +72,5 @@ func (external *ExternalModule) searchModules() {
 
 func getFilename(filename string) string {
 	extension := filepath.Ext(filename)
-	return strings.ToLower(filename[0:len(filename) - len(extension)])
+	return strings.ToLower(filename[0 : len(filename)-len(extension)])
 }

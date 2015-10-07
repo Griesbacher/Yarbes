@@ -1,11 +1,12 @@
 package RuleFileParser
+
 import (
-	"io/ioutil"
 	"fmt"
-	"strings"
-	"strconv"
-	"github.com/griesbacher/SystemX/Module"
 	"github.com/griesbacher/SystemX/Event"
+	"github.com/griesbacher/SystemX/Module"
+	"io/ioutil"
+	"strconv"
+	"strings"
 )
 
 type RuleFileParser struct {
@@ -32,18 +33,18 @@ func NewRuleFileParser(ruleFile string) *RuleFileParser {
 			panic(err)
 		}
 		lines = append(lines,
-			RuleLine{name:elements[0],
-				condition:elements[1],
-				command:elements[2],
-				last:last})
+			RuleLine{name: elements[0],
+				condition: elements[1],
+				command:   elements[2],
+				last:      last})
 	}
-	return &RuleFileParser{ruleFile: ruleFile, lines:lines, externalModule:*Module.GetExternalModule()}
+	return &RuleFileParser{ruleFile: ruleFile, lines: lines, externalModule: *Module.GetExternalModule()}
 }
 
-func (rule RuleFileParser)EvaluateJson(event Event.Event) {
+func (rule RuleFileParser) EvaluateJson(event Event.Event) {
 	currentEvent := event
 	for _, line := range rule.lines {
-		fmt.Print(line.name+" ")
+		fmt.Print(line.name + " ")
 		valid, err := line.EvaluateLine(currentEvent)
 		if err != nil {
 			panic(err)
@@ -54,7 +55,7 @@ func (rule RuleFileParser)EvaluateJson(event Event.Event) {
 			newEvent, err := rule.externalModule.Call(line.command, currentEvent)
 			if err != nil {
 				panic(err)
-			}else {
+			} else {
 				fmt.Println(newEvent)
 				currentEvent = *newEvent
 				if line.last {

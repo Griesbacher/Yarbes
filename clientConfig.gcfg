@@ -1,0 +1,6 @@
+[Client]
+    RpcInterface = "127.0.0.1:8000"
+    TLSEnable   = true
+    TLSCert     = "certs/client.crt"
+    TLSKey      = "certs/client.key"
+    TLSCaCert   = "certs/ca.crt"

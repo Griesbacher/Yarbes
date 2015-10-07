@@ -1,10 +1,10 @@
 package Event
 
 import (
-	"time"
 	"encoding/json"
 	"errors"
 	"strings"
+	"time"
 )
 
 type Event struct {
@@ -21,7 +21,7 @@ func NewEvent(jsonData []byte) (*Event, error) {
 	}
 	switch data := jsonInterface.(type) {
 	case map[string]interface{}:
-		return &Event{DataRaw: jsonData, data:data, created:time.Now()}, nil
+		return &Event{DataRaw: jsonData, data: data, created: time.Now()}, nil
 	default:
 		return nil, errors.New("Given Jsondata is not in the format: map[string]interface{}")
 	}

@@ -1,20 +1,18 @@
 package main
 
 import (
-	"time"
-	"os"
-	"strconv"
 	"github.com/griesbacher/SystemX/HttpsRpcAnalyse/HttpsTest"
 	"github.com/griesbacher/SystemX/HttpsRpcAnalyse/RpcTest"
+	"os"
+	"strconv"
+	"time"
 )
 
 func main() {
-	go RpcTest.Server()
-	time.Sleep(time.Duration(1) * time.Second)
 	RpcTest.Client(1)
 
 	os.Exit(1)
-	if len(os.Args )!= 3 {
+	if len(os.Args) != 3 {
 		panic("arg1: http|rpc ,arg2:rounds")
 	}
 	loops, err := strconv.Atoi(os.Args[2])
@@ -28,7 +26,7 @@ func main() {
 		for i := 0; i < loops; i++ {
 			HttpsTest.Request(client, "test string")
 		}
-	}else {
+	} else {
 		go RpcTest.Server()
 		time.Sleep(time.Duration(5) * time.Second)
 		RpcTest.Client(loops)

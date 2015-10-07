@@ -1,6 +1,7 @@
 package RuleFileParser
 
 import (
+	"errors"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -9,7 +10,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"errors"
 )
 
 type dataStore struct {
@@ -27,7 +27,7 @@ func (d *dataStore) appendToStack(node ast.Node) {
 func (d *dataStore) popFromStack() ast.Node {
 	var last ast.Node
 	if len(d.stack) > 0 {
-		last, d.stack = d.stack[len(d.stack) - 1], d.stack[:len(d.stack) - 1]
+		last, d.stack = d.stack[len(d.stack)-1], d.stack[:len(d.stack)-1]
 	}
 	return last
 }
@@ -40,7 +40,7 @@ func (d *dataStore) appendToResult(result bool) {
 }
 
 func (d *dataStore) evaluateResultQueue() {
-	switch d.stack[len(d.stack) - 1].(*ast.BinaryExpr).Op.String() {
+	switch d.stack[len(d.stack)-1].(*ast.BinaryExpr).Op.String() {
 	case "&&":
 		d.result = []bool{d.result[0] && d.result[1]}
 	case "||":
@@ -53,7 +53,7 @@ func (d *dataStore) returnResult() bool {
 	if len(d.result) == 1 {
 		return d.result[0]
 	} else {
-		switch lastToken := d.stack[len(d.stack) - 1].(type) {
+		switch lastToken := d.stack[len(d.stack)-1].(type) {
 		case *ast.BasicLit:
 			if lastToken.Kind == token.ILLEGAL {
 				return false
@@ -121,7 +121,7 @@ func (v myVisitor) Visit(node ast.Node) ast.Visitor {
 	} else {
 		switch n := node.(type) { //Current element
 		case *ast.BasicLit:
-			switch nstack := v.store.stack[len(v.store.stack) - 1].(type) { //Last element
+			switch nstack := v.store.stack[len(v.store.stack)-1].(type) { //Last element
 			case *ast.BasicLit:
 				v.store.popFromStack()
 				op := v.store.popFromStack().(*ast.BinaryExpr).Op.String()
@@ -136,7 +136,7 @@ func (v myVisitor) Visit(node ast.Node) ast.Visitor {
 		case *ast.Ident:
 			if indexExpr := v.genBasicLitFromIndexExpr(n); indexExpr != nil {
 				if len(v.store.stack) > 0 {
-					switch nstack := v.store.stack[len(v.store.stack) - 1].(type) { //Last element
+					switch nstack := v.store.stack[len(v.store.stack)-1].(type) { //Last element
 					case *ast.BasicLit:
 						v.store.popFromStack()
 						op := v.store.popFromStack().(*ast.BinaryExpr).Op.String()
@@ -144,8 +144,8 @@ func (v myVisitor) Visit(node ast.Node) ast.Visitor {
 					default:
 						v.store.appendToStack(indexExpr)
 					}
-				}else {
-					v.store.appendToResult(true)//Found index
+				} else {
+					v.store.appendToResult(true) //Found index
 				}
 			} else {
 				v.store.appendToStack(&ast.BasicLit{token.NoPos, token.ILLEGAL, "X"})
@@ -185,7 +185,7 @@ func (v myVisitor) compareBasicLit(lit1, lit2 *ast.BasicLit, op string) bool {
 		default:
 			v.store.err = errors.New("used unsupported operator!")
 			return false
-		//panic("used unsupported operator!")
+			//panic("used unsupported operator!")
 		}
 	case token.INT, token.FLOAT:
 		value1, _ := strconv.Atoi(lit1.Value)
@@ -206,12 +206,12 @@ func (v myVisitor) compareBasicLit(lit1, lit2 *ast.BasicLit, op string) bool {
 		default:
 			v.store.err = errors.New("used unsupported operator!")
 			return false
-		//panic("used unsupported operator!")
+			//panic("used unsupported operator!")
 		}
 	default:
 		v.store.err = errors.New("An unkown token appeard")
 		return false
-	//panic("An unkown token appeard")
+		//panic("An unkown token appeard")
 	}
 }
 
@@ -235,7 +235,7 @@ func (v myVisitor) genBasicLitFromIndexExpr(ident *ast.Ident) *ast.BasicLit {
 					default:
 						v.store.err = errors.New("Got string but it's no map")
 						return nil
-					//panic("Got string but it's no map")
+						//panic("Got string but it's no map")
 					}
 				case token.INT, token.FLOAT: //Should never happen due to json convention
 					key, err := strconv.Atoi(lit.Value)
@@ -250,7 +250,7 @@ func (v myVisitor) genBasicLitFromIndexExpr(ident *ast.Ident) *ast.BasicLit {
 					default:
 						v.store.err = errors.New("Got int but it's no map nor list")
 						return nil
-					//panic("Got int but it's no map nor list")
+						//panic("Got int but it's no map nor list")
 					}
 				}
 			default:
@@ -264,17 +264,17 @@ func (v myVisitor) genBasicLitFromIndexExpr(ident *ast.Ident) *ast.BasicLit {
 			asString := fmt.Sprint(value)
 			if strings.Contains(asString, ".") {
 				return &ast.BasicLit{token.NoPos, token.FLOAT, asString}
-			}else {
-				return &ast.BasicLit{token.NoPos, token.INT, asString }
+			} else {
+				return &ast.BasicLit{token.NoPos, token.INT, asString}
 			}
 		case nil:
 			return nil
 		default:
 			v.store.err = errors.New(fmt.Sprintf("No suitable type found... %s", reflect.TypeOf(currentLevel)))
 			return nil
-		//panic(fmt.Sprintf("No suitable type found... %s", reflect.TypeOf(currentLevel)))
+			//panic(fmt.Sprintf("No suitable type found... %s", reflect.TypeOf(currentLevel)))
 		}
-	}else {
+	} else {
 		v.store.err = errors.New(fmt.Sprintf("Given datastructure name is wrong. Given: %s Expected", ident.Name))
 		return nil
 		//panic(fmt.Sprintf("Given datastructure name is wrong. Given: %s Expected", ident.Name))

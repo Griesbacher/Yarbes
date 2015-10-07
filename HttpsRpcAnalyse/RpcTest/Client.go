@@ -3,9 +3,9 @@ package RpcTest
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"io/ioutil"
 	"log"
 	"net/rpc"
-	"io/ioutil"
 )
 
 func Client(amountRequests int) {

@@ -1,12 +1,13 @@
 package HttpsTest
+
 import (
-	"crypto/tls"
-	"log"
-	"io/ioutil"
-	"crypto/x509"
-	"net/http"
-	"fmt"
 	"bytes"
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"time"
 )
 
@@ -43,7 +44,7 @@ func Request(client *http.Client, data string) {
 	}
 	resp, err := client.Do(req)
 	robots, err := ioutil.ReadAll(resp.Body)
-	time.Sleep(time.Duration(400)*time.Millisecond)
+	time.Sleep(time.Duration(400) * time.Millisecond)
 	resp.Body.Close()
 	if err != nil {
 		log.Fatal(err)

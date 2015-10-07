@@ -1,22 +1,20 @@
 package HttpsTest
 
 import (
-	"net/http"
 	"crypto/tls"
+	"net/http"
 
-	"fmt"
-	"log"
-	"io/ioutil"
-	"crypto/x509"
 	"crypto/rand"
+	"crypto/x509"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"time"
 )
 
-
-
 func Server() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(time.Duration(200)*time.Millisecond)
+		time.Sleep(time.Duration(200) * time.Millisecond)
 		robots, err := ioutil.ReadAll(r.Body)
 		r.Body.Close()
 		if err != nil {
@@ -44,10 +42,9 @@ func Server() {
 	}
 	config.Rand = rand.Reader
 	server := &http.Server{
-		Addr: ":8090",
+		Addr:      ":8090",
 		TLSConfig: &config,
 	}
-
 
 	server.ListenAndServeTLS("certs/server.crt", "certs/server.key")
 }
