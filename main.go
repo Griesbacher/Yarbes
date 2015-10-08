@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 	"github.com/griesbacher/SystemX/NetworkInterfaces/Incoming"
+	"github.com/griesbacher/SystemX/LogServer"
+	"reflect"
 )
 
 type Stoppable interface {
@@ -29,13 +31,17 @@ Commandline Parameter:
 	Config.InitServerConfigProvider(configPath)
 
 	var ruleSystem *RuleSystem.RuleSystem
-	var rpcI *Incoming.RuleSystemRpcInterface
-
-
+	var ruleSystemRpcI *Incoming.RuleSystemRpcInterface
+	var logServer *LogServer.LogServer
+	var logServerRpcI *Incoming.LogServerRpcInterface
 
 	if Config.GetServerConfig().LogServer.Enabled {
+		logServer = LogServer.NewLogServer()
+		logServer.Start()
 		if Config.GetServerConfig().LogServer.RpcInterface != "" {
-
+			fmt.Println("Starting: LogServer RPC")
+			logServerRpcI = Incoming.NewLogServerRpcInterface(logServer.LogQueue)
+			logServerRpcI.Start()
 		}
 	}
 
@@ -44,9 +50,9 @@ Commandline Parameter:
 		ruleSystem.Start()
 		if Config.GetServerConfig().RuleSystem.RpcInterface != "" {
 			fmt.Println("Starting: RuleSystem RPC")
-			rpcI = Incoming.NewRuleSystemRpcInterface(ruleSystem.EventQueue)
+			ruleSystemRpcI = Incoming.NewRuleSystemRpcInterface(ruleSystem.EventQueue)
 			if Config.GetServerConfig().LogServer.RpcInterface != Config.GetServerConfig().RuleSystem.RpcInterface {
-				rpcI.Start()
+				ruleSystemRpcI.Start()
 			}
 		}
 	}
@@ -56,18 +62,19 @@ Commandline Parameter:
 	signal.Notify(interruptChannel, syscall.SIGTERM)
 	go func() {
 		<-interruptChannel
-		cleanUp([]Stoppable{ruleSystem, rpcI})
+		cleanUp([]Stoppable{logServerRpcI, logServer, ruleSystemRpcI, ruleSystem})
 		os.Exit(1)
 	}()
-
+	fmt.Println("Everything's ready!")
 	//wait for the end to come
 	for {
-		time.Sleep(time.Duration(5) * time.Minute)
+		time.Sleep(time.Duration(5) * time.Second)
 	}
 }
 
 func cleanUp(itemsToStop []Stoppable) {
 	for _, item := range itemsToStop {
+		fmt.Println("Stopping: ",reflect.TypeOf(item))
 		item.Stop()
 	}
 }

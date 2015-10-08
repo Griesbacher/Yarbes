@@ -32,11 +32,9 @@ func (system RuleSystem) Start() {
 }
 
 func (system RuleSystem) Stop() {
-	system.quit <- true
 	for _, worker := range system.workers {
 		worker.Stop()
 	}
-	<-system.quit
 }
 
 type ruleSystemWorker struct {

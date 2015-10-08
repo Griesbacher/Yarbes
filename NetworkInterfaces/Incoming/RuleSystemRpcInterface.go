@@ -1,7 +1,9 @@
 package Incoming
+
 import (
 	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/Config"
+	"github.com/griesbacher/SystemX/NetworkInterfaces"
 )
 
 type RuleSystemRpcInterface struct {
@@ -21,18 +23,14 @@ func (rpcI RuleSystemRpcInterface) Start() {
 }
 
 func (rpcI RuleSystemRpcInterface) Stop() {
-	rpcI.rpcInterface.Start()
+	rpcI.rpcInterface.Stop()
 }
 
 type RuleSystemRpcHandler struct {
 	inter RuleSystemRpcInterface
 }
 
-type Result struct {
-	Err error
-}
-
-func (handler *RuleSystemRpcHandler) CreateEvent(args *string, result *Result) error {
+func (handler *RuleSystemRpcHandler) CreateEvent(args *string, result *NetworkInterfaces.RpcResult) error {
 	event, err := Event.NewEvent([]byte(*args))
 	if err == nil {
 		handler.inter.eventQueue <- *event

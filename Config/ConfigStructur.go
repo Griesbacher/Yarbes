@@ -1,15 +1,16 @@
 package Config
 
 type ServerConfig struct {
+	TLS        struct {
+				   Cert string
+				   Key string
+				   CaCert string
+			   }
 	RuleSystem struct {
 				   Enabled      bool
 				   ModulePath   string
 				   Rulefile     string
 				   Worker       int
-				   TLSEnable    bool
-				   TLSCert      string
-				   TLSKey       string
-				   TLSCaCert    string
 				   RpcInterface string
 			   }
 	LogServer  struct {
@@ -19,11 +20,15 @@ type ServerConfig struct {
 }
 
 type ClientConfig struct {
-	Client struct {
-			   RpcInterface string
-			   TLSEnable    bool
-			   TLSCert      string
-			   TLSKey       string
-			   TLSCaCert    string
-		   }
+	TLS       struct {
+				  Cert string
+				  Key string
+				  CaCert string
+			  }
+	Backend   struct {
+				  RpcInterface string
+			  }
+	LogServer struct {
+				  RpcInterface string
+			  }
 }

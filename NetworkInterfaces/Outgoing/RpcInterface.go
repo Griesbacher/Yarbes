@@ -1,4 +1,4 @@
-package Interface
+package Outgoing
 
 import (
 	"crypto/tls"
@@ -14,7 +14,7 @@ type RpcInterface struct {
 }
 
 func NewRpcInterface(serverAddress string) RpcInterface {
-	config := TLS.GenerateClientTLSConfig(Config.GetClientConfig().Client.TLSCert, Config.GetClientConfig().Client.TLSKey, Config.GetClientConfig().Client.TLSCaCert)
+	config := TLS.GenerateClientTLSConfig(Config.GetClientConfig().TLS.Cert, Config.GetClientConfig().TLS.Key, Config.GetClientConfig().TLS.CaCert)
 	return RpcInterface{serverAddress: serverAddress, Config: config}
 }
 

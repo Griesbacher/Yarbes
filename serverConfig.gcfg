@@ -1,14 +1,15 @@
+[TLS]
+    Cert            = "certs/server.crt"
+    Key             = "certs/server.key"
+    CaCert          = "certs/ca.crt"
+
 [RuleSystem]
-    Enabled     = true
-    ModulePath  = "Module"
-    Rulefile    = "ruleFile.rule"
-    Worker      = 1
-    TLSEnable   = true
-    TLSCert     = "certs/server.crt"
-    TLSKey      = "certs/server.key"
-    TLSCaCert   = "certs/ca.crt"
-    RpcInterface= "127.0.0.1:8000"
+    Enabled         = true
+    ModulePath      = "Module"
+    Rulefile        = "ruleFile.rule"
+    Worker          = 1
+    RpcInterface    = "127.0.0.1:8000"
 
 [LogServer]
-    Enabled     = true
-    RpcInterface= "127.0.0.1:8001"
+    Enabled         = true
+    RpcInterface    = "127.0.0.1:8000"

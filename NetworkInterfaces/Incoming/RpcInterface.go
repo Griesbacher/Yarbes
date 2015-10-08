@@ -21,7 +21,7 @@ func NewRpcInterface(listenTo string) *RpcInterface {
 
 func (rpcI RpcInterface) Start() {
 	if !rpcI.isRunning {
-		rpcI.serve()
+		go rpcI.serve()
 	}
 }
 
@@ -32,9 +32,9 @@ func (rpcI RpcInterface) Stop() {
 	}
 }
 
-func (rpcI RpcInterface) serve() {
+func (rpcI *RpcInterface) serve() {
 	rpcI.isRunning = true
-	config := TLS.GenerateServerTLSConfig(Config.GetServerConfig().RuleSystem.TLSCert, Config.GetServerConfig().RuleSystem.TLSKey, Config.GetServerConfig().RuleSystem.TLSCaCert)
+	config := TLS.GenerateServerTLSConfig(Config.GetServerConfig().TLS.Cert, Config.GetServerConfig().TLS.Key, Config.GetServerConfig().TLS.CaCert)
 	listener, err := tls.Listen("tcp", rpcI.RPCListenTo, config)
 	if err != nil {
 		panic(err)
