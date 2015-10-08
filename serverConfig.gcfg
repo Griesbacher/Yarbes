@@ -8,3 +8,7 @@
     TLSKey      = "certs/server.key"
     TLSCaCert   = "certs/ca.crt"
     RpcInterface= "127.0.0.1:8000"
+
+[LogServer]
+    Enabled     = true
+    RpcInterface= "127.0.0.1:8001"

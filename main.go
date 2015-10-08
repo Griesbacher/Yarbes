@@ -4,17 +4,15 @@ import (
 	"flag"
 	"fmt"
 	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/RuleSystem"
-	"github.com/griesbacher/SystemX/RuleSystem/Incoming"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+	"github.com/griesbacher/SystemX/NetworkInterfaces/Incoming"
 )
 
-type StartAndStoppable interface {
-	Start()
+type Stoppable interface {
 	Stop()
 }
 
@@ -30,31 +28,35 @@ Commandline Parameter:
 	flag.Parse()
 	Config.InitServerConfigProvider(configPath)
 
-	b := []byte(`{
-   "k1" : "v1",
-   "k2" : 10,
-   "k3" : ["v4",12.3,{"k11" : "v11", "k22" : "v22"}]
-}`)
+	var ruleSystem *RuleSystem.RuleSystem
+	var rpcI *Incoming.RuleSystemRpcInterface
 
-	event, err := Event.NewEvent(b)
-	if err != nil {
-		panic(err)
+
+
+	if Config.GetServerConfig().LogServer.Enabled {
+		if Config.GetServerConfig().LogServer.RpcInterface != "" {
+
+		}
 	}
-	ruleSystem := RuleSystem.NewRuleSystem()
-	ruleSystem.Start()
-	ruleSystem.EventQueue <- *event
 
-	rpcI := Incoming.NewRpcInterface(ruleSystem.EventQueue)
-	rpcI.Start()
+	if Config.GetServerConfig().RuleSystem.Enabled {
+		ruleSystem = RuleSystem.NewRuleSystem()
+		ruleSystem.Start()
+		if Config.GetServerConfig().RuleSystem.RpcInterface != "" {
+			fmt.Println("Starting: RuleSystem RPC")
+			rpcI = Incoming.NewRuleSystemRpcInterface(ruleSystem.EventQueue)
+			if Config.GetServerConfig().LogServer.RpcInterface != Config.GetServerConfig().RuleSystem.RpcInterface {
+				rpcI.Start()
+			}
+		}
+	}
 
-	time.Sleep(time.Duration(5) * time.Second)
-	//Listen for Interrupts
 	interruptChannel := make(chan os.Signal, 1)
 	signal.Notify(interruptChannel, syscall.SIGINT)
 	signal.Notify(interruptChannel, syscall.SIGTERM)
 	go func() {
 		<-interruptChannel
-		cleanUp([]StartAndStoppable{ruleSystem, rpcI})
+		cleanUp([]Stoppable{ruleSystem, rpcI})
 		os.Exit(1)
 	}()
 
@@ -64,7 +66,7 @@ Commandline Parameter:
 	}
 }
 
-func cleanUp(itemsToStop []StartAndStoppable) {
+func cleanUp(itemsToStop []Stoppable) {
 	for _, item := range itemsToStop {
 		item.Stop()
 	}

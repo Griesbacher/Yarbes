@@ -3,20 +3,19 @@ package Incoming
 import (
 	"crypto/tls"
 	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/TLS"
 	"log"
 	"net/rpc"
 )
 
 type RpcInterface struct {
-	eventQueue chan Event.Event
-	quit       chan bool
-	isRunning  bool
+	quit        chan bool
+	isRunning   bool
+	RPCListenTo string
 }
 
-func NewRpcInterface(eventQueue chan Event.Event) *RpcInterface {
-	rpc := &RpcInterface{eventQueue: eventQueue, quit: make(chan bool), isRunning: false}
+func NewRpcInterface(listenTo string) *RpcInterface {
+	rpc := &RpcInterface{quit: make(chan bool), isRunning: false, RPCListenTo: listenTo}
 	return rpc
 }
 
@@ -27,17 +26,16 @@ func (rpcI RpcInterface) Start() {
 }
 
 func (rpcI RpcInterface) Stop() {
-	rpcI.quit <- true
-	<-rpcI.quit
+	if rpcI.isRunning {
+		rpcI.quit <- true
+		<-rpcI.quit
+	}
 }
 
 func (rpcI RpcInterface) serve() {
-	if err := rpc.Register(&RpcHandler{rpcI}); err != nil {
-		panic(err)
-	}
+	rpcI.isRunning = true
 	config := TLS.GenerateServerTLSConfig(Config.GetServerConfig().RuleSystem.TLSCert, Config.GetServerConfig().RuleSystem.TLSKey, Config.GetServerConfig().RuleSystem.TLSCaCert)
-	listenTo := Config.GetServerConfig().RuleSystem.RpcInterface
-	listener, err := tls.Listen("tcp", listenTo, config)
+	listener, err := tls.Listen("tcp", rpcI.RPCListenTo, config)
 	if err != nil {
 		panic(err)
 	}
@@ -67,19 +65,9 @@ func (rpcI RpcInterface) serve() {
 	}
 }
 
-type RpcHandler struct {
-	inter RpcInterface
-}
-
-type Result struct {
-	Err error
-}
-
-func (handler *RpcHandler) CreateEvent(args *string, result *Result) error {
-	event, err := Event.NewEvent([]byte(*args))
-	if err == nil {
-		handler.inter.eventQueue <- *event
+func (rpcI RpcInterface) publishHandler(rcvr interface{}) {
+	if err := rpc.Register(rcvr); err != nil {
+		panic(err)
 	}
-	result.Err = err
-	return err
 }
+

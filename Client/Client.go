@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/griesbacher/SystemX/Client/Interface"
 	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/RuleSystem/Incoming"
+	"github.com/griesbacher/SystemX/NetworkInterfaces/Incoming"
 )
 
 func main() {
@@ -33,7 +33,7 @@ Commandline Parameter:
 	}
 	if rpcClient := rpcI.GenRpcClient(); rpcClient != nil {
 		result := new(Incoming.Result)
-		if err := rpcClient.Call("RpcHandler.CreateEvent", string(b), &result); err != nil {
+		if err := rpcClient.Call("RuleSystemRpcHandler.CreateEvent", string(b), &result); err != nil {
 			panic(err)
 		}
 		if result.Err != nil {
