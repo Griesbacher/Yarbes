@@ -3,7 +3,7 @@ package RuleFileParser
 import (
 	"fmt"
 	"github.com/griesbacher/SystemX/Event"
-	"github.com/griesbacher/SystemX/Modul"
+	"github.com/griesbacher/SystemX/Module"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -12,7 +12,7 @@ import (
 type RuleFileParser struct {
 	ruleFile       string
 	lines          []RuleLine
-	externalModule Modul.ExternalModule
+	externalModule Module.ExternalModule
 }
 
 func NewRuleFileParser(ruleFile string) *RuleFileParser {
@@ -38,7 +38,7 @@ func NewRuleFileParser(ruleFile string) *RuleFileParser {
 				command:   elements[2],
 				last:      last})
 	}
-	return &RuleFileParser{ruleFile: ruleFile, lines: lines, externalModule: *Modul.GetExternalModule()}
+	return &RuleFileParser{ruleFile: ruleFile, lines: lines, externalModule: *Module.GetExternalModule()}
 }
 
 func (rule RuleFileParser) EvaluateJson(event Event.Event) {

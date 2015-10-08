@@ -1,4 +1,4 @@
-package Modul
+package Module
 
 import (
 	"bytes"
