@@ -148,7 +148,7 @@ func (v myVisitor) Visit(node ast.Node) ast.Visitor {
 					v.store.appendToResult(true) //Found index
 				}
 			} else {
-				v.store.appendToStack(&ast.BasicLit{token.NoPos, token.ILLEGAL, "X"})
+				v.store.appendToStack(&ast.BasicLit{ValuePos:token.NoPos, Kind:token.ILLEGAL, Value:"X"})
 			}
 		case *ast.ParenExpr, nil:
 		//Allowed but not used
@@ -259,13 +259,13 @@ func (v myVisitor) genBasicLitFromIndexExpr(ident *ast.Ident) *ast.BasicLit {
 		}
 		switch value := currentLevel.(type) {
 		case string:
-			return &ast.BasicLit{token.NoPos, token.STRING, "\"" + value + "\""}
+			return &ast.BasicLit{ValuePos:token.NoPos, Kind:token.STRING, Value:"\"" + value + "\""}
 		case int, float32, float64:
 			asString := fmt.Sprint(value)
 			if strings.Contains(asString, ".") {
-				return &ast.BasicLit{token.NoPos, token.FLOAT, asString}
+				return &ast.BasicLit{ValuePos:token.NoPos, Kind:token.FLOAT, Value:asString}
 			} else {
-				return &ast.BasicLit{token.NoPos, token.INT, asString}
+				return &ast.BasicLit{ValuePos:token.NoPos, Kind:token.INT, Value:asString}
 			}
 		case nil:
 			return nil

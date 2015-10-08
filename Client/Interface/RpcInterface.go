@@ -9,7 +9,7 @@ import (
 
 type RpcInterface struct {
 	serverAddress string
-	Config        tls.Config
+	Config        *tls.Config
 	conn          *tls.Conn
 }
 
@@ -19,7 +19,7 @@ func NewRpcInterface(serverAddress string) RpcInterface {
 }
 
 func (rpcI *RpcInterface) Connect() error {
-	conn, err := tls.Dial("tcp", rpcI.serverAddress, &rpcI.Config)
+	conn, err := tls.Dial("tcp", rpcI.serverAddress, rpcI.Config)
 	rpcI.conn = conn
 	return err
 }

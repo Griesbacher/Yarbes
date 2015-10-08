@@ -1,6 +1,6 @@
 [RuleSystem]
     Enabled     = true
-    ModulePath  = "Modul"
+    ModulePath  = "Module"
     Rulefile    = "ruleFile.rule"
     Worker      = 1
     TLSEnable   = true

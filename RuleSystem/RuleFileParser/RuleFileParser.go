@@ -26,7 +26,7 @@ func NewRuleFileParser(ruleFile string) *RuleFileParser {
 		line = strings.TrimSpace(line)
 		elements := strings.Split(line, ";")
 		if len(elements) != 4 {
-			panic(fmt.Sprintf("Error in Line: &d", index))
+			panic(fmt.Sprintf("Error in Line: %d", index))
 		}
 		last, err := strconv.ParseBool(elements[3])
 		if err != nil {

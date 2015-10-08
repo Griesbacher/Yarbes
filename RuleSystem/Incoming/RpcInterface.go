@@ -37,7 +37,7 @@ func (rpcI RpcInterface) serve() {
 	}
 	config := TLS.GenerateServerTLSConfig(Config.GetServerConfig().RuleSystem.TLSCert, Config.GetServerConfig().RuleSystem.TLSKey, Config.GetServerConfig().RuleSystem.TLSCaCert)
 	listenTo := Config.GetServerConfig().RuleSystem.RpcInterface
-	listener, err := tls.Listen("tcp", listenTo, &config)
+	listener, err := tls.Listen("tcp", listenTo, config)
 	if err != nil {
 		panic(err)
 	}

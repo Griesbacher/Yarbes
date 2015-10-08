@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 )
 
-func GenerateServerTLSConfig(serverCrt, serverKey, caCert string) tls.Config {
+func GenerateServerTLSConfig(serverCrt, serverKey, caCert string) *tls.Config {
 	cert, err := tls.LoadX509KeyPair(serverCrt, serverKey)
 	if err != nil {
 		panic("server: loadkeys")
@@ -29,10 +29,10 @@ func GenerateServerTLSConfig(serverCrt, serverKey, caCert string) tls.Config {
 	}
 	config.Rand = rand.Reader
 
-	return config
+	return &config
 }
 
-func GenerateClientTLSConfig(clientCrt, clientKey, caCert string) tls.Config {
+func GenerateClientTLSConfig(clientCrt, clientKey, caCert string) *tls.Config {
 	cert, err := tls.LoadX509KeyPair(clientCrt, clientKey)
 	if err != nil {
 		panic(err)
@@ -50,5 +50,5 @@ func GenerateClientTLSConfig(clientCrt, clientKey, caCert string) tls.Config {
 		Certificates: []tls.Certificate{cert},
 		RootCAs:      certPool,
 	}
-	return config
+	return &config
 }
