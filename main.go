@@ -32,7 +32,7 @@ Commandline Parameter:
 
 	var ruleSystem *RuleSystem.RuleSystem
 	var ruleSystemRPCI *Incoming.RuleSystemRPCInterface
-	var logServer *LogServer.LogServer
+	var logServer *LogServer.Server
 	var logServerRPCI *Incoming.LogServerRPCInterface
 
 	if Config.GetServerConfig().LogServer.Enabled {
