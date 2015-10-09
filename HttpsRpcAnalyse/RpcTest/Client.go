@@ -1,4 +1,4 @@
-package RpcTest
+package RPCTest
 
 import (
 	"crypto/tls"

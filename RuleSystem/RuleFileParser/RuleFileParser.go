@@ -41,7 +41,7 @@ func NewRuleFileParser(ruleFile string) *RuleFileParser {
 	return &RuleFileParser{ruleFile: ruleFile, lines: lines, externalModule: *Module.GetExternalModule()}
 }
 
-func (rule RuleFileParser) EvaluateJson(event Event.Event) {
+func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 	currentEvent := event
 	for _, line := range rule.lines {
 		fmt.Print(line.name + " ")

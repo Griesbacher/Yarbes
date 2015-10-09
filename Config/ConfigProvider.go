@@ -13,8 +13,8 @@ type ClientConfigProvider struct {
 	Cfg ClientConfig
 }
 
-var singleServerConfigProvider *ServerConfigProvider = nil
-var singleClientConfigProvider *ClientConfigProvider = nil
+var singleServerConfigProvider *ServerConfigProvider
+var singleClientConfigProvider *ClientConfigProvider
 var mutex = &sync.Mutex{}
 
 func InitServerConfigProvider(configPath string) {

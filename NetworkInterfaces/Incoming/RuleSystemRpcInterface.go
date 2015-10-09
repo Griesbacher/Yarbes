@@ -1,36 +1,36 @@
 package Incoming
 
 import (
-	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/Config"
+	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/NetworkInterfaces"
 )
 
-type RuleSystemRpcInterface struct {
-	rpcInterface *RpcInterface
+type RuleSystemRPCInterface struct {
+	rpcInterface *RPCInterface
 	eventQueue   chan Event.Event
 }
 
-func NewRuleSystemRpcInterface(eventQueue chan Event.Event) *RuleSystemRpcInterface {
-	rpc := NewRpcInterface(Config.GetServerConfig().RuleSystem.RpcInterface)
-	ruleRpc := &RuleSystemRpcInterface{rpcInterface:rpc, eventQueue:eventQueue}
-	rpc.publishHandler(&RuleSystemRpcHandler{*ruleRpc})
-	return ruleRpc
+func NewRuleSystemRPCInterface(eventQueue chan Event.Event) *RuleSystemRPCInterface {
+	rpc := NewRPCInterface(Config.GetServerConfig().RuleSystem.RPCInterface)
+	ruleRPC := &RuleSystemRPCInterface{rpcInterface: rpc, eventQueue: eventQueue}
+	rpc.publishHandler(&RuleSystemRPCHandler{*ruleRPC})
+	return ruleRPC
 }
 
-func (rpcI RuleSystemRpcInterface) Start() {
+func (rpcI RuleSystemRPCInterface) Start() {
 	rpcI.rpcInterface.Start()
 }
 
-func (rpcI RuleSystemRpcInterface) Stop() {
+func (rpcI RuleSystemRPCInterface) Stop() {
 	rpcI.rpcInterface.Stop()
 }
 
-type RuleSystemRpcHandler struct {
-	inter RuleSystemRpcInterface
+type RuleSystemRPCHandler struct {
+	inter RuleSystemRPCInterface
 }
 
-func (handler *RuleSystemRpcHandler) CreateEvent(args *string, result *NetworkInterfaces.RpcResult) error {
+func (handler *RuleSystemRPCHandler) CreateEvent(args *string, result *NetworkInterfaces.RPCResult) error {
 	event, err := Event.NewEvent([]byte(*args))
 	if err == nil {
 		handler.inter.eventQueue <- *event

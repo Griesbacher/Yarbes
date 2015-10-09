@@ -4,7 +4,7 @@
     CaCert   = "certs/ca.crt"
 
 [Backend]
-    RpcInterface = "127.0.0.1:8000"
+    RPCInterface = "127.0.0.1:8000"
 
 [LogServer]
-    RpcInterface = "127.0.0.1:8000"
+    RPCInterface = "127.0.0.1:8000"

@@ -6,38 +6,38 @@ import (
 	"github.com/griesbacher/SystemX/NetworkInterfaces"
 )
 
-type LogServerRpcInterface struct {
-	rpcInterface *RpcInterface
+type LogServerRPCInterface struct {
+	rpcInterface *RPCInterface
 	logQueue     chan LogServer.LogMessage
 }
 
-func NewLogServerRpcInterface(logQueue chan LogServer.LogMessage) *LogServerRpcInterface {
-	rpc := NewRpcInterface(Config.GetServerConfig().LogServer.RpcInterface)
-	ruleRpc := &LogServerRpcInterface{rpcInterface: rpc, logQueue: logQueue}
-	rpc.publishHandler(&LogServerRpcHandler{*ruleRpc})
-	return ruleRpc
+func NewLogServerRPCInterface(logQueue chan LogServer.LogMessage) *LogServerRPCInterface {
+	rpc := NewRPCInterface(Config.GetServerConfig().LogServer.RPCInterface)
+	ruleRPC := &LogServerRPCInterface{rpcInterface: rpc, logQueue: logQueue}
+	rpc.publishHandler(&LogServerRPCHandler{*ruleRPC})
+	return ruleRPC
 }
 
-func (rpcI LogServerRpcInterface) Start() {
+func (rpcI LogServerRPCInterface) Start() {
 	rpcI.rpcInterface.Start()
 }
 
-func (rpcI LogServerRpcInterface) Stop() {
+func (rpcI LogServerRPCInterface) Stop() {
 	rpcI.rpcInterface.Stop()
 }
 
-type LogServerRpcHandler struct {
-	inter LogServerRpcInterface
+type LogServerRPCHandler struct {
+	inter LogServerRPCInterface
 }
 
-func (handler *LogServerRpcHandler) SendMessages(messages *[]LogServer.LogMessage, result *NetworkInterfaces.RpcResult) error {
+func (handler *LogServerRPCHandler) SendMessages(messages *[]LogServer.LogMessage, result *NetworkInterfaces.RPCResult) error {
 	for _, message := range *messages {
 		handler.SendMessage(&message, result)
 	}
 	return nil
 }
 
-func (handler *LogServerRpcHandler) SendMessage(message *LogServer.LogMessage, result *NetworkInterfaces.RpcResult) error {
+func (handler *LogServerRPCHandler) SendMessage(message *LogServer.LogMessage, result *NetworkInterfaces.RPCResult) error {
 	handler.inter.logQueue <- *message
 	return nil
 }

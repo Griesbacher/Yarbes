@@ -64,7 +64,7 @@ func (worker *ruleSystemWorker) work() {
 			worker.quit <- true
 			return
 		case event = <-worker.eventQueue:
-			worker.parser.EvaluateJson(event)
+			worker.parser.EvaluateJSON(event)
 		}
 	}
 }

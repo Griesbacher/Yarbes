@@ -1,15 +1,15 @@
 package LogServer
+
 import "fmt"
 
 type LogServer struct {
 	LogQueue  chan LogMessage
 	quit      chan bool
 	isRunning bool
-
 }
 
-func NewLogServer()*LogServer{
-	return &LogServer{LogQueue:make(chan LogMessage, 100), quit:make(chan bool), isRunning:false}
+func NewLogServer() *LogServer {
+	return &LogServer{LogQueue: make(chan LogMessage, 100), quit: make(chan bool), isRunning: false}
 }
 
 func (log LogServer) Start() {
@@ -34,7 +34,7 @@ func (log *LogServer) handleLog() {
 			log.quit <- true
 			return
 		case message = <-log.LogQueue:
-			fmt.Printf("[%s]@[%s] %s\n", message.Source,message.Timestamp ,message.Message)
+			fmt.Printf("[%s]@[%s] %s\n", message.Source, message.Timestamp, message.Message)
 		}
 	}
 }

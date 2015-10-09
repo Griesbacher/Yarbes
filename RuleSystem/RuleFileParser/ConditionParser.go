@@ -52,16 +52,16 @@ func (d *dataStore) evaluateResultQueue() {
 func (d *dataStore) returnResult() bool {
 	if len(d.result) == 1 {
 		return d.result[0]
-	} else {
-		switch lastToken := d.stack[len(d.stack)-1].(type) {
-		case *ast.BasicLit:
-			if lastToken.Kind == token.ILLEGAL {
-				return false
-			}
-		}
-		d.err = errors.New("Result is empty")
-		return false
 	}
+
+	switch lastToken := d.stack[len(d.stack)-1].(type) {
+		case *ast.BasicLit:
+		if lastToken.Kind == token.ILLEGAL {
+			return false
+		}
+	}
+	d.err = errors.New("Result is empty")
+	return false
 }
 
 type ConditionParser struct {
@@ -120,28 +120,28 @@ func (v myVisitor) Visit(node ast.Node) ast.Visitor {
 		v.store.appendToStack(node)
 	} else {
 		switch n := node.(type) { //Current element
-		case *ast.BasicLit:
-			switch nstack := v.store.stack[len(v.store.stack)-1].(type) { //Last element
 			case *ast.BasicLit:
+			switch nstack := v.store.stack[len(v.store.stack)-1].(type) { //Last element
+				case *ast.BasicLit:
 				v.store.popFromStack()
 				op := v.store.popFromStack().(*ast.BinaryExpr).Op.String()
 				v.store.appendToResult(v.compareBasicLit(nstack, n, op))
-			case *ast.IndexExpr, *ast.Ident:
+				case *ast.IndexExpr, *ast.Ident:
 				panic("should not happen")
-			default:
+				default:
 				v.store.appendToStack(node)
 			}
-		case *ast.BinaryExpr, *ast.IndexExpr:
+			case *ast.BinaryExpr, *ast.IndexExpr:
 			v.store.appendToStack(node)
-		case *ast.Ident:
+			case *ast.Ident:
 			if indexExpr := v.genBasicLitFromIndexExpr(n); indexExpr != nil {
 				if len(v.store.stack) > 0 {
 					switch nstack := v.store.stack[len(v.store.stack)-1].(type) { //Last element
-					case *ast.BasicLit:
+						case *ast.BasicLit:
 						v.store.popFromStack()
 						op := v.store.popFromStack().(*ast.BinaryExpr).Op.String()
 						v.store.appendToResult(v.compareBasicLit(nstack, indexExpr, op))
-					default:
+						default:
 						v.store.appendToStack(indexExpr)
 					}
 				} else {
@@ -150,9 +150,9 @@ func (v myVisitor) Visit(node ast.Node) ast.Visitor {
 			} else {
 				v.store.appendToStack(&ast.BasicLit{ValuePos: token.NoPos, Kind: token.ILLEGAL, Value: "X"})
 			}
-		case *ast.ParenExpr, nil:
+			case *ast.ParenExpr, nil:
 		//Allowed but not used
-		default:
+			default:
 			//Not allowed
 			//panic("Token not allowed!")
 			v.store.err = errors.New("Token not allowed!")
@@ -164,7 +164,7 @@ func (v myVisitor) Visit(node ast.Node) ast.Visitor {
 
 func (v myVisitor) compareBasicLit(lit1, lit2 *ast.BasicLit, op string) bool {
 	if lit1.Kind != lit2.Kind {
-		v.store.err = errors.New(fmt.Sprintf("Types don't match: %s != %s. Values: %s, %s", lit1.Kind, lit2.Kind, lit1.Value, lit2.Value))
+		v.store.err = fmt.Errorf("Types don't match: %s != %s. Values: %s, %s", lit1.Kind, lit2.Kind, lit1.Value, lit2.Value)
 		return false
 		//panic(fmt.Sprintf("Types don't match: %s != %s. Values: %s, %s", lit1.Kind, lit2.Kind, lit1.Value, lit2.Value))
 	}
@@ -183,9 +183,9 @@ func (v myVisitor) compareBasicLit(lit1, lit2 *ast.BasicLit, op string) bool {
 			}
 			return matched
 		default:
-			v.store.err = errors.New("used unsupported operator!")
+			v.store.err = errors.New("used unsupported operator")
 			return false
-			//panic("used unsupported operator!")
+		//panic("used unsupported operator!")
 		}
 	case token.INT, token.FLOAT:
 		value1, _ := strconv.Atoi(lit1.Value)
@@ -204,14 +204,14 @@ func (v myVisitor) compareBasicLit(lit1, lit2 *ast.BasicLit, op string) bool {
 		case "<":
 			return value1 < value2
 		default:
-			v.store.err = errors.New("used unsupported operator!")
+			v.store.err = errors.New("used unsupported operator")
 			return false
-			//panic("used unsupported operator!")
+		//panic("used unsupported operator!")
 		}
 	default:
 		v.store.err = errors.New("An unkown token appeard")
 		return false
-		//panic("An unkown token appeard")
+	//panic("An unkown token appeard")
 	}
 }
 
@@ -222,7 +222,7 @@ func (v myVisitor) genBasicLitFromIndexExpr(ident *ast.Ident) *ast.BasicLit {
 		stackSize := len(v.store.stack) - 1
 		for i := stackSize; i >= 0; i-- {
 			switch s := v.store.stack[i].(type) {
-			case *ast.IndexExpr:
+				case *ast.IndexExpr:
 				v.store.ignoreNextX++
 				v.store.popFromStack()
 				lit := s.Index.(*ast.BasicLit)
@@ -230,12 +230,12 @@ func (v myVisitor) genBasicLitFromIndexExpr(ident *ast.Ident) *ast.BasicLit {
 				case token.STRING:
 					key := strings.Trim(lit.Value, "\"")
 					switch d := currentLevel.(type) {
-					case map[string]interface{}:
+						case map[string]interface{}:
 						currentLevel = d[key]
-					default:
+						default:
 						v.store.err = errors.New("Got string but it's no map")
 						return nil
-						//panic("Got string but it's no map")
+					//panic("Got string but it's no map")
 					}
 				case token.INT, token.FLOAT: //Should never happen due to json convention
 					key, err := strconv.Atoi(lit.Value)
@@ -243,39 +243,39 @@ func (v myVisitor) genBasicLitFromIndexExpr(ident *ast.Ident) *ast.BasicLit {
 						panic(err)
 					}
 					switch d := currentLevel.(type) {
-					case map[int]interface{}:
+						case map[int]interface{}:
 						currentLevel = d[key]
-					case []interface{}:
+						case []interface{}:
 						currentLevel = d[key]
-					default:
+						default:
 						v.store.err = errors.New("Got int but it's no map nor list")
 						return nil
-						//panic("Got int but it's no map nor list")
+					//panic("Got int but it's no map nor list")
 					}
 				}
-			default:
+				default:
 				break
 			}
 		}
 		switch value := currentLevel.(type) {
-		case string:
+			case string:
 			return &ast.BasicLit{ValuePos: token.NoPos, Kind: token.STRING, Value: "\"" + value + "\""}
-		case int, float32, float64:
+			case int, float32, float64:
 			asString := fmt.Sprint(value)
 			if strings.Contains(asString, ".") {
 				return &ast.BasicLit{ValuePos: token.NoPos, Kind: token.FLOAT, Value: asString}
-			} else {
-				return &ast.BasicLit{ValuePos: token.NoPos, Kind: token.INT, Value: asString}
 			}
-		case nil:
+
+			return &ast.BasicLit{ValuePos: token.NoPos, Kind: token.INT, Value: asString}
+			case nil:
 			return nil
-		default:
-			v.store.err = errors.New(fmt.Sprintf("No suitable type found... %s", reflect.TypeOf(currentLevel)))
+			default:
+			v.store.err = fmt.Errorf("No suitable type found... %s", reflect.TypeOf(currentLevel))
 			return nil
-			//panic(fmt.Sprintf("No suitable type found... %s", reflect.TypeOf(currentLevel)))
+		//panic(fmt.Sprintf("No suitable type found... %s", reflect.TypeOf(currentLevel)))
 		}
 	} else {
-		v.store.err = errors.New(fmt.Sprintf("Given datastructure name is wrong. Given: %s Expected", ident.Name))
+		v.store.err = fmt.Errorf("Given datastructure name is wrong. Given: %s Expected", ident.Name)
 		return nil
 		//panic(fmt.Sprintf("Given datastructure name is wrong. Given: %s Expected", ident.Name))
 	}
@@ -291,16 +291,16 @@ func (v myVisitor) printNodes(node []ast.Node) {
 
 func printNode(node ast.Node, appendix string) {
 	switch n := node.(type) {
-	case *ast.BasicLit:
+		case *ast.BasicLit:
 		fmt.Print(n.Value, appendix)
-	case *ast.BinaryExpr:
+		case *ast.BinaryExpr:
 		fmt.Print(n.Op, appendix)
-	case *ast.ParenExpr:
-	case *ast.IndexExpr:
+		case *ast.ParenExpr:
+		case *ast.IndexExpr:
 		fmt.Print(n.Index, appendix)
-	case *ast.Ident:
+		case *ast.Ident:
 		fmt.Print(n.Name, appendix)
-	default:
+		default:
 		if n != nil {
 			fmt.Print("ERROR - ", reflect.TypeOf(node), ", ")
 		}

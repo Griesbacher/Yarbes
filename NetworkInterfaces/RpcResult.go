@@ -1,6 +1,6 @@
 package NetworkInterfaces
 
-type RpcResult struct {
+type RPCResult struct {
 	Message string
 	Err     error
 }

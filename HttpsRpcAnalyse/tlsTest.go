@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/griesbacher/SystemX/HttpsRpcAnalyse/HttpsTest"
-	"github.com/griesbacher/SystemX/HttpsRpcAnalyse/RpcTest"
+	"github.com/griesbacher/SystemX/HttpsRPCAnalyse/HttpsTest"
+	"github.com/griesbacher/SystemX/HttpsRPCAnalyse/RPCTest"
 	"os"
 	"strconv"
 	"time"
 )
 
 func main() {
-	RpcTest.Client(1)
+	RPCTest.Client(1)
 
 	os.Exit(1)
 	if len(os.Args) != 3 {
@@ -27,9 +27,9 @@ func main() {
 			HttpsTest.Request(client, "test string")
 		}
 	} else {
-		go RpcTest.Server()
+		go RPCTest.Server()
 		time.Sleep(time.Duration(5) * time.Second)
-		RpcTest.Client(loops)
+		RPCTest.Client(loops)
 
 	}
 }

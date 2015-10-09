@@ -1,7 +1,8 @@
 package LogServer
+
 import (
-	"time"
 	"github.com/kdar/factorlog"
+	"time"
 )
 
 type LogMessage struct {
@@ -12,5 +13,5 @@ type LogMessage struct {
 }
 
 func NewLogMessage(source, message string) *LogMessage {
-	return &LogMessage{Timestamp:time.Now(), Source:source, LogLevel:factorlog.DEBUG, Message:message}
+	return &LogMessage{Timestamp: time.Now(), Source: source, LogLevel: factorlog.DEBUG, Message: message}
 }

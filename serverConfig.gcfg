@@ -8,8 +8,8 @@
     ModulePath      = "Module"
     Rulefile        = "ruleFile.rule"
     Worker          = 1
-    RpcInterface    = "127.0.0.1:8000"
+    RPCInterface    = "127.0.0.1:8000"
 
 [LogServer]
     Enabled         = true
-    RpcInterface    = "127.0.0.1:8000"
+    RPCInterface    = "127.0.0.1:8000"

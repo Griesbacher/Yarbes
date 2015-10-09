@@ -18,7 +18,7 @@ type ExternalModule struct {
 	modules     map[string]string
 }
 
-var singleExternalModule *ExternalModule = nil
+var singleExternalModule *ExternalModule
 var mutex = &sync.Mutex{}
 
 func GetExternalModule() *ExternalModule {
@@ -52,7 +52,7 @@ func (external ExternalModule) Call(moduleName string, event Event.Event) (*Even
 }
 
 func (external ExternalModule) doesModuleExist(moduleName string) bool {
-	for command, _ := range external.modules {
+	for command := range external.modules {
 		if command == moduleName {
 			return true
 		}

@@ -8,31 +8,31 @@ import (
 	"net/rpc"
 )
 
-type RpcInterface struct {
+type RPCInterface struct {
 	quit        chan bool
 	isRunning   bool
 	RPCListenTo string
 }
 
-func NewRpcInterface(listenTo string) *RpcInterface {
-	rpc := &RpcInterface{quit: make(chan bool), isRunning: false, RPCListenTo: listenTo}
+func NewRPCInterface(listenTo string) *RPCInterface {
+	rpc := &RPCInterface{quit: make(chan bool), isRunning: false, RPCListenTo: listenTo}
 	return rpc
 }
 
-func (rpcI RpcInterface) Start() {
+func (rpcI RPCInterface) Start() {
 	if !rpcI.isRunning {
 		go rpcI.serve()
 	}
 }
 
-func (rpcI RpcInterface) Stop() {
+func (rpcI RPCInterface) Stop() {
 	if rpcI.isRunning {
 		rpcI.quit <- true
 		<-rpcI.quit
 	}
 }
 
-func (rpcI *RpcInterface) serve() {
+func (rpcI *RPCInterface) serve() {
 	rpcI.isRunning = true
 	config := TLS.GenerateServerTLSConfig(Config.GetServerConfig().TLS.Cert, Config.GetServerConfig().TLS.Key, Config.GetServerConfig().TLS.CaCert)
 	listener, err := tls.Listen("tcp", rpcI.RPCListenTo, config)
@@ -65,9 +65,8 @@ func (rpcI *RpcInterface) serve() {
 	}
 }
 
-func (rpcI RpcInterface) publishHandler(rcvr interface{}) {
+func (rpcI RPCInterface) publishHandler(rcvr interface{}) {
 	if err := rpc.Register(rcvr); err != nil {
 		panic(err)
 	}
 }
-
