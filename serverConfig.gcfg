@@ -2,6 +2,7 @@
     Cert            = "certs/server.crt"
     Key             = "certs/server.key"
     CaCert          = "certs/ca.crt"
+    BlackList       = "client1"
 
 [RuleSystem]
     Enabled         = true

@@ -6,6 +6,7 @@ import (
 	"github.com/griesbacher/SystemX/TLS"
 	"log"
 	"net/rpc"
+	"fmt"
 )
 
 type RPCInterface struct {
@@ -54,8 +55,12 @@ func (rpcI *RPCInterface) serve() {
 		if tlscon, ok := conn.(*tls.Conn); bytesRead == 1 && ok {
 			state := tlscon.ConnectionState()
 			sub := state.PeerCertificates[0].Subject
-			log.Println(state)
-			log.Println(sub)
+			fmt.Println("Clientname: ", sub.CommonName)
+			if isClientOnBlackList(sub.CommonName){
+				fmt.Println("Client is blacklisted")
+				conn.Close()
+				break
+			}
 		}
 		go func() {
 			log.Printf("server: accepted from %s", conn.RemoteAddr())
@@ -69,4 +74,13 @@ func (rpcI RPCInterface) publishHandler(rcvr interface{}) {
 	if err := rpc.Register(rcvr); err != nil {
 		panic(err)
 	}
+}
+
+func isClientOnBlackList(clientName string) bool {
+	for _, name := range Config.GetServerConfig().TLS.BlackList {
+		if clientName == name {
+			return true
+		}
+	}
+	return false
 }
