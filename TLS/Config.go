@@ -26,8 +26,9 @@ func GenerateServerTLSConfig(serverCrt, serverKey, caCert string) *tls.Config {
 		Certificates: []tls.Certificate{cert},
 		ClientAuth:   tls.RequireAndVerifyClientCert,
 		ClientCAs:    certPool,
+		MinVersion:   tls.VersionTLS12,
+		Rand:         rand.Reader,
 	}
-	config.Rand = rand.Reader
 
 	return &config
 }
@@ -37,6 +38,7 @@ func GenerateClientTLSConfig(clientCrt, clientKey, caCert string) *tls.Config {
 	if err != nil {
 		panic(err)
 	}
+
 	pem, err := ioutil.ReadFile(caCert)
 	if err != nil {
 		panic(err)
@@ -49,6 +51,9 @@ func GenerateClientTLSConfig(clientCrt, clientKey, caCert string) *tls.Config {
 	config := tls.Config{
 		Certificates: []tls.Certificate{cert},
 		RootCAs:      certPool,
+		MinVersion:   tls.VersionTLS12,
+		Rand:         rand.Reader,
 	}
+	config.BuildNameToCertificate()
 	return &config
 }
