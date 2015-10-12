@@ -5,8 +5,8 @@ import (
 	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/LogServer"
 	"github.com/griesbacher/SystemX/Module"
+	"github.com/griesbacher/nagflux/helper"
 	"io/ioutil"
-	"strconv"
 	"strings"
 )
 
@@ -14,7 +14,7 @@ type RuleFileParser struct {
 	ruleFile       string
 	lines          []RuleLine
 	externalModule Module.ExternalModule
-	logClient      LogServer.Client
+	logClient      *LogServer.Client
 }
 
 func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
@@ -26,19 +26,20 @@ func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
 	lines := []RuleLine{}
 	for index, line := range strings.SplitAfter(string(fileContent), "\n") {
 		line = strings.TrimSpace(line)
+		if len(line) == 0 || string(line[0]) == "#" {
+			continue
+		}
 		elements := strings.Split(line, ";")
 		if len(elements) != 4 {
 			return nil, fmt.Errorf("Number of Elements are not four in line: %d", index)
 		}
-		last, err := strconv.ParseBool(elements[3])
-		if err != nil {
-			return nil, fmt.Errorf("Could not parse bool in line: %d", index)
-		}
+
 		lines = append(lines,
 			RuleLine{name: elements[0],
 				condition: elements[1],
 				command:   elements[2],
-				last:      last})
+				flags:     helper.StringToMap(elements[3], ",", "="),
+			})
 	}
 	client, err := LogServer.NewClient()
 	if err != nil {
@@ -64,7 +65,7 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 			} else {
 				fmt.Println(newEvent)
 				currentEvent = *newEvent
-				if line.last {
+				if line.LastLine() {
 					break
 				}
 			}

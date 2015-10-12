@@ -39,9 +39,9 @@ func NewClient() (*Client, error) {
 	return nil, errors.New("Could not create a RPC client")
 }
 
-func (client Client) Log(message LogMessage) error {
+func (client Client) Log(message *LogMessage) error {
 	result := new(NetworkInterfaces.RPCResult)
-	if err := client.rpcClient.Call("LogServerRPCHandler.SendMessage", &message, &result); err != nil {
+	if err := client.rpcClient.Call("LogServerRPCHandler.SendMessage", message, &result); err != nil {
 		return err
 	}
 	return result.Err

@@ -35,7 +35,7 @@ func (external ExternalModule) Call(moduleName string, event Event.Event) (*Even
 	if !external.doesModuleExist(moduleName) {
 		external.searchModules()
 		if !external.doesModuleExist(moduleName) {
-			return fmt.Errorf("Module: %s not found", moduleName)
+			return nil, fmt.Errorf("Module: %s not found", moduleName)
 		}
 	}
 

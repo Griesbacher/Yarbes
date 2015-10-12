@@ -1,3 +1,11 @@
-Regel1;_["k1"]=="v1";echo;false
-Regel2;_["k1"]=="v1";echo;true
-Regel3;3==3;echo;true
+#Rule Definition:
+#Rulename;Condition;Module to Call;Flags
+#Flags:
+#last bool: if the condition matches this is the last rule
+
+#it is possible to leave Rulename and Condition empty,
+#in this case the last Rulename and Condition are taken from the last line
+
+Regel1;_["k1"]=="v1";echo;last=false
+Regel2;_["k1"]=="v1";echo;last=true
+Regel3;3==3;echo;last=true

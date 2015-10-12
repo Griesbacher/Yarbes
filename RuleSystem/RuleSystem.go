@@ -15,14 +15,14 @@ type RuleSystem struct {
 func NewRuleSystem() *RuleSystem {
 	eventQueue := make(chan Event.Event, 1000)
 
-	parser, err := *RuleFileParser.NewRuleFileParser(Config.GetServerConfig().RuleSystem.Rulefile)
+	parser, err := RuleFileParser.NewRuleFileParser(Config.GetServerConfig().RuleSystem.Rulefile)
 	if err != nil {
 		panic(err)
 	}
 	amountOfWorker := Config.GetServerConfig().RuleSystem.Worker
 	workers := []ruleSystemWorker{}
 	for i := 0; i < amountOfWorker; i++ {
-		workers = append(workers, ruleSystemWorker{eventQueue: eventQueue, parser: parser, quit: make(chan bool), isRunning: false})
+		workers = append(workers, ruleSystemWorker{eventQueue: eventQueue, parser: *parser, quit: make(chan bool), isRunning: false})
 	}
 	return &RuleSystem{EventQueue: eventQueue, workers: workers}
 }

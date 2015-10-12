@@ -19,16 +19,20 @@ type stoppable interface {
 }
 
 func main() {
-	var configPath string
+	var serverConfigPath string
+	var clientConfigPath string
 	flag.Usage = func() {
 		fmt.Println(`SystemX by Philip Griesbacher @ 2015
 Commandline Parameter:
--configPath Path to the config file. If no file path is given the default is ./serverConfig.gcfg.
+-serverConfigPath Path to the server config file. If no file path is given the default is ./serverConfig.gcfg.
+-clientConfigPath Path to the client config file. If no file path is given the default is ./clientConfig.gcfg.
 		`)
 	}
-	flag.StringVar(&configPath, "configPath", "serverConfig.gcfg", "path to the config file")
+	flag.StringVar(&serverConfigPath, "serverConfigPath", "serverConfig.gcfg", "path to the server config file")
+	flag.StringVar(&clientConfigPath, "clientConfigPath", "clientConfig.gcfg", "path to the client config file")
 	flag.Parse()
-	Config.InitServerConfigProvider(configPath)
+	Config.InitServerConfigProvider(serverConfigPath)
+	Config.InitClientConfigProvider(clientConfigPath)
 
 	var ruleSystem *RuleSystem.RuleSystem
 	var ruleSystemRPCI *Incoming.RuleSystemRPCInterface
