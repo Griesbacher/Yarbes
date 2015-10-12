@@ -82,7 +82,7 @@ func (p ConditionParser) ParseString(condition string, jsonData interface{}) (bo
 	data := &dataStore{data: jsonData, stack: []ast.Node{}, result: []bool{}, ignoreNextX: 0}
 	tree, err := parser.ParseExpr(condition)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 	if p.Debug {
 		ast.Print(token.NewFileSet(), tree)
@@ -179,7 +179,8 @@ func (v myVisitor) compareBasicLit(lit1, lit2 *ast.BasicLit, op string) bool {
 			lit2.Value = strings.Replace(lit2.Value, "\\\\", "\\", -1)
 			matched, err := regexp.MatchString(lit2.Value, lit1.Value)
 			if err != nil {
-				panic(err)
+				v.store.err = err
+				return false
 			}
 			return matched
 		default:
@@ -240,7 +241,8 @@ func (v myVisitor) genBasicLitFromIndexExpr(ident *ast.Ident) *ast.BasicLit {
 				case token.INT, token.FLOAT: //Should never happen due to json convention
 					key, err := strconv.Atoi(lit.Value)
 					if err != nil {
-						panic(err)
+						v.store.err = fmt.Errorf("Could not cast string: %s to int", lit.Value)
+						return nil
 					}
 					switch d := currentLevel.(type) {
 					case map[int]interface{}:

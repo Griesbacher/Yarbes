@@ -20,7 +20,7 @@ Commandline Parameter:
 	}
 	flag.StringVar(&configPath, "configPath", "clientConfig.gcfg", "path to the config file")
 	flag.Parse()
-	Config.InitClientonfigProvider(configPath)
+	Config.InitClientConfigProvider(configPath)
 
 	b := []byte(`{
 			   "k1" : "v1",
@@ -53,7 +53,7 @@ Commandline Parameter:
 			result := new(NetworkInterfaces.RPCResult)
 			for i := 0; i < 10; i++ {
 				start := time.Now()
-				message := LogServer.NewLogMessage("client0", "Hallo Log ")
+				message := LogServer.NewDebugLogMessage("client0", "Hallo Log ")
 				if err := rpcClient.Call("LogServerRPCHandler.SendMessage", &message, &result); err != nil {
 					panic(err)
 				}
@@ -66,7 +66,10 @@ Commandline Parameter:
 		logRPC.Disconnect()
 	}
 
-	client := LogServer.NewClient()
-	client.Log("Hallo Server")
+	client, err := LogServer.NewClient()
+	if err != nil {
+		panic(err)
+	}
+	client.Debug("Hallo Server")
 	client.Disconnect()
 }

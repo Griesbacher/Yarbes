@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/griesbacher/SystemX/HttpsRPCAnalyse/HttpsTest"
-	"github.com/griesbacher/SystemX/HttpsRPCAnalyse/RPCTest"
+	"github.com/griesbacher/SystemX/HttpsRpcAnalyse/HttpsTest"
+	"github.com/griesbacher/SystemX/HttpsRpcAnalyse/RpcTest"
 	"os"
 	"strconv"
 	"time"

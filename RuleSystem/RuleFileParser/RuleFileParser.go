@@ -3,6 +3,7 @@ package RuleFileParser
 import (
 	"fmt"
 	"github.com/griesbacher/SystemX/Event"
+	"github.com/griesbacher/SystemX/LogServer"
 	"github.com/griesbacher/SystemX/Module"
 	"io/ioutil"
 	"strconv"
@@ -13,12 +14,13 @@ type RuleFileParser struct {
 	ruleFile       string
 	lines          []RuleLine
 	externalModule Module.ExternalModule
+	logClient      LogServer.Client
 }
 
-func NewRuleFileParser(ruleFile string) *RuleFileParser {
+func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
 	fileContent, err := ioutil.ReadFile(ruleFile)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	lines := []RuleLine{}
@@ -26,11 +28,11 @@ func NewRuleFileParser(ruleFile string) *RuleFileParser {
 		line = strings.TrimSpace(line)
 		elements := strings.Split(line, ";")
 		if len(elements) != 4 {
-			panic(fmt.Sprintf("Error in Line: %d", index))
+			return nil, fmt.Errorf("Number of Elements are not four in line: %d", index)
 		}
 		last, err := strconv.ParseBool(elements[3])
 		if err != nil {
-			panic(err)
+			return nil, fmt.Errorf("Could not parse bool in line: %d", index)
 		}
 		lines = append(lines,
 			RuleLine{name: elements[0],
@@ -38,7 +40,11 @@ func NewRuleFileParser(ruleFile string) *RuleFileParser {
 				command:   elements[2],
 				last:      last})
 	}
-	return &RuleFileParser{ruleFile: ruleFile, lines: lines, externalModule: *Module.GetExternalModule()}
+	client, err := LogServer.NewClient()
+	if err != nil {
+		return nil, err
+	}
+	return &RuleFileParser{ruleFile: ruleFile, lines: lines, externalModule: *Module.GetExternalModule(), logClient: client}, nil
 }
 
 func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
@@ -47,14 +53,14 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 		fmt.Print(line.name + " ")
 		valid, err := line.EvaluateLine(currentEvent)
 		if err != nil {
-			panic(err)
+			rule.logClient.Debug(err.Error())
 		}
 
 		if valid {
 			fmt.Println(valid)
 			newEvent, err := rule.externalModule.Call(line.command, currentEvent)
 			if err != nil {
-				panic(err)
+				rule.logClient.Debug(err.Error())
 			} else {
 				fmt.Println(newEvent)
 				currentEvent = *newEvent

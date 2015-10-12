@@ -10,7 +10,7 @@ import (
 func GenerateServerTLSConfig(serverCrt, serverKey, caCert string) *tls.Config {
 	cert, err := tls.LoadX509KeyPair(serverCrt, serverKey)
 	if err != nil {
-		panic("server: loadkeys")
+		panic(err)
 	}
 
 	pem, err := ioutil.ReadFile(caCert)

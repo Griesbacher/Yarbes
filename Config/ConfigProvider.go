@@ -21,7 +21,7 @@ func InitServerConfigProvider(configPath string) {
 	InitConfigProvider(configPath, singleServerConfigProvider)
 }
 
-func InitClientonfigProvider(configPath string) {
+func InitClientConfigProvider(configPath string) {
 	InitConfigProvider(configPath, singleClientConfigProvider)
 }
 

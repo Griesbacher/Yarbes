@@ -15,8 +15,10 @@ type RuleSystem struct {
 func NewRuleSystem() *RuleSystem {
 	eventQueue := make(chan Event.Event, 1000)
 
-	parser := *RuleFileParser.NewRuleFileParser(Config.GetServerConfig().RuleSystem.Rulefile)
-
+	parser, err := *RuleFileParser.NewRuleFileParser(Config.GetServerConfig().RuleSystem.Rulefile)
+	if err != nil {
+		panic(err)
+	}
 	amountOfWorker := Config.GetServerConfig().RuleSystem.Worker
 	workers := []ruleSystemWorker{}
 	for i := 0; i < amountOfWorker; i++ {

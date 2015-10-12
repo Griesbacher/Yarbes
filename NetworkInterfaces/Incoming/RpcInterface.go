@@ -2,11 +2,11 @@ package Incoming
 
 import (
 	"crypto/tls"
+	"fmt"
 	"github.com/griesbacher/SystemX/Config"
 	"github.com/griesbacher/SystemX/TLS"
 	"log"
 	"net/rpc"
-	"fmt"
 )
 
 type RPCInterface struct {
@@ -50,13 +50,14 @@ func (rpcI *RPCInterface) serve() {
 		}
 		bytesRead, err := conn.Read(firstByte)
 		if err != nil {
+			//TODO: durch log austauschen
 			panic(err)
 		}
 		if tlscon, ok := conn.(*tls.Conn); bytesRead == 1 && ok {
 			state := tlscon.ConnectionState()
 			sub := state.PeerCertificates[0].Subject
 			fmt.Println("Clientname: ", sub.CommonName)
-			if isClientOnBlackList(sub.CommonName){
+			if isClientOnBlackList(sub.CommonName) {
 				fmt.Println("Client is blacklisted")
 				conn.Close()
 				break
