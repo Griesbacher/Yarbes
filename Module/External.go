@@ -39,7 +39,7 @@ func (external ExternalModule) Call(moduleName string, event Event.Event) (*Even
 		}
 	}
 
-	cmd := exec.Command(external.modules[moduleName], string(event.DataRaw))
+	cmd := exec.Command(external.modules[moduleName], event.String())
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
@@ -47,7 +47,7 @@ func (external ExternalModule) Call(moduleName string, event Event.Event) (*Even
 		return nil, err
 	}
 	var newEvent *Event.Event
-	newEvent, err = Event.NewEvent(out.Bytes())
+	newEvent, err = Event.NewEventFromBytes(out.Bytes())
 	return newEvent, err
 }
 

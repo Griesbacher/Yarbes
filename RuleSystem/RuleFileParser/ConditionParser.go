@@ -81,7 +81,6 @@ func (p ConditionParser) ParseStringChannel(condition string, jsonData interface
 	}
 }
 
-
 //ParseString parses the string and JSON object, if there is an error the result is irrelevant
 func (p ConditionParser) ParseString(condition string, jsonData interface{}) (bool, error) {
 	data := &dataStore{data: jsonData, stack: []ast.Node{}, result: []bool{}, ignoreNextX: 0}

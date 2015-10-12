@@ -31,7 +31,7 @@ type RuleSystemRPCHandler struct {
 }
 
 func (handler *RuleSystemRPCHandler) CreateEvent(args *string, result *NetworkInterfaces.RPCResult) error {
-	event, err := Event.NewEvent([]byte(*args))
+	event, err := Event.NewEventFromBytes([]byte(*args))
 	if err == nil {
 		handler.inter.eventQueue <- *event
 	}
