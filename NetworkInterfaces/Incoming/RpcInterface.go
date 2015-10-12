@@ -56,7 +56,7 @@ func (rpcI *RPCInterface) serve() {
 			state := tlscon.ConnectionState()
 			sub := state.PeerCertificates[0].Subject
 			if isClientOnBlackList(sub.CommonName) {
-				fmt.Println(sub.CommonName," is blacklisted")
+				fmt.Println(sub.CommonName, " is blacklisted")
 				conn.Close()
 				break
 			}

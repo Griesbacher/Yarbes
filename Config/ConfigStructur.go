@@ -1,5 +1,6 @@
 package Config
 
+//Server config file layout
 type ServerConfig struct {
 	TLS struct {
 		Cert      string
@@ -20,6 +21,7 @@ type ServerConfig struct {
 	}
 }
 
+//Client config file layout
 type ClientConfig struct {
 	TLS struct {
 		Cert   string

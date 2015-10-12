@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 )
 
+//Generates a TLS Config which should be used by the server, min TLS Version 1.2
 func GenerateServerTLSConfig(serverCrt, serverKey, caCert string) *tls.Config {
 	cert, err := tls.LoadX509KeyPair(serverCrt, serverKey)
 	if err != nil {
@@ -33,6 +34,7 @@ func GenerateServerTLSConfig(serverCrt, serverKey, caCert string) *tls.Config {
 	return &config
 }
 
+//Generates a TLS Client Config, min TLS Version 1.2
 func GenerateClientTLSConfig(clientCrt, clientKey, caCert string) *tls.Config {
 	cert, err := tls.LoadX509KeyPair(clientCrt, clientKey)
 	if err != nil {
