@@ -40,6 +40,7 @@ var ParseStringData = []struct {
 }
 
 func TestParseString(t *testing.T) {
+	t.Parallel()
 	b := []byte(`{
    "k1" : "v1",
    "k2" : 10,
@@ -61,6 +62,7 @@ func TestParseString(t *testing.T) {
 
 }
 func TestParseStringChannel(t *testing.T) {
+	t.Parallel()
 	b := []byte(`{
    "k1" : "v1",
    "k2" : 10,
