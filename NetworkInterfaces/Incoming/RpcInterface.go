@@ -43,7 +43,6 @@ func (rpcI *RPCInterface) serve() {
 	firstByte := make([]byte, 1)
 	for {
 		conn, err := listener.Accept()
-		log.Printf("server: connection from %s", conn.RemoteAddr())
 		if err != nil {
 			log.Printf("server: accept: %s", err)
 			break
@@ -56,15 +55,13 @@ func (rpcI *RPCInterface) serve() {
 		if tlscon, ok := conn.(*tls.Conn); bytesRead == 1 && ok {
 			state := tlscon.ConnectionState()
 			sub := state.PeerCertificates[0].Subject
-			fmt.Println("Clientname: ", sub.CommonName)
 			if isClientOnBlackList(sub.CommonName) {
-				fmt.Println("Client is blacklisted")
+				fmt.Println(sub.CommonName," is blacklisted")
 				conn.Close()
 				break
 			}
 		}
 		go func() {
-			log.Printf("server: accepted from %s", conn.RemoteAddr())
 			defer conn.Close()
 			rpc.ServeConn(conn)
 		}()

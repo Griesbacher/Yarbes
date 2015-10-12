@@ -33,13 +33,24 @@ func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
 		if len(elements) != 4 {
 			return nil, fmt.Errorf("Number of Elements are not four in line: %d", index)
 		}
-
-		lines = append(lines,
-			RuleLine{name: elements[0],
-				condition: elements[1],
+		if len(elements[0]) == 0 && len(elements[1]) == 0 {
+			if len(lines) == 0 {
+				return nil, fmt.Errorf("The first rule can not referance back")
+			}
+			lastRule := lines[len(lines)-1]
+			lines = append(lines, RuleLine{name: lastRule.name,
+				condition: lastRule.condition,
 				command:   elements[2],
 				flags:     helper.StringToMap(elements[3], ",", "="),
 			})
+		} else {
+			lines = append(lines,
+				RuleLine{name: elements[0],
+					condition: elements[1],
+					command:   elements[2],
+					flags:     helper.StringToMap(elements[3], ",", "="),
+				})
+		}
 	}
 	client, err := LogServer.NewClient()
 	if err != nil {

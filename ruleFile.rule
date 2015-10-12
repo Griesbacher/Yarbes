@@ -7,5 +7,5 @@
 #in this case the last Rulename and Condition are taken from the last line
 
 Regel1;_["k1"]=="v1";echo;last=false
-Regel2;_["k1"]=="v1";echo;last=true
+    ;;echo;last=true
 Regel3;3==3;echo;last=true
