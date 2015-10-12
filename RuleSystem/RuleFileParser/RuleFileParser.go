@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+//RuleFileParser represents a single rule file
 type RuleFileParser struct {
 	ruleFile       string
 	lines          []RuleLine
@@ -17,6 +18,7 @@ type RuleFileParser struct {
 	logClient      *LogServer.Client
 }
 
+//NewRuleFileParser creates a new RuleFileParser, returns an error if the object is not valid
 func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
 	fileContent, err := ioutil.ReadFile(ruleFile)
 	if err != nil {
@@ -59,6 +61,7 @@ func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
 	return &RuleFileParser{ruleFile: ruleFile, lines: lines, externalModule: *Module.GetExternalModule(), logClient: client}, nil
 }
 
+//EvaluateJSON will be called if a new Event occurred an the rulefile will be executed
 func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 	currentEvent := event
 	for _, line := range rule.lines {

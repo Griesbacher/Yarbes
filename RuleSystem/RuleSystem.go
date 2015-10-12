@@ -6,12 +6,14 @@ import (
 	"github.com/griesbacher/SystemX/RuleSystem/RuleFileParser"
 )
 
+//RuleSystem is a deamonlike struct which recives events and executes modules depending on the rules
 type RuleSystem struct {
 	EventQueue chan Event.Event
 	workers    []ruleSystemWorker
 	quit       chan bool
 }
 
+//NewRuleSystem is the constructor
 func NewRuleSystem() *RuleSystem {
 	eventQueue := make(chan Event.Event, 1000)
 
@@ -27,12 +29,14 @@ func NewRuleSystem() *RuleSystem {
 	return &RuleSystem{EventQueue: eventQueue, workers: workers}
 }
 
+//Start starts the RuleSystem with its workers
 func (system RuleSystem) Start() {
 	for _, worker := range system.workers {
 		worker.Start()
 	}
 }
 
+//Stop stops the RuleSystem with its workers
 func (system RuleSystem) Stop() {
 	for _, worker := range system.workers {
 		worker.Stop()

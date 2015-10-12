@@ -64,13 +64,13 @@ func (d *dataStore) returnResult() bool {
 	return false
 }
 
-//This struct parses a given string which should contain a go like condition, conditions can reference on a given JSON struct
+//ConditionParser parses a given string which should contain a go like condition, conditions can reference on a given JSON struct
 type ConditionParser struct {
 	//Prints debug output on std
 	Debug bool
 }
 
-//Parses the string and communicates through channels, if there is an error the result is irrelevant
+//ParseStringChannel parses the string and communicates through channels, if there is an error the result is irrelevant
 func (p ConditionParser) ParseStringChannel(condition string, jsonData interface{}, output chan bool, errors chan error) {
 	result, err := p.ParseString(condition, jsonData)
 	for i := 0; i < 2; i++ {
@@ -81,7 +81,8 @@ func (p ConditionParser) ParseStringChannel(condition string, jsonData interface
 	}
 }
 
-//Parses the string and JSON object, if there is an error the result is irrelevant
+
+//ParseString parses the string and JSON object, if there is an error the result is irrelevant
 func (p ConditionParser) ParseString(condition string, jsonData interface{}) (bool, error) {
 	data := &dataStore{data: jsonData, stack: []ast.Node{}, result: []bool{}, ignoreNextX: 0}
 	tree, err := parser.ParseExpr(condition)

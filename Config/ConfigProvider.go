@@ -5,12 +5,12 @@ import (
 	"sync"
 )
 
-//Provides the server configfile as an object
+//ServerConfigProvider provides the server configfile as an object
 type ServerConfigProvider struct {
 	Cfg ServerConfig
 }
 
-//Provides the client configfile as an object
+//ClientConfigProvider provides the client configfile as an object
 type ClientConfigProvider struct {
 	Cfg ClientConfig
 }
@@ -19,12 +19,12 @@ var singleServerConfigProvider *ServerConfigProvider
 var singleClientConfigProvider *ClientConfigProvider
 var mutex = &sync.Mutex{}
 
-//Parses the server config file
+//InitServerConfigProvider parses the server config file
 func InitServerConfigProvider(configPath string) {
 	initConfigProvider(configPath, singleServerConfigProvider)
 }
 
-//Parses the client config file
+//InitClientConfigProvider parses the client config file
 func InitClientConfigProvider(configPath string) {
 	initConfigProvider(configPath, singleClientConfigProvider)
 }
@@ -51,7 +51,7 @@ func initConfigProvider(configPath string, provider interface{}) {
 	mutex.Unlock()
 }
 
-//Simple Getter for the server config, panics if not initialized
+//GetServerConfig simple getter for the server config, panics if not initialized
 func GetServerConfig() ServerConfig {
 	if singleServerConfigProvider == nil {
 		panic("Call InitServerConfigProvider first!")
@@ -59,7 +59,7 @@ func GetServerConfig() ServerConfig {
 	return singleServerConfigProvider.Cfg
 }
 
-//Simple Getter for the client config, panics if not initialized
+//GetClientConfig simple getter for the client config, panics if not initialized
 func GetClientConfig() ClientConfig {
 	if singleClientConfigProvider == nil {
 		panic("Call InitClientonfigProvider first!")
