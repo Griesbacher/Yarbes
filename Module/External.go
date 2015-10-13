@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"encoding/json"
 )
 
 type ExternalModule struct {
@@ -31,7 +32,7 @@ func GetExternalModule() *ExternalModule {
 	return singleExternalModule
 }
 
-func (external ExternalModule) Call(moduleName string, event Event.Event) (*Event.Event, error) {
+func (external ExternalModule) Call(moduleName string, event Event.Event) (*ModuleResult, error) {
 	if !external.doesModuleExist(moduleName) {
 		external.searchModules()
 		if !external.doesModuleExist(moduleName) {
@@ -46,9 +47,14 @@ func (external ExternalModule) Call(moduleName string, event Event.Event) (*Even
 	if err != nil {
 		return nil, err
 	}
-	var newEvent *Event.Event
-	newEvent, err = Event.NewEventFromBytes(out.Bytes())
-	return newEvent, err
+
+	var moduleResult ModuleResult
+	err = json.Unmarshal(out.Bytes(), &moduleResult)
+	if err != nil {
+		return nil, err
+	}
+
+	return &moduleResult, err
 }
 
 func (external ExternalModule) doesModuleExist(moduleName string) bool {

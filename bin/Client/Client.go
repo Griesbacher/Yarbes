@@ -4,10 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/LogServer"
 	"github.com/griesbacher/SystemX/NetworkInterfaces"
 	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
-	"time"
+	"github.com/griesbacher/SystemX/Logging"
 )
 
 func main() {
@@ -43,33 +42,12 @@ Commandline Parameter:
 		}
 	}
 	eventRPC.Disconnect()
-	{
-		logRPC := Outgoing.NewRPCInterface(Config.GetClientConfig().LogServer.RPCInterface)
-		lerr := logRPC.Connect()
-		if lerr != nil {
-			panic(lerr)
-		}
-		if rpcClient := logRPC.GenRPCClient(); rpcClient != nil {
-			result := new(NetworkInterfaces.RPCResult)
-			for i := 0; i < 10; i++ {
-				start := time.Now()
-				message := LogServer.NewDebugLogMessage("client0", "Hallo Log ")
-				if err := rpcClient.Call("LogServerRPCHandler.SendMessage", &message, &result); err != nil {
-					panic(err)
-				}
-				if result.Err != nil {
-					panic(result.Err)
-				}
-				fmt.Println(time.Now().Sub(start))
-			}
-		}
-		logRPC.Disconnect()
-	}
 
-	client, err := LogServer.NewClient()
+	client, err := Logging.NewClient(Config.GetClientConfig().LogServer.RPCInterface)
 	if err != nil {
 		panic(err)
 	}
 	client.Debug("Hallo Server")
 	client.Disconnect()
+
 }

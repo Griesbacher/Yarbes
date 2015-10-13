@@ -19,3 +19,11 @@ func NewLogMessage(source, message string, level factorlog.Severity) *LogMessage
 func NewDebugLogMessage(source, message string) *LogMessage {
 	return NewLogMessage(source, message, factorlog.DEBUG)
 }
+
+func NewWarnLogMessage(source, message string) *LogMessage {
+	return NewLogMessage(source, message, factorlog.WARN)
+}
+
+func NewErrorLogMessage(source, message string) *LogMessage {
+	return NewLogMessage(source, message, factorlog.ERROR)
+}

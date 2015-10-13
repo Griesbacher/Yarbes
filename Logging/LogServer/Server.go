@@ -1,6 +1,8 @@
 package LogServer
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Server struct {
 	LogQueue  chan LogMessage
@@ -34,7 +36,7 @@ func (log *Server) handleLog() {
 			log.quit <- true
 			return
 		case message = <-log.LogQueue:
-			fmt.Printf("[%s]@[%s] %s\n", message.Source, message.Timestamp, message.Message)
+			fmt.Printf("[%s]@[%s]-[%d] %s\n", message.Source, message.Timestamp, message.LogLevel, message.Message)
 		}
 	}
 }

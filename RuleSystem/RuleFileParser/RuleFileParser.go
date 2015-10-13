@@ -3,11 +3,12 @@ package RuleFileParser
 import (
 	"fmt"
 	"github.com/griesbacher/SystemX/Event"
-	"github.com/griesbacher/SystemX/LogServer"
 	"github.com/griesbacher/SystemX/Module"
 	"github.com/griesbacher/nagflux/helper"
 	"io/ioutil"
 	"strings"
+	"github.com/griesbacher/SystemX/Logging"
+	"github.com/griesbacher/SystemX/Config"
 )
 
 //RuleFileParser represents a single rule file
@@ -15,7 +16,7 @@ type RuleFileParser struct {
 	ruleFile       string
 	lines          []RuleLine
 	externalModule Module.ExternalModule
-	logClient      *LogServer.Client
+	logClient      *Logging.Client
 }
 
 //NewRuleFileParser creates a new RuleFileParser, returns an error if the object is not valid
@@ -54,7 +55,7 @@ func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
 				})
 		}
 	}
-	client, err := LogServer.NewClient()
+	client, err := Logging.NewClient(Config.GetClientConfig().LogServer.RPCInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -68,16 +69,21 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 		fmt.Print(line.name + " ")
 		valid, err := line.EvaluateLine(currentEvent)
 		if err != nil {
-			rule.logClient.Debug(err.Error())
+			rule.logClient.Warn("EvaluteLine:"+err.Error())
 		}
 
 		if valid {
 			fmt.Println(valid)
-			newEvent, err := rule.externalModule.Call(line.command, currentEvent)
-			if err != nil {
-				rule.logClient.Debug(err.Error())
+			moduleResult, err := rule.externalModule.Call(line.command, currentEvent)
+			if err != nil{
+				rule.logClient.Warn("Call: "+err.Error())
 			} else {
-				fmt.Println(newEvent)
+				fmt.Println(moduleResult)
+				var newEvent *Event.Event
+				newEvent, err = Event.NewEventFromInterface(moduleResult.Event)
+				if err != nil {
+					rule.logClient.Warn("NewEventFromInterface: "+err.Error())
+				}
 				currentEvent = *newEvent
 				if line.LastLine() {
 					break
