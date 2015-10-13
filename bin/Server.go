@@ -1,4 +1,4 @@
-package main
+package bin
 
 import (
 	"flag"
@@ -18,7 +18,8 @@ type stoppable interface {
 	Stop()
 }
 
-func main() {
+//Server start a server config depending on the config file
+func Server() {
 	var serverConfigPath string
 	var clientConfigPath string
 	flag.Usage = func() {

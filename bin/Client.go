@@ -1,4 +1,4 @@
-package main
+package bin
 
 import (
 	"flag"
@@ -9,7 +9,8 @@ import (
 	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
 )
 
-func main() {
+//Starts a example client
+func Client() {
 	var configPath string
 	flag.Usage = func() {
 		fmt.Println(`SystemX by Philip Griesbacher @ 2015
