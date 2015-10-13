@@ -2,6 +2,7 @@ package Module
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/griesbacher/SystemX/Config"
 	"github.com/griesbacher/SystemX/Event"
@@ -11,7 +12,6 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
-	"encoding/json"
 )
 
 type ExternalModule struct {

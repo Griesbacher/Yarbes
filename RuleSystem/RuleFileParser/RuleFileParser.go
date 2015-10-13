@@ -2,13 +2,13 @@ package RuleFileParser
 
 import (
 	"fmt"
+	"github.com/griesbacher/SystemX/Config"
 	"github.com/griesbacher/SystemX/Event"
+	"github.com/griesbacher/SystemX/Logging"
 	"github.com/griesbacher/SystemX/Module"
 	"github.com/griesbacher/nagflux/helper"
 	"io/ioutil"
 	"strings"
-	"github.com/griesbacher/SystemX/Logging"
-	"github.com/griesbacher/SystemX/Config"
 )
 
 //RuleFileParser represents a single rule file
@@ -69,22 +69,24 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 		fmt.Print(line.name + " ")
 		valid, err := line.EvaluateLine(currentEvent)
 		if err != nil {
-			rule.logClient.Warn("EvaluteLine:"+err.Error())
+			rule.logClient.Warn("EvaluteLine:" + err.Error())
 		}
 
 		if valid {
 			fmt.Println(valid)
 			moduleResult, err := rule.externalModule.Call(line.command, currentEvent)
-			if err != nil{
-				rule.logClient.Warn("Call: "+err.Error())
+			if err != nil {
+				rule.logClient.Warn("Call: " + err.Error())
 			} else {
 				fmt.Println(moduleResult)
 				var newEvent *Event.Event
 				newEvent, err = Event.NewEventFromInterface(moduleResult.Event)
 				if err != nil {
-					rule.logClient.Warn("NewEventFromInterface: "+err.Error())
+					rule.logClient.Warn("NewEventFromInterface: " + err.Error())
 				}
 				currentEvent = *newEvent
+
+				rule.logClient.LogMultiple(moduleResult.DecodeLogMessages())
 				if line.LastLine() {
 					break
 				}

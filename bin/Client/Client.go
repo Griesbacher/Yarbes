@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/griesbacher/SystemX/Config"
+	"github.com/griesbacher/SystemX/Logging"
 	"github.com/griesbacher/SystemX/NetworkInterfaces"
 	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
-	"github.com/griesbacher/SystemX/Logging"
 )
 
 func main() {

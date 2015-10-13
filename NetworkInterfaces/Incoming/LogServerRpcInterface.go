@@ -2,8 +2,8 @@ package Incoming
 
 import (
 	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/NetworkInterfaces"
 	"github.com/griesbacher/SystemX/Logging/LogServer"
+	"github.com/griesbacher/SystemX/NetworkInterfaces"
 )
 
 type LogServerRPCInterface struct {

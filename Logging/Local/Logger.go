@@ -2,8 +2,8 @@ package Local
 
 import (
 	"github.com/kdar/factorlog"
-	"os"
 	"io"
+	"os"
 )
 
 const logFormat = "%{Date} %{Time} %{Severity}: %{SafeMessage}"
@@ -16,7 +16,7 @@ func InitLogger(minSeverity string) {
 	var targetWriter io.Writer
 	var err error
 	//logFormatter = factorlog.NewStdFormatter(logColors + logFormat)
-	logFormatter = factorlog.NewStdFormatter( logFormat)
+	logFormatter = factorlog.NewStdFormatter(logFormat)
 	targetWriter = os.Stdout
 
 	if err != nil {

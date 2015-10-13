@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/griesbacher/SystemX/Config"
+	"github.com/griesbacher/SystemX/Logging/LogServer"
 	"github.com/griesbacher/SystemX/NetworkInterfaces/Incoming"
 	"github.com/griesbacher/SystemX/RuleSystem"
 	"os"
@@ -11,7 +12,6 @@ import (
 	"reflect"
 	"syscall"
 	"time"
-	"github.com/griesbacher/SystemX/Logging/LogServer"
 )
 
 type stoppable interface {
@@ -47,7 +47,7 @@ Commandline Parameter:
 			logServerRPCI = Incoming.NewLogServerRPCInterface(logServer.LogQueue)
 			logServerRPCI.Start()
 		}
-		time.Sleep(time.Duration(100)*time.Millisecond)
+		time.Sleep(time.Duration(100) * time.Millisecond)
 	}
 
 	if Config.GetServerConfig().RuleSystem.Enabled {
