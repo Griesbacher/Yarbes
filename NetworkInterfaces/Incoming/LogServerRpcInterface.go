@@ -30,9 +30,9 @@ type LogServerRPCHandler struct {
 	inter LogServerRPCInterface
 }
 
-func (handler *LogServerRPCHandler) SendMessages(messages *[]LogServer.LogMessage, result *NetworkInterfaces.RPCResult) error {
+func (handler *LogServerRPCHandler) SendMessages(messages *[]*LogServer.LogMessage, result *NetworkInterfaces.RPCResult) error {
 	for _, message := range *messages {
-		handler.SendMessage(&message, result)
+		handler.SendMessage(message, result)
 	}
 	return nil
 }

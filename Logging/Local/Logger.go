@@ -2,30 +2,27 @@ package Local
 
 import (
 	"github.com/kdar/factorlog"
-	"io"
 	"os"
+	"sync"
 )
 
 const logFormat = "%{Date} %{Time} %{Severity}: %{SafeMessage}"
-const logColors = "%{Color \"white\" \"DEBUG\"}%{Color \"magenta\" \"WARN\"}%{Color \"red\" \"CRITICAL\"}"
+const logColors = "%{Color \"magenta\" \"WARN\"}%{Color \"red\" \"CRITICAL\"}"
 
-var singleLogger *factorlog.FactorLog = nil
+var singleLogger *factorlog.FactorLog
+var mutex = &sync.Mutex{}
 
+//InitLogger creates a factorlog with the given min loglevel
 func InitLogger(minSeverity string) {
-	var logFormatter factorlog.Formatter
-	var targetWriter io.Writer
-	var err error
-	//logFormatter = factorlog.NewStdFormatter(logColors + logFormat)
-	logFormatter = factorlog.NewStdFormatter(logFormat)
-	targetWriter = os.Stdout
-
-	if err != nil {
-		panic(err)
-	}
+	mutex.Lock()
+	logFormatter := factorlog.NewStdFormatter(logColors + logFormat)
+	targetWriter := os.Stdout
 	singleLogger = factorlog.New(targetWriter, logFormatter)
 	singleLogger.SetMinMaxSeverity(factorlog.StringToSeverity(minSeverity), factorlog.StringToSeverity("PANIC"))
+	mutex.Unlock()
 }
 
+//GetLogger returns a factorlog an constructs a new if not exists
 func GetLogger() *factorlog.FactorLog {
 	if singleLogger == nil {
 		InitLogger("DEBUG")

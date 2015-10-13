@@ -9,7 +9,7 @@ import (
 
 const TimeParseLayout = ""
 
-type ModuleResult struct {
+type Result struct {
 	Event       interface{}
 	ReturnCode  int
 	LogMessages []struct {
@@ -20,13 +20,15 @@ type ModuleResult struct {
 	}
 }
 
-func (moduleResult ModuleResult) DecodeLogMessages() []*LogServer.LogMessage {
+func (moduleResult Result) DecodeLogMessages() *[]*LogServer.LogMessage {
 	result := []*LogServer.LogMessage{}
 	for _, message := range moduleResult.LogMessages {
 		var level factorlog.Severity
 		switch strings.ToLower(message.Level) {
 		case "debug":
 			level = factorlog.DEBUG
+		case "info":
+			level = factorlog.INFO
 		case "warn":
 			level = factorlog.WARN
 		case "error":
@@ -49,5 +51,5 @@ func (moduleResult ModuleResult) DecodeLogMessages() []*LogServer.LogMessage {
 			Message:message.Message,
 		})
 	}
-	return result
+	return &result
 }

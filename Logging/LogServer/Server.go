@@ -4,22 +4,26 @@ import (
 	"fmt"
 )
 
+//Server receives LogMessages and does something with them
 type Server struct {
 	LogQueue  chan LogMessage
 	quit      chan bool
 	isRunning bool
 }
 
+//NewLogServer constructs a new LogServer
 func NewLogServer() *Server {
 	return &Server{LogQueue: make(chan LogMessage, 100), quit: make(chan bool), isRunning: false}
 }
 
+//Start starts the LogServer
 func (log Server) Start() {
 	if !log.isRunning {
 		go log.handleLog()
 	}
 }
 
+//Stop stops the LogServer
 func (log Server) Stop() {
 	if log.isRunning {
 		log.quit <- true

@@ -16,7 +16,7 @@ type RuleFileParser struct {
 	ruleFile       string
 	lines          []RuleLine
 	externalModule Module.ExternalModule
-	logClient      *Logging.Client
+	LogClient      *Logging.Client
 }
 
 //NewRuleFileParser creates a new RuleFileParser, returns an error if the object is not valid
@@ -59,7 +59,7 @@ func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &RuleFileParser{ruleFile: ruleFile, lines: lines, externalModule: *Module.GetExternalModule(), logClient: client}, nil
+	return &RuleFileParser{ruleFile: ruleFile, lines: lines, externalModule: *Module.GetExternalModule(), LogClient: client}, nil
 }
 
 //EvaluateJSON will be called if a new Event occurred an the rulefile will be executed
@@ -69,24 +69,24 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 		fmt.Print(line.name + " ")
 		valid, err := line.EvaluateLine(currentEvent)
 		if err != nil {
-			rule.logClient.Warn("EvaluteLine:" + err.Error())
+			rule.LogClient.Warn("EvaluteLine:" + err.Error())
 		}
 
 		if valid {
 			fmt.Println(valid)
 			moduleResult, err := rule.externalModule.Call(line.command, currentEvent)
 			if err != nil {
-				rule.logClient.Warn("Call: " + err.Error())
+				rule.LogClient.Warn("Call: " + err.Error())
 			} else {
 				fmt.Println(moduleResult)
 				var newEvent *Event.Event
 				newEvent, err = Event.NewEventFromInterface(moduleResult.Event)
 				if err != nil {
-					rule.logClient.Warn("NewEventFromInterface: " + err.Error())
+					rule.LogClient.Warn("NewEventFromInterface: " + err.Error())
 				}
 				currentEvent = *newEvent
 
-				rule.logClient.LogMultiple(moduleResult.DecodeLogMessages())
+				rule.LogClient.LogMultiple(moduleResult.DecodeLogMessages())
 				if line.LastLine() {
 					break
 				}

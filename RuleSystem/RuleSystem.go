@@ -59,6 +59,7 @@ func (worker ruleSystemWorker) Start() {
 func (worker ruleSystemWorker) Stop() {
 	worker.quit <- true
 	<-worker.quit
+	worker.parser.LogClient.Disconnect()
 }
 
 func (worker *ruleSystemWorker) work() {

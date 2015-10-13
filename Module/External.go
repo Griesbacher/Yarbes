@@ -32,7 +32,7 @@ func GetExternalModule() *ExternalModule {
 	return singleExternalModule
 }
 
-func (external ExternalModule) Call(moduleName string, event Event.Event) (*ModuleResult, error) {
+func (external ExternalModule) Call(moduleName string, event Event.Event) (*Result, error) {
 	if !external.doesModuleExist(moduleName) {
 		external.searchModules()
 		if !external.doesModuleExist(moduleName) {
@@ -48,7 +48,7 @@ func (external ExternalModule) Call(moduleName string, event Event.Event) (*Modu
 		return nil, err
 	}
 
-	var moduleResult ModuleResult
+	var moduleResult Result
 	err = json.Unmarshal(out.Bytes(), &moduleResult)
 	if err != nil {
 		return nil, err
