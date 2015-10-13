@@ -14,6 +14,7 @@ import (
 	"sync"
 )
 
+//ExternalModule caches all the files within the search path
 type ExternalModule struct {
 	searchPaths []string
 	modules     map[string]string
@@ -22,7 +23,8 @@ type ExternalModule struct {
 var singleExternalModule *ExternalModule
 var mutex = &sync.Mutex{}
 
-func GetExternalModule() *ExternalModule {
+//NewExternalModule constructs a new ExternalModule, this is a singleton
+func NewExternalModule() *ExternalModule {
 	mutex.Lock()
 	if singleExternalModule == nil {
 		modulePath := Config.GetServerConfig().RuleSystem.ModulePath
@@ -32,6 +34,7 @@ func GetExternalModule() *ExternalModule {
 	return singleExternalModule
 }
 
+//Call tries to execute the given Module with the given Event and returns the whole output as Result
 func (external ExternalModule) Call(moduleName string, event Event.Event) (*Result, error) {
 	if !external.doesModuleExist(moduleName) {
 		external.searchModules()

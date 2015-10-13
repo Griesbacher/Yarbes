@@ -59,7 +59,7 @@ func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &RuleFileParser{ruleFile: ruleFile, lines: lines, externalModule: *Module.GetExternalModule(), LogClient: client}, nil
+	return &RuleFileParser{ruleFile: ruleFile, lines: lines, externalModule: *Module.NewExternalModule(), LogClient: client}, nil
 }
 
 //EvaluateJSON will be called if a new Event occurred an the rulefile will be executed

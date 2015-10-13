@@ -2,13 +2,12 @@ package Module
 
 import (
 	"github.com/griesbacher/SystemX/Logging/LogServer"
-	"strings"
 	"github.com/kdar/factorlog"
+	"strings"
 	"time"
 )
 
-const TimeParseLayout = ""
-
+//Result represents the output which is expected from a called module
 type Result struct {
 	Event       interface{}
 	ReturnCode  int
@@ -20,6 +19,10 @@ type Result struct {
 	}
 }
 
+//TimeParseLayout is the format in which the timestamps, within the JSON, are expected
+const TimeParseLayout = ""
+
+//DecodeLogMessages converts the LogMessages from the JSON object to LogServer.LogMessages
 func (moduleResult Result) DecodeLogMessages() *[]*LogServer.LogMessage {
 	result := []*LogServer.LogMessage{}
 	for _, message := range moduleResult.LogMessages {
@@ -40,15 +43,15 @@ func (moduleResult Result) DecodeLogMessages() *[]*LogServer.LogMessage {
 
 		if newTime, err := time.Parse(TimeParseLayout, message.Timestamp); err == nil {
 			timestamp = newTime
-		}else {
+		} else {
 			timestamp = time.Now()
 		}
 
 		result = append(result, &LogServer.LogMessage{
-			Timestamp:timestamp,
-			Source:message.Source,
-			LogLevel:level,
-			Message:message.Message,
+			Timestamp: timestamp,
+			Source:    message.Source,
+			LogLevel:  level,
+			Message:   message.Message,
 		})
 	}
 	return &result

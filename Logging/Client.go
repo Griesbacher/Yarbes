@@ -59,7 +59,7 @@ func (client Client) LogMultiple(messages *[]*LogServer.LogMessage) {
 	result := new(NetworkInterfaces.RPCResult)
 	if err := client.rpcClient.Call("LogServerRPCHandler.SendMessages", messages, &result); err != nil {
 		client.localLogger.Error(err)
-		for message := range *messages{
+		for message := range *messages {
 			client.localLogger.Debug("Message", message)
 		}
 	}
@@ -84,7 +84,7 @@ func (client Client) Log(message *LogServer.LogMessage) {
 
 //Disconnect closes the connection to the remote logServer
 func (client Client) Disconnect() {
-	if client.logRPC != nil{
+	if client.logRPC != nil {
 		client.logRPC.Disconnect()
 	}
 }
