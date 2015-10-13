@@ -9,23 +9,27 @@ import (
 	"net/rpc"
 )
 
+//RPCInterface represents a incoming RPC interface
 type RPCInterface struct {
 	quit        chan bool
 	isRunning   bool
 	RPCListenTo string
 }
 
+//NewRPCInterface creates a new RPCInterface
 func NewRPCInterface(listenTo string) *RPCInterface {
 	rpc := &RPCInterface{quit: make(chan bool), isRunning: false, RPCListenTo: listenTo}
 	return rpc
 }
 
+//Start starts listening for requests
 func (rpcI RPCInterface) Start() {
 	if !rpcI.isRunning {
 		go rpcI.serve()
 	}
 }
 
+//Stop closes the port
 func (rpcI RPCInterface) Stop() {
 	if rpcI.isRunning {
 		rpcI.quit <- true
