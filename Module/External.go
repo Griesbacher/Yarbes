@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"runtime"
 )
 
 //ExternalModule caches all the files within the search path
@@ -73,6 +74,11 @@ func (external *ExternalModule) searchModules() {
 	for _, searchPath := range external.searchPaths {
 		files, _ := ioutil.ReadDir(searchPath)
 		for _, file := range files {
+			if runtime.GOOS == "windows" && filepath.Ext(file.Name()) == "bin"{
+				continue
+			}else if filepath.Ext(file.Name()) == "exe"{
+				continue
+			}
 			moduleName := getFilename(file.Name())
 			external.modules[moduleName] = path.Join(searchPath, file.Name())
 		}

@@ -9,13 +9,13 @@ import (
 type LogMessage struct {
 	Timestamp time.Time
 	Source    string
-	LogLevel  factorlog.Severity
+	Severity  factorlog.Severity
 	Message   string
 }
 
 //NewLogMessage constructs a new LogMessage
 func NewLogMessage(source, message string, level factorlog.Severity) *LogMessage {
-	return &LogMessage{Timestamp: time.Now(), Source: source, LogLevel: level, Message: message}
+	return &LogMessage{Timestamp: time.Now(), Source: source, Severity: level, Message: message}
 }
 
 //NewDebugLogMessage constructs a new LogMessage with level debug
@@ -36,4 +36,9 @@ func NewWarnLogMessage(source, message string) *LogMessage {
 //NewErrorLogMessage constructs a new LogMessage with level error
 func NewErrorLogMessage(source, message string) *LogMessage {
 	return NewLogMessage(source, message, factorlog.ERROR)
+}
+
+//SeverityToString converts the Severity to human readable string
+func SeverityToString(s factorlog.Severity) string {
+	return factorlog.CapSeverityStrings[factorlog.SeverityToIndex(s)]
 }

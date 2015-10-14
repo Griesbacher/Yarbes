@@ -13,32 +13,20 @@ type Result struct {
 	ReturnCode  int
 	LogMessages []struct {
 		Timestamp string
-		Level     string
+		Severity  string
 		Message   string
 		Source    string
 	}
 }
 
-//TimeParseLayout is the format in which the timestamps, within the JSON, are expected
-const TimeParseLayout = ""
+//TimeParseLayout is the format in which the timestamps, within the JSON, are expected RFC3339
+const TimeParseLayout = "2015-10-14T08:26:26+02:00"
 
 //DecodeLogMessages converts the LogMessages from the JSON object to LogServer.LogMessages
 func (moduleResult Result) DecodeLogMessages() *[]*LogServer.LogMessage {
 	result := []*LogServer.LogMessage{}
 	for _, message := range moduleResult.LogMessages {
-		var level factorlog.Severity
-		switch strings.ToLower(message.Level) {
-		case "debug":
-			level = factorlog.DEBUG
-		case "info":
-			level = factorlog.INFO
-		case "warn":
-			level = factorlog.WARN
-		case "error":
-			level = factorlog.ERROR
-		default:
-			level = factorlog.NONE
-		}
+		level := factorlog.StringToSeverity(strings.ToUpper(message.Severity))
 		var timestamp time.Time
 
 		if newTime, err := time.Parse(TimeParseLayout, message.Timestamp); err == nil {
@@ -50,7 +38,7 @@ func (moduleResult Result) DecodeLogMessages() *[]*LogServer.LogMessage {
 		result = append(result, &LogServer.LogMessage{
 			Timestamp: timestamp,
 			Source:    message.Source,
-			LogLevel:  level,
+			Severity:  level,
 			Message:   message.Message,
 		})
 	}

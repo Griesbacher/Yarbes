@@ -2,6 +2,7 @@ package LogServer
 
 import (
 	"fmt"
+	"time"
 )
 
 //Server receives LogMessages and does something with them
@@ -40,7 +41,7 @@ func (log *Server) handleLog() {
 			log.quit <- true
 			return
 		case message = <-log.LogQueue:
-			fmt.Printf("[%s]@[%s]-[%d] %s\n", message.Source, message.Timestamp, message.LogLevel, message.Message)
+			fmt.Printf("[%s]@[%s][%s] %s\n", message.Source, message.Timestamp.Format(time.RFC3339), SeverityToString(message.Severity), message.Message)
 		}
 	}
 }

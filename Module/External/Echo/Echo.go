@@ -9,7 +9,7 @@ func main() {
 	if len(os.Args) > 1 {
 		fmt.Println(`{"Event": ` + os.Args[1] + `, "LogMessages" :[{
 			"Timestamp" :"now",
-			"Level"     :"debug",
+			"Severity"  :"Debug",
 			"Message"   :"hallo from module",
 			"Source"    :"echo module"
 			}]
