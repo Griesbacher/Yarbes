@@ -1,14 +1,14 @@
 package RuleFileParser
 
 import (
+	"encoding/csv"
 	"fmt"
 	"github.com/griesbacher/SystemX/Config"
 	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/Logging"
 	"github.com/griesbacher/SystemX/Module"
 	"github.com/griesbacher/nagflux/helper"
-	"io/ioutil"
-	"strings"
+	"os"
 )
 
 //RuleFileParser represents a single rule file
@@ -21,21 +21,21 @@ type RuleFileParser struct {
 
 //NewRuleFileParser creates a new RuleFileParser, returns an error if the object is not valid
 func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
-	fileContent, err := ioutil.ReadFile(ruleFile)
+	fileReader, err := os.Open(ruleFile)
+	if err != nil {
+		return nil, err
+	}
+	r := csv.NewReader(fileReader)
+	r.TrimLeadingSpace = true
+	r.Comment = '#'
+	r.Comma = ';'
+	records, err := r.ReadAll()
 	if err != nil {
 		return nil, err
 	}
 
 	lines := []RuleLine{}
-	for index, line := range strings.SplitAfter(string(fileContent), "\n") {
-		line = strings.TrimSpace(line)
-		if len(line) == 0 || string(line[0]) == "#" {
-			continue
-		}
-		elements := strings.Split(line, ";")
-		if len(elements) != 4 {
-			return nil, fmt.Errorf("Number of Elements are not four in line: %d", index)
-		}
+	for _, elements := range records {
 		if len(elements[0]) == 0 && len(elements[1]) == 0 {
 			if len(lines) == 0 {
 				return nil, fmt.Errorf("The first rule can not referance back")

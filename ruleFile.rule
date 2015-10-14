@@ -1,11 +1,16 @@
 #Rule Definition:
 #Rulename;Condition;Module to Call;Flags
+
+#Overall:
+#this is treated as a csv file, so if there are " or ; within the fields the whole field must be quoted with "
+# " within the quoted filed must be quoted twice "hello" -> ""hello""
+
 #Flags:
 #last bool: if the condition matches this is the last rule
 
 #it is possible to leave Rulename and Condition empty,
 #in this case the last Rulename and Condition are taken from the last line
 
-Regel1;_["k1"]=="v1";echo;last=false
+Regel1;"_[""k1""]==""v1""";echo;last=false
     ;;echo;last=true
 Regel3;3==3;echo;last=true
