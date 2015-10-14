@@ -37,6 +37,20 @@ var ParseStringData = []struct {
 	{`_["k3"][2]["k22"] == "v22"`, true},
 	{`data["k1"]`, true},
 	{`data["zzz"]`, false},
+	{"`a` == `a`", true},
+	{"`a` == `b`", false},
+	{"`a` != `b`", true},
+	{"`a` != `a`", false},
+	{"`abba` &^ `a.+a`", true},
+	{"data[`k1`] &^ `v\\d`", true},
+	{"data[`k1`] == `v1`", true},
+	{"data[`k2`] == 10", true},
+	{"data[`k3`][0] == `v4`", true},
+	{"data[`k3`][1] == 12.5", true},
+	{"data[`k3`][2][`k11`] == `v11`", true},
+	{"_[`k3`][2][`k22`] == `v22`", true},
+	{"data[`k1`]", true},
+	{"data[`zzz`]", false},
 }
 
 func TestParseString(t *testing.T) {
