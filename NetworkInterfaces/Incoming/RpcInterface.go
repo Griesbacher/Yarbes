@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/griesbacher/SystemX/Config"
 	"github.com/griesbacher/SystemX/TLS"
+	"io"
 	"log"
 	"net/rpc"
 )
@@ -42,6 +43,7 @@ func (rpcI *RPCInterface) serve() {
 	config := TLS.GenerateServerTLSConfig(Config.GetServerConfig().TLS.Cert, Config.GetServerConfig().TLS.Key, Config.GetServerConfig().TLS.CaCert)
 	listener, err := tls.Listen("tcp", rpcI.RPCListenTo, config)
 	if err != nil {
+		fmt.Println("listener")
 		panic(err)
 	}
 	firstByte := make([]byte, 1)
@@ -53,7 +55,12 @@ func (rpcI *RPCInterface) serve() {
 		}
 		bytesRead, err := conn.Read(firstByte)
 		if err != nil {
+			if err == io.EOF {
+				conn.Close()
+				continue
+			}
 			//TODO: durch log austauschen
+			fmt.Println("first byte")
 			panic(err)
 		}
 		if tlscon, ok := conn.(*tls.Conn); bytesRead == 1 && ok {
@@ -74,6 +81,7 @@ func (rpcI *RPCInterface) serve() {
 
 func (rpcI RPCInterface) publishHandler(rcvr interface{}) {
 	if err := rpc.Register(rcvr); err != nil {
+		fmt.Println("publish")
 		panic(err)
 	}
 }

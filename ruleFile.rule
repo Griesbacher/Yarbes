@@ -4,6 +4,7 @@
 #Overall:
 #this is treated as a csv file, so if there are " or ; within the fields the whole field must be quoted with "
 # " within the quoted filed must be quoted twice "hello" -> ""hello""
+# " for strings can be replaced with `
 
 #Flags:
 #last bool: if the condition matches this is the last rule

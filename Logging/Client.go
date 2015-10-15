@@ -48,7 +48,7 @@ func NewClient(target string) (*Client, error) {
 				return nil, err
 			}
 		}
-		return &Client{logRPC: &logRPC, rpcClient: rpcClient, name: clientName, localLogger: Local.GetLogger()}, nil
+		return &Client{logRPC: logRPC, rpcClient: rpcClient, name: clientName, localLogger: Local.GetLogger()}, nil
 
 	}
 	return nil, errors.New("Could not create a RPC client")

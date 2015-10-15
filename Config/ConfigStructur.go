@@ -34,4 +34,9 @@ type ClientConfig struct {
 	LogServer struct {
 		RPCInterface string
 	}
+	Livestatus struct {
+		Enable  bool
+		Type    string
+		Address string
+	}
 }

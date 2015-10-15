@@ -47,6 +47,11 @@ func (event Event) GetDataAsInterface() map[string]interface{} {
 	return event.data
 }
 
+//GetDataAsBytes returns the internal data as bytes
+func (event Event) GetDataAsBytes() []byte {
+	return event.dataRaw
+}
+
 //String returns the internal data as string
 func (event Event) String() string {
 	return strings.TrimSpace(string(event.dataRaw))

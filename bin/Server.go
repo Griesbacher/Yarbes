@@ -14,10 +14,6 @@ import (
 	"time"
 )
 
-type stoppable interface {
-	Stop()
-}
-
 //Server start a server config depending on the config file
 func Server() {
 	var serverConfigPath string

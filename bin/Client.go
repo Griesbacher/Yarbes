@@ -3,13 +3,14 @@ package bin
 import (
 	"flag"
 	"fmt"
+	"github.com/griesbacher/SystemX/Client/Livestatus"
 	"github.com/griesbacher/SystemX/Config"
 	"github.com/griesbacher/SystemX/Logging"
-	"github.com/griesbacher/SystemX/NetworkInterfaces"
 	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
+	"time"
 )
 
-//Starts a example client
+//Client starts a example client
 func Client() {
 	var configPath string
 	flag.Usage = func() {
@@ -22,33 +23,24 @@ Commandline Parameter:
 	flag.Parse()
 	Config.InitClientConfigProvider(configPath)
 
-	b := []byte(`{
-			   "k1" : "v1",
-			   "k2" : 10,
-			   "k3" : ["v4",12.3,{"k11" : "v11", "k22" : "v22"}]
-			}`)
+	var logger *Logging.Client
+	logger, err := Logging.NewClient(Config.GetClientConfig().LogServer.RPCInterface)
+	if err != nil {
+		logger = Logging.NewLocalClient()
+	}
 
 	eventRPC := Outgoing.NewRPCInterface(Config.GetClientConfig().Backend.RPCInterface)
-	err := eventRPC.Connect()
+	err = eventRPC.Connect()
 	if err != nil {
-		panic(err)
+		logger.Error(err)
 	}
-	if rpcClient := eventRPC.GenRPCClient(); rpcClient != nil {
-		result := new(NetworkInterfaces.RPCResult)
-		if err := rpcClient.Call("RuleSystemRPCHandler.CreateEvent", string(b), &result); err != nil {
-			panic(err)
-		}
-		if result.Err != nil {
-			panic(result.Err)
-		}
-	}
+
+	livestatus := Livestatus.NewCollector(*logger, eventRPC)
+	livestatus.Start()
+	time.Sleep(time.Duration(30) * time.Second)
+	livestatus.Stop()
+	logger.Debug("Fertig")
+	logger.Disconnect()
+
 	eventRPC.Disconnect()
-
-	client, err := Logging.NewClient(Config.GetClientConfig().LogServer.RPCInterface)
-	if err != nil {
-		panic(err)
-	}
-	client.Debug("Hallo Server")
-	client.Disconnect()
-
 }
