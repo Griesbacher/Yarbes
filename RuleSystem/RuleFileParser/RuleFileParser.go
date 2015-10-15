@@ -69,11 +69,15 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 		fmt.Print(line.name + " ")
 		valid, err := line.EvaluateLine(currentEvent)
 		if err != nil {
-			rule.LogClient.Warn("EvaluteLine:" + err.Error())
+			if err == errElementNotFound {
+				valid = false
+			} else {
+				rule.LogClient.Warn("EvaluteLine:" + err.Error())
+			}
 		}
 
+		fmt.Println(valid)
 		if valid {
-			fmt.Println(valid)
 			moduleResult, err := rule.externalModule.Call(line.command, currentEvent)
 			if err != nil {
 				rule.LogClient.Warn("Call: " + err.Error())

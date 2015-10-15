@@ -91,6 +91,9 @@ func (collector *Collector) work() {
 					}
 				case <-time.After(time.Duration(15) * time.Second):
 					collector.logger.Debug("Livestatus collector timed out")
+				case <-collector.quit:
+					collector.quit <- true
+					return
 				}
 			}
 			oldCache = newCache
@@ -124,9 +127,9 @@ func contains(hay []string, needle string) bool {
 func (collector Collector) convertQueryResultToJSON(queryLine []string) []byte {
 	var event map[string]interface{}
 	switch queryLine[0] {
-	case "HOST ALERT":
+	case "HOST ALERT", "HOST FLAPPING ALERT":
 		event = map[string]interface{}{"hostname": queryLine[2]}
-	case "SERVICE ALERT":
+	case "SERVICE ALERT", "SERVICE FLAPPING ALERT":
 		event = map[string]interface{}{"hostname": queryLine[2], "servicename": queryLine[3]}
 	default:
 		//collector.logger.Debug("Loglinetype ignored: " + queryLine[0])

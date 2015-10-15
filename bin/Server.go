@@ -64,7 +64,7 @@ Commandline Parameter:
 	signal.Notify(interruptChannel, syscall.SIGTERM)
 	go func() {
 		<-interruptChannel
-		cleanUp([]stoppable{logServerRPCI, logServer, ruleSystemRPCI, ruleSystem})
+		cleanUp([]Stoppable{logServerRPCI, logServer, ruleSystemRPCI, ruleSystem})
 		os.Exit(1)
 	}()
 	fmt.Println("Everything's ready!")
@@ -74,7 +74,7 @@ Commandline Parameter:
 	}
 }
 
-func cleanUp(itemsToStop []stoppable) {
+func cleanUp(itemsToStop []Stoppable) {
 	for _, item := range itemsToStop {
 		fmt.Println("Stopping: ", reflect.TypeOf(item))
 		item.Stop()

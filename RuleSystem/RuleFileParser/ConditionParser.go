@@ -105,6 +105,8 @@ type myVisitor struct {
 
 const charsToTimInStrings = "\"`"
 
+var errElementNotFound = errors.New("Element not found")
+
 func (v myVisitor) Visit(node ast.Node) ast.Visitor {
 	if node == nil || v.store.err != nil {
 		return ast.Visitor(nil)
@@ -276,6 +278,7 @@ func (v myVisitor) genBasicLitFromIndexExpr(ident *ast.Ident) *ast.BasicLit {
 
 			return &ast.BasicLit{ValuePos: token.NoPos, Kind: token.INT, Value: asString}
 		case nil:
+			v.store.err = errElementNotFound
 			return nil
 		default:
 			v.store.err = fmt.Errorf("No suitable type found... %s", reflect.TypeOf(currentLevel))
