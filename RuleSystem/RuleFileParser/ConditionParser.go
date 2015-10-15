@@ -275,6 +275,8 @@ func (v myVisitor) genBasicLitFromIndexExpr(ident *ast.Ident) *ast.BasicLit {
 			}
 
 			return &ast.BasicLit{ValuePos: token.NoPos, Kind: token.INT, Value: asString}
+		case nil:
+			return nil
 		default:
 			v.store.err = fmt.Errorf("No suitable type found... %s", reflect.TypeOf(currentLevel))
 			return nil
