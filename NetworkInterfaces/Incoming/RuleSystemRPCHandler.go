@@ -11,10 +11,14 @@ type RuleSystemRPCHandler struct {
 }
 
 //CreateEvent creates a event from the given string and sends it to the RuleSystem
-func (handler *RuleSystemRPCHandler) CreateEvent(args *string, result *NetworkInterfaces.RPCResult) error {
-	event, err := Event.NewEventFromBytes([]byte(*args))
-	if err == nil {
-		handler.inter.eventQueue <- *event
+func (handler *RuleSystemRPCHandler) CreateEvent(rpcEvent *NetworkInterfaces.RPCEvent, result *NetworkInterfaces.RPCResult) error {
+	event, err := Event.NewEventFromBytes([]byte(rpcEvent.EventAsString))
+	if rpcEvent.Delay == nil {
+		if err == nil {
+			handler.inter.ruleSystem.EventQueue <- *event
+		}
+	} else {
+		handler.inter.ruleSystem.AddDelayedEvent(event, *rpcEvent.Delay)
 	}
 	result.Err = err
 	return err

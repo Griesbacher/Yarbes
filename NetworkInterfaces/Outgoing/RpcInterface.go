@@ -8,6 +8,7 @@ import (
 	"github.com/griesbacher/SystemX/NetworkInterfaces"
 	"github.com/griesbacher/SystemX/TLS"
 	"net/rpc"
+	"time"
 )
 
 //RPCInterface represents a outgoing RPC connection, with which a rpc.Client can be created
@@ -46,13 +47,23 @@ func (rpcI RPCInterface) Disconnect() {
 	}
 }
 
-//CreateEvent  encapsulates the RPC call to create a event on the server
+//CreateEvent encapsulates the RPC call to create a Event on the server
 func (rpcI RPCInterface) CreateEvent(event []byte) error {
 	result := new(NetworkInterfaces.RPCResult)
-	if err := rpcI.client.Call("RuleSystemRPCHandler.CreateEvent", string(event), &result); err != nil {
+	rpcEvent := NetworkInterfaces.RPCEvent{string(event), nil}
+	if err := rpcI.client.Call("RuleSystemRPCHandler.CreateEvent", &rpcEvent, &result); err != nil {
 		return err
 	}
+	return result.Err
+}
 
+//CreateDelayedEvent encapsulates the RPC call to create a DelayedEvent on the server
+func (rpcI RPCInterface) CreateDelayedEvent(event []byte, delay *time.Duration) error {
+	result := new(NetworkInterfaces.RPCResult)
+	rpcEvent := NetworkInterfaces.RPCEvent{string(event), delay}
+	if err := rpcI.client.Call("RuleSystemRPCHandler.CreateEvent", &rpcEvent, &result); err != nil {
+		return err
+	}
 	return result.Err
 }
 
@@ -62,7 +73,6 @@ func (rpcI RPCInterface) SendMessage(message *LogServer.LogMessage) error {
 	if err := rpcI.client.Call("LogServerRPCHandler.SendMessage", message, &result); err != nil {
 		return err
 	}
-
 	return result.Err
 }
 
@@ -72,6 +82,5 @@ func (rpcI RPCInterface) SendMessages(messages *[]*LogServer.LogMessage) error {
 	if err := rpcI.client.Call("LogServerRPCHandler.SendMessages", messages, &result); err != nil {
 		return err
 	}
-
 	return result.Err
 }

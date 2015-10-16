@@ -7,9 +7,9 @@ import (
 	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/Logging"
 	"github.com/griesbacher/SystemX/Module"
+	"github.com/griesbacher/SystemX/RuleSystem/RuleFileParser/ConditionParser"
 	"github.com/griesbacher/nagflux/helper"
 	"os"
-	"github.com/griesbacher/SystemX/RuleSystem/RuleFileParser/ConditionParser"
 )
 
 //RuleFileParser represents a single rule file
@@ -83,7 +83,7 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 			if err != nil {
 				rule.LogClient.Warn("Call: " + err.Error())
 			} else {
-				fmt.Println(moduleResult)
+				rule.LogClient.Debug(*moduleResult)
 
 				//If the module provides a new Event replace the old one
 				if moduleResult.Event != nil {

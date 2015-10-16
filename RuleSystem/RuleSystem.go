@@ -4,14 +4,17 @@ import (
 	"github.com/griesbacher/SystemX/Config"
 	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/RuleSystem/RuleFileParser"
+	"sync"
+	"time"
 )
 
 //RuleSystem is a deamonlike struct which recives events and executes modules depending on the rules
 type RuleSystem struct {
-	EventQueue chan Event.Event
-	workers    []ruleSystemWorker
-	quit       chan bool
-	isRunning  bool
+	EventQueue    chan Event.Event
+	workers       []ruleSystemWorker
+	quit          chan bool
+	isRunning     bool
+	delayedEvents []*Event.DelayedEvent
 }
 
 //NewRuleSystem is the constructor
@@ -51,4 +54,33 @@ func (system RuleSystem) Stop() {
 //IsRunning returns true if the daemon is running
 func (system RuleSystem) IsRunning() bool {
 	return system.isRunning
+}
+
+//AddDelayedEvent creates a DelayedEvent and starts the countdown
+func (system *RuleSystem) AddDelayedEvent(event *Event.Event, delay time.Duration) {
+	delayedEvent := Event.NewDelayedEvent(event, delay, system.EventQueue)
+	system.delayedEvents = append(system.delayedEvents, delayedEvent)
+	delayedEvent.Start()
+	system.clearDelayedEvents()
+}
+
+//GetDelayedEvent returns the list of DelayedEvents which are still waiting
+func (system RuleSystem) GetDelayedEvent() []*Event.DelayedEvent {
+	system.clearDelayedEvents()
+	return system.delayedEvents
+}
+
+var mutex = &sync.Mutex{}
+
+func (system *RuleSystem) clearDelayedEvents() {
+	mutex.Lock()
+	old := system.delayedEvents
+	result := []*Event.DelayedEvent{}
+	for _, event := range old {
+		if event.IsWaiting() {
+			result = append(result, event)
+		}
+	}
+	system.delayedEvents = result
+	mutex.Unlock()
 }

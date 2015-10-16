@@ -59,7 +59,7 @@ Commandline Parameter:
 		fmt.Println("Starting: RuleSystem")
 		if Config.GetServerConfig().RuleSystem.RPCInterface != "" {
 			fmt.Println("Starting: RuleSystem - RPC Interface")
-			ruleSystemRPCI = Incoming.NewRuleSystemRPCInterface(ruleSystem.EventQueue)
+			ruleSystemRPCI = Incoming.NewRuleSystemRPCInterface(ruleSystem)
 			if Config.GetServerConfig().LogServer.RPCInterface != Config.GetServerConfig().RuleSystem.RPCInterface || (logServerRPCI == nil || !logServerRPCI.IsRunning()) {
 				fmt.Println("Starting: RPC")
 				ruleSystemRPCI.Start()
