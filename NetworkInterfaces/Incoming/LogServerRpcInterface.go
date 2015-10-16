@@ -8,26 +8,16 @@ import (
 
 //LogServerRPCInterface is RPC interface which offers logging
 type LogServerRPCInterface struct {
-	rpcInterface *RPCInterface
-	logQueue     chan LogServer.LogMessage
+	*RPCInterface
+	logQueue chan LogServer.LogMessage
 }
 
 //NewLogServerRPCInterface creates a new LogServerRPCInterface
 func NewLogServerRPCInterface(logQueue chan LogServer.LogMessage) *LogServerRPCInterface {
 	rpc := NewRPCInterface(Config.GetServerConfig().LogServer.RPCInterface)
-	ruleRPC := &LogServerRPCInterface{rpcInterface: rpc, logQueue: logQueue}
+	ruleRPC := &LogServerRPCInterface{RPCInterface: rpc, logQueue: logQueue}
 	rpc.publishHandler(&LogServerRPCHandler{*ruleRPC})
 	return ruleRPC
-}
-
-//Start starts listening for messages
-func (rpcI LogServerRPCInterface) Start() {
-	rpcI.rpcInterface.Start()
-}
-
-//Stop closes the port
-func (rpcI LogServerRPCInterface) Stop() {
-	rpcI.rpcInterface.Stop()
 }
 
 //LogServerRPCHandler is a RPC handler which accepts LogMessages
