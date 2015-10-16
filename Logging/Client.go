@@ -62,7 +62,7 @@ func (client Client) LogMultiple(messages *[]*LogServer.LogMessage) {
 		for message := range *messages {
 			client.localLogger.Println(message)
 		}
-	}else {
+	} else {
 		err := client.logRPC.SendMessages(messages)
 		if err != nil {
 			client.localLogger.Error(appendStackToMessage(err))
@@ -74,7 +74,7 @@ func (client Client) LogMultiple(messages *[]*LogServer.LogMessage) {
 func (client Client) Log(message *LogServer.LogMessage) {
 	if client.logLocal {
 		client.localLogger.Println(message)
-	}else {
+	} else {
 		err := client.logRPC.SendMessage(message)
 		if err != nil {
 			client.localLogger.Error(appendStackToMessage(err))
@@ -128,7 +128,7 @@ func (client Client) Error(v ...interface{}) {
 }
 
 func appendStackToMessage(v ...interface{}) string {
-	buf := make([]byte, 1 << 16)
+	buf := make([]byte, 1<<16)
 	stackSize := runtime.Stack(buf, true)
 	stack := fmt.Sprintf("%s\n", string(buf[0:stackSize]))
 	return fmt.Sprintf("%s\n%s", v, stack)

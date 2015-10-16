@@ -1,9 +1,9 @@
 package LogServer
 
 import (
+	"fmt"
 	"github.com/kdar/factorlog"
 	"time"
-	"fmt"
 )
 
 //LogMessage represents a single Message which can be send over network
