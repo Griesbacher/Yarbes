@@ -24,22 +24,24 @@ func NewRPCInterface(listenTo string) *RPCInterface {
 }
 
 //Start starts listening for requests
-func (rpcI RPCInterface) Start() {
+func (rpcI *RPCInterface) Start() {
 	if !rpcI.isRunning {
 		go rpcI.serve()
+		rpcI.isRunning = true
 	}
 }
 
 //Stop closes the port
 func (rpcI RPCInterface) Stop() {
-	if rpcI.isRunning {
-		rpcI.quit <- true
-		<-rpcI.quit
-	}
+	//do nothing because rpc closes at program end automatically
+}
+
+//IsRunning returns true if the daemon is running
+func (rpcI RPCInterface) IsRunning() bool {
+	return rpcI.isRunning
 }
 
 func (rpcI *RPCInterface) serve() {
-	rpcI.isRunning = true
 	config := TLS.GenerateServerTLSConfig(Config.GetServerConfig().TLS.Cert, Config.GetServerConfig().TLS.Key, Config.GetServerConfig().TLS.CaCert)
 	listener, err := tls.Listen("tcp", rpcI.RPCListenTo, config)
 	if err != nil {

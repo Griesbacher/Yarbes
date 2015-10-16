@@ -32,6 +32,11 @@ func (log Server) Stop() {
 	}
 }
 
+//IsRunning returns true if the daemon is running
+func (log Server) IsRunning() bool {
+	return log.isRunning
+}
+
 func (log *Server) handleLog() {
 	log.isRunning = true
 	var message LogMessage

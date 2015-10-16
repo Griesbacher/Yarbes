@@ -36,13 +36,18 @@ Commandline Parameter:
 	var logServer *LogServer.Server
 	var logServerRPCI *Incoming.LogServerRPCInterface
 
+	stoppables := []Stoppable{}
+
 	if Config.GetServerConfig().LogServer.Enabled {
 		logServer = LogServer.NewLogServer()
 		logServer.Start()
+		stoppables = append(stoppables, logServer)
+		fmt.Println("Starting: LogServer")
 		if Config.GetServerConfig().LogServer.RPCInterface != "" {
-			fmt.Println("Starting: LogServer RPC")
+			fmt.Println("Starting: LogServer - RPC Interface")
 			logServerRPCI = Incoming.NewLogServerRPCInterface(logServer.LogQueue)
 			logServerRPCI.Start()
+			stoppables = append(stoppables, logServerRPCI)
 		}
 		time.Sleep(time.Duration(100) * time.Millisecond)
 	}
@@ -50,11 +55,15 @@ Commandline Parameter:
 	if Config.GetServerConfig().RuleSystem.Enabled {
 		ruleSystem = RuleSystem.NewRuleSystem()
 		ruleSystem.Start()
+		stoppables = append(stoppables, ruleSystem)
+		fmt.Println("Starting: RuleSystem")
 		if Config.GetServerConfig().RuleSystem.RPCInterface != "" {
-			fmt.Println("Starting: RuleSystem RPC")
+			fmt.Println("Starting: RuleSystem - RPC Interface")
 			ruleSystemRPCI = Incoming.NewRuleSystemRPCInterface(ruleSystem.EventQueue)
-			if Config.GetServerConfig().LogServer.RPCInterface != Config.GetServerConfig().RuleSystem.RPCInterface {
+			if Config.GetServerConfig().LogServer.RPCInterface != Config.GetServerConfig().RuleSystem.RPCInterface || (logServerRPCI == nil || !logServerRPCI.IsRunning()) {
+				fmt.Println("Starting: RPC")
 				ruleSystemRPCI.Start()
+				stoppables = append(stoppables, ruleSystemRPCI)
 			}
 		}
 	}
@@ -64,7 +73,7 @@ Commandline Parameter:
 	signal.Notify(interruptChannel, syscall.SIGTERM)
 	go func() {
 		<-interruptChannel
-		cleanUp([]Stoppable{logServerRPCI, logServer, ruleSystemRPCI, ruleSystem})
+		cleanUp(stoppables)
 		os.Exit(1)
 	}()
 	fmt.Println("Everything's ready!")
@@ -76,7 +85,9 @@ Commandline Parameter:
 
 func cleanUp(itemsToStop []Stoppable) {
 	for _, item := range itemsToStop {
-		fmt.Println("Stopping: ", reflect.TypeOf(item))
-		item.Stop()
+		if item != nil && item.IsRunning() {
+			fmt.Println("Stopping: ", reflect.TypeOf(item))
+			item.Stop()
+		}
 	}
 }

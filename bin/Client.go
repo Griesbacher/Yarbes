@@ -7,6 +7,7 @@ import (
 	"github.com/griesbacher/SystemX/Config"
 	"github.com/griesbacher/SystemX/Logging"
 	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
+	"os"
 	"time"
 )
 
@@ -33,6 +34,7 @@ Commandline Parameter:
 	err = eventRPC.Connect()
 	if err != nil {
 		logger.Error(err)
+		os.Exit(2)
 	}
 
 	livestatus := Livestatus.NewCollector(*logger, eventRPC)

@@ -11,6 +11,7 @@ type RuleSystem struct {
 	EventQueue chan Event.Event
 	workers    []ruleSystemWorker
 	quit       chan bool
+	isRunning  bool
 }
 
 //NewRuleSystem is the constructor
@@ -26,13 +27,16 @@ func NewRuleSystem() *RuleSystem {
 	for i := 0; i < amountOfWorker; i++ {
 		workers = append(workers, ruleSystemWorker{eventQueue: eventQueue, parser: *parser, quit: make(chan bool), isRunning: false})
 	}
-	return &RuleSystem{EventQueue: eventQueue, workers: workers}
+	return &RuleSystem{EventQueue: eventQueue, workers: workers, isRunning: false}
 }
 
 //Start starts the RuleSystem with its workers
-func (system RuleSystem) Start() {
-	for _, worker := range system.workers {
-		worker.Start()
+func (system *RuleSystem) Start() {
+	if !system.isRunning {
+		for _, worker := range system.workers {
+			worker.Start()
+		}
+		system.isRunning = true
 	}
 }
 
@@ -41,6 +45,12 @@ func (system RuleSystem) Stop() {
 	for _, worker := range system.workers {
 		worker.Stop()
 	}
+	system.isRunning = false
+}
+
+//IsRunning returns true if the daemon is running
+func (system RuleSystem) IsRunning() bool {
+	return system.isRunning
 }
 
 type ruleSystemWorker struct {

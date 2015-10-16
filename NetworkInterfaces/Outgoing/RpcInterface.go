@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"github.com/griesbacher/SystemX/Config"
+	"github.com/griesbacher/SystemX/Logging/LogServer"
 	"github.com/griesbacher/SystemX/NetworkInterfaces"
 	"github.com/griesbacher/SystemX/TLS"
 	"net/rpc"
@@ -38,16 +39,11 @@ func (rpcI *RPCInterface) Connect() error {
 	return nil
 }
 
-//GenRPCClient sends a single byte for authentication and returns a rpc.Client
-//TODO: durch methoden ersetzen
-func (rpcI RPCInterface) GenRPCClient() *rpc.Client {
-	rpcI.conn.Write([]byte("a"))
-	return rpc.NewClient(rpcI.conn)
-}
-
 //Disconnect closes the tcp connection
 func (rpcI RPCInterface) Disconnect() {
-	rpcI.conn.Close()
+	if rpcI.conn != nil {
+		rpcI.conn.Close()
+	}
 }
 
 //CreateEvent  encapsulates the RPC call to create a event on the server
@@ -56,8 +52,26 @@ func (rpcI RPCInterface) CreateEvent(event []byte) error {
 	if err := rpcI.client.Call("RuleSystemRPCHandler.CreateEvent", string(event), &result); err != nil {
 		return err
 	}
-	if result.Err != nil {
-		return result.Err
+
+	return result.Err
+}
+
+//SendMessage sends a message to the logserver
+func (rpcI RPCInterface) SendMessage(message *LogServer.LogMessage) error {
+	result := new(NetworkInterfaces.RPCResult)
+	if err := rpcI.client.Call("LogServerRPCHandler.SendMessage", message, &result); err != nil {
+		return err
 	}
-	return nil
+
+	return result.Err
+}
+
+//SendMessages sends a multiple messages to the logserver
+func (rpcI RPCInterface) SendMessages(messages *[]*LogServer.LogMessage) error {
+	result := new(NetworkInterfaces.RPCResult)
+	if err := rpcI.client.Call("LogServerRPCHandler.SendMessages", messages, &result); err != nil {
+		return err
+	}
+
+	return result.Err
 }

@@ -1,23 +1,21 @@
 package Logging
 
 import (
-	"errors"
 	"fmt"
 	"github.com/griesbacher/SystemX/Logging/Local"
 	"github.com/griesbacher/SystemX/Logging/LogServer"
-	"github.com/griesbacher/SystemX/NetworkInterfaces"
 	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
 	"github.com/kdar/factorlog"
-	"net/rpc"
 	"os"
+	"runtime"
 )
 
 //Client combines locallogging with factorlog and remote logging via RPC
 type Client struct {
 	logRPC      *Outgoing.RPCInterface
-	rpcClient   *rpc.Client
 	name        string
 	localLogger *factorlog.FactorLog
+	logLocal    bool
 }
 
 //NewLocalClient constructs a new client, which logs to stdout
@@ -31,54 +29,42 @@ func NewClient(target string) (*Client, error) {
 		//use local logger
 		return NewLocalClient(), nil
 	}
+	logLocal := false
 	logRPC := Outgoing.NewRPCInterface(target)
 	if err := logRPC.Connect(); err != nil {
-		return nil, err
+		logLocal = true
 	}
-	if rpcClient := logRPC.GenRPCClient(); rpcClient != nil {
-		var clientName string
-		for name := range logRPC.Config.NameToCertificate {
-			clientName = name
-			break
-		}
-		if clientName == "" {
-			var err error
-			clientName, err = os.Hostname()
-			if err != nil {
-				return nil, err
-			}
-		}
-		return &Client{logRPC: logRPC, rpcClient: rpcClient, name: clientName, localLogger: Local.GetLogger()}, nil
 
+	var clientName string
+	for name := range logRPC.Config.NameToCertificate {
+		clientName = name
+		break
 	}
-	return nil, errors.New("Could not create a RPC client")
+	if clientName == "" {
+		var err error
+		clientName, err = os.Hostname()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &Client{logRPC: logRPC, name: clientName, localLogger: Local.GetLogger(), logLocal: logLocal}, nil
+
 }
 
 //LogMultiple sends the logMessages to the remote logServer, log an error to stdout
 func (client Client) LogMultiple(messages *[]*LogServer.LogMessage) {
-	result := new(NetworkInterfaces.RPCResult)
-	if err := client.rpcClient.Call("LogServerRPCHandler.SendMessages", messages, &result); err != nil {
-		client.localLogger.Error(err)
-		for message := range *messages {
-			client.localLogger.Debug("Message", message)
-		}
-	}
+	err := client.logRPC.SendMessages(messages)
+	if err != nil {
 
-	if result.Err != nil {
-		client.localLogger.Error(result.Err)
 	}
 }
 
 //Log sends the logMessage to the remote logServer, log an error to stdout
 func (client Client) Log(message *LogServer.LogMessage) {
-	result := new(NetworkInterfaces.RPCResult)
-	if err := client.rpcClient.Call("LogServerRPCHandler.SendMessage", message, &result); err != nil {
-		client.localLogger.Error(err)
-		client.localLogger.Debug("Message", message)
-	}
+	err := client.logRPC.SendMessage(message)
+	if err != nil {
 
-	if result.Err != nil {
-		client.localLogger.Error(result.Err)
 	}
 }
 
@@ -91,7 +77,7 @@ func (client Client) Disconnect() {
 
 //Debug logs the message local/remote to on debug level
 func (client Client) Debug(v ...interface{}) {
-	if client.rpcClient == nil {
+	if client.logLocal {
 		client.localLogger.Debug(v)
 	} else {
 		client.Log(LogServer.NewDebugLogMessage(client.name, fmt.Sprint(v)))
@@ -100,7 +86,7 @@ func (client Client) Debug(v ...interface{}) {
 
 //Info logs the message local/remote to on info level
 func (client Client) Info(v ...interface{}) {
-	if client.rpcClient == nil {
+	if client.logLocal {
 		client.localLogger.Info(v)
 	} else {
 		client.Log(LogServer.NewInfoLogMessage(client.name, fmt.Sprint(v)))
@@ -109,7 +95,7 @@ func (client Client) Info(v ...interface{}) {
 
 //Warn logs the message local/remote to on warn level
 func (client Client) Warn(v ...interface{}) {
-	if client.rpcClient == nil {
+	if client.logLocal {
 		client.localLogger.Warn(v)
 	} else {
 		client.Log(LogServer.NewWarnLogMessage(client.name, fmt.Sprint(v)))
@@ -118,9 +104,14 @@ func (client Client) Warn(v ...interface{}) {
 
 //Error logs the message local/remote to on error level
 func (client Client) Error(v ...interface{}) {
-	if client.rpcClient == nil {
-		client.localLogger.Error(v)
+	buf := make([]byte, 1<<16)
+	stackSize := runtime.Stack(buf, true)
+	stack := fmt.Sprintf("%s\n", string(buf[0:stackSize]))
+	message := fmt.Sprintf("%s\n%s", v, stack)
+
+	if client.logLocal {
+		client.localLogger.Error(message)
 	} else {
-		client.Log(LogServer.NewErrorLogMessage(client.name, fmt.Sprint(v)))
+		client.Log(LogServer.NewErrorLogMessage(client.name, message))
 	}
 }
