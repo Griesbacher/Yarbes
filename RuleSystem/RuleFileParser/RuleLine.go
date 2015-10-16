@@ -2,6 +2,7 @@ package RuleFileParser
 
 import (
 	"github.com/griesbacher/SystemX/Event"
+	"github.com/griesbacher/SystemX/RuleSystem/RuleFileParser/ConditionParser"
 	"strconv"
 )
 
@@ -11,7 +12,7 @@ type RuleLine struct {
 	condition string
 	command   string
 	flags     map[string]string
-	parser    ConditionParser
+	parser    ConditionParser.ConditionParser
 }
 
 //EvaluateLine returns if state of the condition and an error if the result is not valid

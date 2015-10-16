@@ -9,6 +9,7 @@ import (
 	"github.com/griesbacher/SystemX/Module"
 	"github.com/griesbacher/nagflux/helper"
 	"os"
+	"github.com/griesbacher/SystemX/RuleSystem/RuleFileParser/ConditionParser"
 )
 
 //RuleFileParser represents a single rule file
@@ -69,7 +70,7 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 		fmt.Print(line.name + " ")
 		valid, err := line.EvaluateLine(currentEvent)
 		if err != nil {
-			if err == errElementNotFound {
+			if err == ConditionParser.ErrElementNotFound {
 				valid = false
 			} else {
 				rule.LogClient.Warn("EvaluteLine:" + err.Error())
@@ -83,14 +84,22 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 				rule.LogClient.Warn("Call: " + err.Error())
 			} else {
 				fmt.Println(moduleResult)
-				var newEvent *Event.Event
-				newEvent, err = Event.NewEventFromInterface(moduleResult.Event)
-				if err != nil {
-					rule.LogClient.Warn("NewEventFromInterface: " + err.Error())
-				}
-				currentEvent = *newEvent
 
-				rule.LogClient.LogMultiple(moduleResult.DecodeLogMessages())
+				//If the module provides a new Event replace the old one
+				if moduleResult.Event != nil {
+					var newEvent *Event.Event
+					newEvent, err = Event.NewEventFromInterface(moduleResult.Event)
+					if err != nil {
+						rule.LogClient.Warn("NewEventFromInterface: " + err.Error())
+					}
+					currentEvent = *newEvent
+				}
+
+				messages := moduleResult.DecodeLogMessages()
+				if len(*messages) > 0 {
+					rule.LogClient.LogMultiple(moduleResult.DecodeLogMessages())
+				}
+
 				if line.LastLine() {
 					break
 				}

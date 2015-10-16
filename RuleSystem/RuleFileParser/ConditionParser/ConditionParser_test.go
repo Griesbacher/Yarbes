@@ -1,4 +1,4 @@
-package RuleFileParser
+package ConditionParser
 
 import (
 	"encoding/json"
