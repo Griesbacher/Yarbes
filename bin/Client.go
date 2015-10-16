@@ -36,7 +36,7 @@ Commandline Parameter:
 		logger.Error(err)
 		os.Exit(2)
 	}
-
+	logger.Debug("Start")
 	livestatus := Livestatus.NewCollector(*logger, eventRPC)
 	livestatus.Start()
 	time.Sleep(time.Duration(30) * time.Second)

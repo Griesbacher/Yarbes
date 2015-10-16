@@ -3,6 +3,7 @@ package LogServer
 import (
 	"github.com/kdar/factorlog"
 	"time"
+	"fmt"
 )
 
 //LogMessage represents a single Message which can be send over network
@@ -41,4 +42,9 @@ func NewErrorLogMessage(source, message string) *LogMessage {
 //SeverityToString converts the Severity to human readable string
 func SeverityToString(s factorlog.Severity) string {
 	return factorlog.CapSeverityStrings[factorlog.SeverityToIndex(s)]
+}
+
+//String prints the message human readable
+func (message *LogMessage) String() string {
+	return fmt.Sprintf("[%s]@[%s][%s] %s", message.Source, message.Timestamp.Format(time.RFC3339), SeverityToString(message.Severity), message.Message)
 }

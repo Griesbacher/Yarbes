@@ -47,6 +47,10 @@ func NewClient(target string) (*Client, error) {
 			return nil, err
 		}
 	}
+	err := logRPC.SendMessage(LogServer.NewDebugLogMessage(clientName, "connected"))
+	if err != nil {
+		logLocal = true
+	}
 
 	return &Client{logRPC: logRPC, name: clientName, localLogger: Local.GetLogger(), logLocal: logLocal}, nil
 
@@ -54,17 +58,27 @@ func NewClient(target string) (*Client, error) {
 
 //LogMultiple sends the logMessages to the remote logServer, log an error to stdout
 func (client Client) LogMultiple(messages *[]*LogServer.LogMessage) {
-	err := client.logRPC.SendMessages(messages)
-	if err != nil {
-
+	if client.logLocal {
+		for message := range *messages {
+			client.localLogger.Println(message)
+		}
+	}else {
+		err := client.logRPC.SendMessages(messages)
+		if err != nil {
+			client.localLogger.Error(appendStackToMessage(err))
+		}
 	}
 }
 
 //Log sends the logMessage to the remote logServer, log an error to stdout
 func (client Client) Log(message *LogServer.LogMessage) {
-	err := client.logRPC.SendMessage(message)
-	if err != nil {
-
+	if client.logLocal {
+		client.localLogger.Println(message)
+	}else {
+		err := client.logRPC.SendMessage(message)
+		if err != nil {
+			client.localLogger.Error(appendStackToMessage(err))
+		}
 	}
 }
 
@@ -104,14 +118,18 @@ func (client Client) Warn(v ...interface{}) {
 
 //Error logs the message local/remote to on error level
 func (client Client) Error(v ...interface{}) {
-	buf := make([]byte, 1<<16)
-	stackSize := runtime.Stack(buf, true)
-	stack := fmt.Sprintf("%s\n", string(buf[0:stackSize]))
-	message := fmt.Sprintf("%s\n%s", v, stack)
+	message := appendStackToMessage(v)
 
 	if client.logLocal {
 		client.localLogger.Error(message)
 	} else {
 		client.Log(LogServer.NewErrorLogMessage(client.name, message))
 	}
+}
+
+func appendStackToMessage(v ...interface{}) string {
+	buf := make([]byte, 1 << 16)
+	stackSize := runtime.Stack(buf, true)
+	stack := fmt.Sprintf("%s\n", string(buf[0:stackSize]))
+	return fmt.Sprintf("%s\n%s", v, stack)
 }
