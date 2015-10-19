@@ -1,7 +1,6 @@
 package Livestatus
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -25,12 +24,10 @@ func newLivestatusResultConverter(query string) *livestatusResultConverter {
 			}
 		}
 	}
-	fmt.Println(index)
 	return &livestatusResultConverter{query: query, index: index}
 }
 
 func (c livestatusResultConverter) createObject(result []string) map[string]interface{} {
-	fmt.Println(result)
 	typ := result[c.index["type"]]
 	event := map[string]interface{}{}
 	var mappingTable map[string]string
@@ -46,6 +43,5 @@ func (c livestatusResultConverter) createObject(result []string) map[string]inte
 	for k, v := range mappingTable {
 		event[k] = result[c.index[v]]
 	}
-	fmt.Println(event)
 	return event
 }

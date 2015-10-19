@@ -129,17 +129,6 @@ func contains(hay []string, needle string) bool {
 }
 
 func (collector Collector) convertQueryResultToJSON(queryLine []string) []byte {
-	/*var event map[string]interface{}
-	switch queryLine[0] {
-	case "HOST ALERT", "HOST FLAPPING ALERT":
-		event = map[string]interface{}{"hostname": queryLine[2], "plugin_output"}
-	case "SERVICE ALERT", "SERVICE FLAPPING ALERT":
-		event = map[string]interface{}{"hostname": queryLine[2], "servicename": queryLine[3]}
-	default:
-		//collector.logger.Debug("Loglinetype ignored: " + queryLine[0])
-		return []byte{}
-	}
-	*/
 	event := collector.converter.createObject(queryLine)
 	newEvent, err := Event.NewEventFromInterface(event)
 	if err != nil {
