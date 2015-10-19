@@ -16,6 +16,7 @@ type Collector struct {
 	isRunning bool
 	logger    Logging.Client
 	creator   Client.EventCreatable
+	converter *livestatusResultConverter
 }
 
 //LogQuery will be used for every livestatus query
@@ -33,7 +34,8 @@ Separators: 10 2 5 6
 //NewCollector constructs a new Livestatus Collector
 func NewCollector(logger Logging.Client, eventCreator Client.EventCreatable) *Collector {
 	connector := Connector{LivestatusAddress: Config.GetClientConfig().Livestatus.Address, ConnectionType: Config.GetClientConfig().Livestatus.Type}
-	return &Collector{conn: connector, quit: make(chan bool), isRunning: false, logger: logger, creator: eventCreator}
+	converter := newLivestatusResultConverter(LogQuery)
+	return &Collector{conn: connector, quit: make(chan bool), isRunning: false, logger: logger, creator: eventCreator, converter:converter}
 }
 
 //Start starts the collector
@@ -67,7 +69,7 @@ func (collector *Collector) work() {
 			errorChan = make(chan error)
 			newCache = []string{}
 			timeToHandleRequest := time.Now().Sub(start)
-			//fmt.Println(time.Now().Unix(), timeToHandleRequest)
+		//fmt.Println(time.Now().Unix(), timeToHandleRequest)
 			go collector.conn.connectToLivestatus(addTimestampToLivestatusQuery(LogQuery, timeToHandleRequest), result, errorChan)
 			start = time.Now()
 			queryRunning := true
@@ -114,7 +116,7 @@ func (collector Collector) sendEvent(event []byte) {
 }
 
 func addTimestampToLivestatusQuery(query string, durration time.Duration) string {
-	return fmt.Sprintf(query, time.Now().Add((durration+time.Duration(1)*time.Second)*-2).Unix())
+	return fmt.Sprintf(query, time.Now().Add((durration + time.Duration(1) * time.Second) * -2).Unix())
 }
 
 func contains(hay []string, needle string) bool {
@@ -127,17 +129,18 @@ func contains(hay []string, needle string) bool {
 }
 
 func (collector Collector) convertQueryResultToJSON(queryLine []string) []byte {
-	var event map[string]interface{}
+	/*var event map[string]interface{}
 	switch queryLine[0] {
 	case "HOST ALERT", "HOST FLAPPING ALERT":
-		event = map[string]interface{}{"hostname": queryLine[2]}
+		event = map[string]interface{}{"hostname": queryLine[2], "plugin_output"}
 	case "SERVICE ALERT", "SERVICE FLAPPING ALERT":
 		event = map[string]interface{}{"hostname": queryLine[2], "servicename": queryLine[3]}
 	default:
 		//collector.logger.Debug("Loglinetype ignored: " + queryLine[0])
 		return []byte{}
 	}
-
+*/
+	event := collector.converter.createObject(queryLine)
 	newEvent, err := Event.NewEventFromInterface(event)
 	if err != nil {
 		collector.logger.Error(err)
