@@ -1,7 +1,8 @@
 package Livestatus
+
 import (
-	"strings"
 	"fmt"
+	"strings"
 )
 
 type livestatusResultConverter struct {
@@ -9,8 +10,8 @@ type livestatusResultConverter struct {
 	index map[string]int
 }
 
-var host = map[string]string{"hostname":"host_name", "time":"time", "service":"current_service_display_name", "plugin_output":"long_plugin_output"}
-var service = map[string]string{"hostname":"host_name", "time":"time", "service":"current_service_display_name", "plugin_output":"long_plugin_output"}
+var host = map[string]string{"hostname": "host_name", "time": "time", "service": "current_service_display_name", "plugin_output": "long_plugin_output"}
+var service = map[string]string{"hostname": "host_name", "time": "time", "service": "current_service_display_name", "plugin_output": "long_plugin_output"}
 
 func newLivestatusResultConverter(query string) *livestatusResultConverter {
 	index := map[string]int{}
@@ -25,7 +26,7 @@ func newLivestatusResultConverter(query string) *livestatusResultConverter {
 		}
 	}
 	fmt.Println(index)
-	return &livestatusResultConverter{query:query, index:index}
+	return &livestatusResultConverter{query: query, index: index}
 }
 
 func (c livestatusResultConverter) createObject(result []string) map[string]interface{} {

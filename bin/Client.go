@@ -40,7 +40,7 @@ Commandline Parameter:
 	/*delay := time.Duration(5) * time.Second
 	var event = []byte(`{"Hallo": "Delayed", "Start":"` + time.Now().Format(time.RFC3339) + `"}`)
 	eventRPC.CreateDelayedEvent(event, &delay)
-*/
+	*/
 	logger.Debug("Start")
 	livestatus := Livestatus.NewCollector(*logger, eventRPC)
 	livestatus.Start()

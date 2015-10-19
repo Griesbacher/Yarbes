@@ -35,7 +35,7 @@ Separators: 10 2 5 6
 func NewCollector(logger Logging.Client, eventCreator Client.EventCreatable) *Collector {
 	connector := Connector{LivestatusAddress: Config.GetClientConfig().Livestatus.Address, ConnectionType: Config.GetClientConfig().Livestatus.Type}
 	converter := newLivestatusResultConverter(LogQuery)
-	return &Collector{conn: connector, quit: make(chan bool), isRunning: false, logger: logger, creator: eventCreator, converter:converter}
+	return &Collector{conn: connector, quit: make(chan bool), isRunning: false, logger: logger, creator: eventCreator, converter: converter}
 }
 
 //Start starts the collector
@@ -69,7 +69,7 @@ func (collector *Collector) work() {
 			errorChan = make(chan error)
 			newCache = []string{}
 			timeToHandleRequest := time.Now().Sub(start)
-		//fmt.Println(time.Now().Unix(), timeToHandleRequest)
+			//fmt.Println(time.Now().Unix(), timeToHandleRequest)
 			go collector.conn.connectToLivestatus(addTimestampToLivestatusQuery(LogQuery, timeToHandleRequest), result, errorChan)
 			start = time.Now()
 			queryRunning := true
@@ -116,7 +116,7 @@ func (collector Collector) sendEvent(event []byte) {
 }
 
 func addTimestampToLivestatusQuery(query string, durration time.Duration) string {
-	return fmt.Sprintf(query, time.Now().Add((durration + time.Duration(1) * time.Second) * -2).Unix())
+	return fmt.Sprintf(query, time.Now().Add((durration+time.Duration(1)*time.Second)*-2).Unix())
 }
 
 func contains(hay []string, needle string) bool {
@@ -139,7 +139,7 @@ func (collector Collector) convertQueryResultToJSON(queryLine []string) []byte {
 		//collector.logger.Debug("Loglinetype ignored: " + queryLine[0])
 		return []byte{}
 	}
-*/
+	*/
 	event := collector.converter.createObject(queryLine)
 	newEvent, err := Event.NewEventFromInterface(event)
 	if err != nil {

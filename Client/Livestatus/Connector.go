@@ -44,7 +44,7 @@ func (connector Connector) connectToLivestatus(query string, result chan []strin
 	if err != nil {
 		resultError <- err
 	}
-	for _, record := range records{
+	for _, record := range records {
 		result <- record
 	}
 	close(result)

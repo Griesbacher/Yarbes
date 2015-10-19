@@ -128,7 +128,7 @@ func (client Client) Error(v ...interface{}) {
 }
 
 func appendStackToMessage(v ...interface{}) string {
-	buf := make([]byte, 1 << 16)
+	buf := make([]byte, 1<<16)
 	stackSize := runtime.Stack(buf, true)
 	stack := fmt.Sprintf("%s\n", string(buf[0:stackSize]))
 	return fmt.Sprintf("%s\n%s", v, stack)
