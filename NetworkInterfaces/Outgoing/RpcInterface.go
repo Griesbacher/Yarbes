@@ -48,7 +48,12 @@ func (rpcI RPCInterface) Disconnect() {
 }
 
 //CreateEvent encapsulates the RPC call to create a Event on the server
-func (rpcI RPCInterface) CreateEvent(event []byte) error {
+func (rpcI RPCInterface) CreateEvent(event []byte) (err error) {
+	defer func() {
+		if rec := recover(); rec != nil {
+			err = rec.(error)
+		}
+	}()
 	result := new(NetworkInterfaces.RPCResult)
 	rpcEvent := NetworkInterfaces.RPCEvent{string(event), nil}
 	if err := rpcI.client.Call("RuleSystemRPCHandler.CreateEvent", &rpcEvent, &result); err != nil {
@@ -58,7 +63,12 @@ func (rpcI RPCInterface) CreateEvent(event []byte) error {
 }
 
 //CreateDelayedEvent encapsulates the RPC call to create a DelayedEvent on the server
-func (rpcI RPCInterface) CreateDelayedEvent(event []byte, delay *time.Duration) error {
+func (rpcI RPCInterface) CreateDelayedEvent(event []byte, delay *time.Duration) (err error) {
+	defer func() {
+		if rec := recover(); rec != nil {
+			err = rec.(error)
+		}
+	}()
 	result := new(NetworkInterfaces.RPCResult)
 	rpcEvent := NetworkInterfaces.RPCEvent{string(event), delay}
 	if err := rpcI.client.Call("RuleSystemRPCHandler.CreateEvent", &rpcEvent, &result); err != nil {
@@ -68,7 +78,12 @@ func (rpcI RPCInterface) CreateDelayedEvent(event []byte, delay *time.Duration) 
 }
 
 //SendMessage sends a message to the logserver
-func (rpcI RPCInterface) SendMessage(message *LogServer.LogMessage) error {
+func (rpcI RPCInterface) SendMessage(message *LogServer.LogMessage) (err error) {
+	defer func() {
+		if rec := recover(); rec != nil {
+			err = rec.(error)
+		}
+	}()
 	result := new(NetworkInterfaces.RPCResult)
 	if err := rpcI.client.Call("LogServerRPCHandler.SendMessage", message, &result); err != nil {
 		return err
@@ -77,7 +92,12 @@ func (rpcI RPCInterface) SendMessage(message *LogServer.LogMessage) error {
 }
 
 //SendMessages sends a multiple messages to the logserver
-func (rpcI RPCInterface) SendMessages(messages *[]*LogServer.LogMessage) error {
+func (rpcI RPCInterface) SendMessages(messages *[]*LogServer.LogMessage) (err error) {
+	defer func() {
+		if rec := recover(); rec != nil {
+			err = rec.(error)
+		}
+	}()
 	result := new(NetworkInterfaces.RPCResult)
 	if err := rpcI.client.Call("LogServerRPCHandler.SendMessages", messages, &result); err != nil {
 		return err

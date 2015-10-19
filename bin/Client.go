@@ -27,6 +27,7 @@ Commandline Parameter:
 	var logger *Logging.Client
 	logger, err := Logging.NewClient(Config.GetClientConfig().LogServer.RPCInterface)
 	if err != nil {
+		fmt.Println("using local logger")
 		logger = Logging.NewLocalClient()
 	}
 

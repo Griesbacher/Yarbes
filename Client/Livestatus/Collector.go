@@ -19,12 +19,14 @@ type Collector struct {
 }
 
 //LogQuery will be used for every livestatus query
+//TODO: fieldseperator durch 1 2 5 6 ersetzen
 const LogQuery = `GET log
-Columns: type time host_name service_display_name
+Columns: type time host_name current_service_display_name long_plugin_output
 Filter: time > %d
 WaitTrigger: log
 WaitTimeout: 10000
 OutputFormat: csv
+Separators: 10 2 5 6
 
 `
 

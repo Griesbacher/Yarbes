@@ -5,9 +5,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"io"
 	"net"
-	"strings"
 )
 
 //Connector fetches data from Livestatussocket
@@ -40,29 +38,14 @@ func (connector Connector) connectToLivestatus(query string, result chan []strin
 	defer conn.Close()
 	fmt.Fprintf(conn, query)
 	reader := bufio.NewReader(conn)
-
-	length := 1
-	for length > 0 {
-		message, _, err := reader.ReadLine()
-		if err != nil {
-			if err == io.EOF {
-				break
-			} else {
-				resultError <- err
-				continue
-			}
-		}
-		length = len(message)
-		if length > 0 {
-			csvReader := csv.NewReader(strings.NewReader(string(message)))
-			csvReader.Comma = ';'
-			records, err := csvReader.Read()
-			if err != nil {
-				resultError <- err
-				continue
-			}
-			result <- records
-		}
+	csvReader := csv.NewReader(reader)
+	csvReader.Comma = '\x02'
+	records, err := csvReader.ReadAll()
+	if err != nil {
+		resultError <- err
+	}
+	for _, record := range records{
+		result <- record
 	}
 	close(result)
 	close(resultError)
