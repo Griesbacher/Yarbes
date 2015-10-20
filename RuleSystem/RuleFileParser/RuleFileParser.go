@@ -81,23 +81,24 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 		if valid {
 			moduleResult, err := rule.externalModule.Call(line.command, currentEvent)
 			if err != nil {
-				rule.LogClient.Warn("Call: " + err.Error())
+				rule.LogClient.Error(err)
 			} else {
-				rule.LogClient.Debug(*moduleResult)
-
-				//If the module provides a new Event replace the old one
-				if moduleResult.Event != nil {
-					var newEvent *Event.Event
-					newEvent, err = Event.NewEventFromInterface(moduleResult.Event)
-					if err != nil {
-						rule.LogClient.Warn("NewEventFromInterface: " + err.Error())
+				if moduleResult != nil {
+					rule.LogClient.Debug(*moduleResult)
+					//If the module provides a new Event replace the old one
+					if moduleResult.Event != nil {
+						var newEvent *Event.Event
+						newEvent, err = Event.NewEventFromInterface(moduleResult.Event)
+						if err != nil {
+							rule.LogClient.Warn("NewEventFromInterface: " + err.Error())
+						}
+						currentEvent = *newEvent
 					}
-					currentEvent = *newEvent
-				}
 
-				messages := moduleResult.DecodeLogMessages()
-				if len(*messages) > 0 {
-					rule.LogClient.LogMultiple(moduleResult.DecodeLogMessages())
+					messages := moduleResult.DecodeLogMessages()
+					if len(*messages) > 0 {
+						rule.LogClient.LogMultiple(moduleResult.DecodeLogMessages())
+					}
 				}
 
 				if line.LastLine() {

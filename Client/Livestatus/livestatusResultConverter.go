@@ -9,8 +9,8 @@ type livestatusResultConverter struct {
 	index map[string]int
 }
 
-var host = map[string]string{"hostname": "host_name", "time": "time", "service": "current_service_display_name", "plugin_output": "long_plugin_output"}
-var service = map[string]string{"hostname": "host_name", "time": "time", "service": "current_service_display_name", "plugin_output": "long_plugin_output"}
+var host = map[string]string{"type": "type", "hostname": "host_name", "time": "time", "service": "current_service_display_name", "plugin_output": "long_plugin_output"}
+var service = map[string]string{"type": "type", "hostname": "host_name", "time": "time", "service": "current_service_display_name", "plugin_output": "long_plugin_output"}
 
 func newLivestatusResultConverter(query string) *livestatusResultConverter {
 	index := map[string]int{}
@@ -43,5 +43,6 @@ func (c livestatusResultConverter) createObject(result []string) map[string]inte
 	for k, v := range mappingTable {
 		event[k] = result[c.index[v]]
 	}
+	event["source"] = "nagios"
 	return event
 }

@@ -12,6 +12,6 @@
 #it is possible to leave Rulename and Condition empty,
 #in this case the last Rulename and Condition are taken from the last line
 
-Regel1;"_[""k1""]==""v1""";echo;last=false
-    ;;echo;last=true
-Regel3;3==3;echo;last=true
+Regel1;_[`source`] != `nagios`;echo;last=true
+Regel2;_[`type`] &^ `.*ALERT`;echo;last=false
+                            ;;mail;last=true

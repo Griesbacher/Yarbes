@@ -20,6 +20,7 @@ func main() {
 	}
 }
 
+//TODO: Client log bib schreiben
 func Sendmail(to mail.Address, subj, body string, config *ConfigLayouts.Mail, useTLS bool) {
 	from := mail.Address{config.Mail.FromName, config.Mail.FromAddress}
 	headers := make(map[string]string)

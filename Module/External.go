@@ -54,9 +54,11 @@ func (external ExternalModule) Call(moduleName string, event Event.Event) (*Resu
 
 	//TODO: get returncode
 	var moduleResult Result
-	err = json.Unmarshal(out.Bytes(), &moduleResult)
-	if err != nil {
-		return nil, err
+	if len(out.Bytes()) != 0 {
+		err = json.Unmarshal(out.Bytes(), &moduleResult)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &moduleResult, err
