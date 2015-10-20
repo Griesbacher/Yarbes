@@ -22,7 +22,7 @@ Commandline Parameter:
 	}
 	flag.StringVar(&configPath, "configPath", "clientConfig.gcfg", "path to the config file")
 	flag.Parse()
-	Config.InitClientConfigProvider(configPath)
+	Config.InitClientConfig(configPath)
 
 	var logger *Logging.Client
 	logger, err := Logging.NewClient(Config.GetClientConfig().LogServer.RPCInterface)

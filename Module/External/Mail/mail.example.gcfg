@@ -1,0 +1,6 @@
+[Mail]
+FromName    = "SystemX"
+FromAddress = "systemx@example.com"
+Server      = "smtp.example.com:465"
+Username    = "SystemX"
+Password    = "0123456789"

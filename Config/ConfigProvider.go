@@ -1,68 +1,67 @@
 package Config
 
 import (
+	"errors"
+	"github.com/griesbacher/SystemX/Config/ConfigLayouts"
 	"gopkg.in/gcfg.v1"
 	"sync"
 )
 
-//ServerConfigProvider provides the server configfile as an object
-type ServerConfigProvider struct {
-	Cfg ServerConfig
-}
-
-//ClientConfigProvider provides the client configfile as an object
-type ClientConfigProvider struct {
-	Cfg ClientConfig
-}
-
-var singleServerConfigProvider *ServerConfigProvider
-var singleClientConfigProvider *ClientConfigProvider
+var singleServerConfig ConfigLayouts.Server
+var singleClientConfig ConfigLayouts.Client
+var singleMailConfig ConfigLayouts.Mail
 var mutex = &sync.Mutex{}
 
-//InitServerConfigProvider parses the server config file
-func InitServerConfigProvider(configPath string) {
-	initConfigProvider(configPath, singleServerConfigProvider)
+//InitServerConfig parses the server config file
+func InitServerConfig(configPath string) {
+	initConfig(configPath, &singleServerConfig)
 }
 
-//InitClientConfigProvider parses the client config file
-func InitClientConfigProvider(configPath string) {
-	initConfigProvider(configPath, singleClientConfigProvider)
+//InitClientConfig parses the client config file
+func InitClientConfig(configPath string) {
+	initConfig(configPath, &singleClientConfig)
 }
 
-func initConfigProvider(configPath string, provider interface{}) {
-	mutex.Lock()
+//InitMailConfig parses the mail config file
+func InitMailConfig(configPath string) {
+	initConfig(configPath, &singleMailConfig)
+}
+
+func initConfig(configPath string, config interface{}) {
 	var err error
-	switch provider.(type) {
-	case *ServerConfigProvider:
-		var cfg ServerConfig
-		err = gcfg.ReadFileInto(&cfg, configPath)
-		if err != nil {
-			panic(err)
-		}
-		singleServerConfigProvider = &ServerConfigProvider{Cfg: cfg}
-	case *ClientConfigProvider:
-		var cfg ClientConfig
-		err = gcfg.ReadFileInto(&cfg, configPath)
-		if err != nil {
-			panic(err)
-		}
-		singleClientConfigProvider = &ClientConfigProvider{Cfg: cfg}
+	mutex.Lock()
+	switch real := config.(type) {
+	case *ConfigLayouts.Server, *ConfigLayouts.Client, *ConfigLayouts.Mail:
+		err = gcfg.ReadFileInto(real, configPath)
+	default:
+		err = errors.New("Unkown config layout")
 	}
 	mutex.Unlock()
+	if err != nil {
+		panic(err)
+	}
 }
 
 //GetServerConfig simple getter for the server config, panics if not initialized
-func GetServerConfig() ServerConfig {
-	if singleServerConfigProvider == nil {
-		panic("Call InitServerConfigProvider first!")
+func GetServerConfig() *ConfigLayouts.Server {
+	if &singleServerConfig == nil {
+		panic("Call InitServerConfig first!")
 	}
-	return singleServerConfigProvider.Cfg
+	return &singleServerConfig
 }
 
 //GetClientConfig simple getter for the client config, panics if not initialized
-func GetClientConfig() ClientConfig {
-	if singleClientConfigProvider == nil {
-		panic("Call InitClientonfigProvider first!")
+func GetClientConfig() *ConfigLayouts.Client {
+	if &singleClientConfig == nil {
+		panic("Call InitClientonfig first!")
 	}
-	return singleClientConfigProvider.Cfg
+	return &singleClientConfig
+}
+
+//GetMailConfig simple getter for the mail config, panics if not initialized
+func GetMailConfig() *ConfigLayouts.Mail {
+	if &singleMailConfig == nil {
+		panic("Call InitMailConfig first!")
+	}
+	return &singleMailConfig
 }

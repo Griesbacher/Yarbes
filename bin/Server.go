@@ -28,8 +28,8 @@ Commandline Parameter:
 	flag.StringVar(&serverConfigPath, "serverConfigPath", "serverConfig.gcfg", "path to the server config file")
 	flag.StringVar(&clientConfigPath, "clientConfigPath", "clientConfig.gcfg", "path to the client config file")
 	flag.Parse()
-	Config.InitServerConfigProvider(serverConfigPath)
-	Config.InitClientConfigProvider(clientConfigPath)
+	Config.InitServerConfig(serverConfigPath)
+	Config.InitClientConfig(clientConfigPath)
 
 	var ruleSystem *RuleSystem.RuleSystem
 	var ruleSystemRPCI *Incoming.RuleSystemRPCInterface
