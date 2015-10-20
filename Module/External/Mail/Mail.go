@@ -12,6 +12,7 @@ import (
 	"os"
 )
 
+//TODO: Client log bib schreiben
 func main() {
 	if len(os.Args) > 1 {
 		Config.InitMailConfig("Module/External/Mail/mail.gcfg")
@@ -20,7 +21,7 @@ func main() {
 	}
 }
 
-//TODO: Client log bib schreiben
+//Sendmail sends a email to the given address, useTLS can be used for encryption
 func Sendmail(to mail.Address, subj, body string, config *ConfigLayouts.Mail, useTLS bool) {
 	from := mail.Address{config.Mail.FromName, config.Mail.FromAddress}
 	headers := make(map[string]string)
