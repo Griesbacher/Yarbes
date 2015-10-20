@@ -60,9 +60,9 @@ func (external ExternalModule) Call(moduleName string, event Event.Event) (*Resu
 
 	if runtimeErr != nil {
 		returnCode := runtimeErr.(*exec.ExitError).Sys().(syscall.WaitStatus).ExitStatus()
-		if &moduleResult == nil{
-			moduleResult = Result{ReturnCode:returnCode}
-		}else{
+		if &moduleResult == nil {
+			moduleResult = Result{ReturnCode: returnCode}
+		} else {
 			moduleResult.ReturnCode = returnCode
 		}
 	}
@@ -96,5 +96,5 @@ func (external *ExternalModule) searchModules() {
 
 func getFilename(filename string) string {
 	extension := filepath.Ext(filename)
-	return strings.ToLower(filename[0 : len(filename) - len(extension)])
+	return strings.ToLower(filename[0 : len(filename)-len(extension)])
 }
