@@ -13,6 +13,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"syscall"
 )
 
 //ExternalModule caches all the files within the search path
@@ -47,21 +48,26 @@ func (external ExternalModule) Call(moduleName string, event Event.Event) (*Resu
 	cmd := exec.Command(external.modules[moduleName], event.String())
 	var out bytes.Buffer
 	cmd.Stdout = &out
-	err := cmd.Run()
-	if err != nil {
-		return nil, err
-	}
+	runtimeErr := cmd.Run()
+	var moduleResult Result
 
 	//TODO: get returncode
-	var moduleResult Result
 	if len(out.Bytes()) != 0 {
-		err = json.Unmarshal(out.Bytes(), &moduleResult)
-		if err != nil {
+		if err := json.Unmarshal(out.Bytes(), &moduleResult); err != nil {
 			return nil, err
 		}
 	}
 
-	return &moduleResult, err
+	if runtimeErr != nil {
+		returnCode := runtimeErr.(*exec.ExitError).Sys().(syscall.WaitStatus).ExitStatus()
+		if &moduleResult == nil{
+			moduleResult = Result{ReturnCode:returnCode}
+		}else{
+			moduleResult.ReturnCode = returnCode
+		}
+	}
+
+	return &moduleResult, runtimeErr
 }
 
 func (external ExternalModule) doesModuleExist(moduleName string) bool {
@@ -90,5 +96,5 @@ func (external *ExternalModule) searchModules() {
 
 func getFilename(filename string) string {
 	extension := filepath.Ext(filename)
-	return strings.ToLower(filename[0 : len(filename)-len(extension)])
+	return strings.ToLower(filename[0 : len(filename) - len(extension)])
 }
