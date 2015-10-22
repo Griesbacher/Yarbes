@@ -21,5 +21,6 @@ Commandline Parameter:
 	flag.StringVar(&clientConfigPath, "clientConfigPath", "clientConfig.gcfg", "path to the client config file")
 	flag.StringVar(&cpuProfile, "pprof", "", "write cpu profile to given file")
 	flag.Parse()
+
 	bin.Server(serverConfigPath, clientConfigPath, clientConfigPath)
 }

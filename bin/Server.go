@@ -14,11 +14,12 @@ import (
 	"runtime/pprof"
 	"syscall"
 	"time"
+	"encoding/gob"
 )
 
 //Server start a server config depending on the config file
 func Server(serverConfigPath, clientConfigPath, cpuProfile string) {
-
+	gob.Register(map[string]interface{}{})
 	if cpuProfile != "" {
 		f, err := os.Create(cpuProfile)
 		if err != nil {
@@ -86,7 +87,9 @@ func Server(serverConfigPath, clientConfigPath, cpuProfile string) {
 	fmt.Println("Everything's ready!")
 	//wait for the end to come
 	<-quit
-	pprof.StopCPUProfile()
+	if cpuProfile != "" {
+		pprof.StopCPUProfile()
+	}
 	fmt.Println("Bye")
 }
 

@@ -13,5 +13,6 @@
 #in this case the last Rulename and Condition are taken from the last line
 
 Regel1;_[`source`] != `nagios`;echo;last=true
-Regel2;_[`type`] &^ `.*ALERT`;echo;last=false
+#Regel2;_[`type`] &^ `.*ALERT`;echo;last=false
+#Regel3;1==1;rpc(echo);last=false
 #                            ;;mail;last=true

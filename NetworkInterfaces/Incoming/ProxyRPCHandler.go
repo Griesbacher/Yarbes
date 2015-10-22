@@ -1,7 +1,6 @@
 package Incoming
 
 import (
-	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/Module"
 	"github.com/griesbacher/SystemX/NetworkInterfaces"
 )
@@ -18,11 +17,10 @@ func (handler *ProxyRPCHandler) Call(call *NetworkInterfaces.RPCCall, result *Mo
 	} else if result == nil {
 		return ErrorResultWasNil
 	}
-	newEvent, err := Event.NewEventFromBytes([]byte(call.EventAsString))
-	if err != nil {
-		return err
-	}
+	callResult, err := handler.external.Call(call.Module, call.EventAsString)
+	result.Event = callResult.Event
 
-	result, err = handler.external.Call(call.Module, *newEvent)
+	result.ReturnCode = callResult.ReturnCode
+	result.LogMessages = callResult.LogMessages
 	return err
 }

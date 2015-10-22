@@ -6,7 +6,7 @@
 
 [RuleSystem]
     Enabled         = true
-    ModulePath      = "Module"
+    ModulePath      = "External"
     Rulefile        = "ruleFile.rule"
     Worker          = 1
     RPCInterface    = "127.0.0.1:8000"
@@ -18,4 +18,4 @@
 [Proxy]
     Enabled         = true
     RPCInterface    = "127.0.0.1:8000"
-    ModuleFolder    = External
+    ModuleFolder    = "External"

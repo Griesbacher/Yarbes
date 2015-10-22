@@ -9,6 +9,7 @@ import (
 	"github.com/griesbacher/SystemX/TLS"
 	"net/rpc"
 	"time"
+	"github.com/griesbacher/SystemX/Module"
 )
 
 //RPCInterface represents a outgoing RPC connection, with which a rpc.Client can be created
@@ -103,4 +104,18 @@ func (rpcI RPCInterface) SendMessages(messages *[]*LogServer.LogMessage) (err er
 		return err
 	}
 	return result.Err
+}
+
+//MakeCall executes a given Module on the other side
+func (rpcI RPCInterface) MakeCall(command string, event []byte) (err error, result *Module.Result) {
+	defer func() {
+		if rec := recover(); rec != nil {
+			err = rec.(error)
+		}
+	}()
+	result = new(Module.Result)
+	call := &NetworkInterfaces.RPCCall{RPCEvent:&NetworkInterfaces.RPCEvent{EventAsString:string(event)}, Module:command}
+	err = rpcI.client.Call("ProxyRPCHandler.Call", call, &result)
+	return err, result
+
 }

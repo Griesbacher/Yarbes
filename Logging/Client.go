@@ -128,12 +128,12 @@ func (client Client) Error(v ...interface{}) {
 }
 
 func appendStackToMessage(v ...interface{}) string {
-	buf := make([]byte, 1<<16)
+	buf := make([]byte, 1 << 16)
 	stackSize := runtime.Stack(buf, true)
 	stack := fmt.Sprintf("%s\n", string(buf[0:stackSize]))
-	if stackSize > 1000{
+	if stackSize > 1000 {
 		f, _ := os.Create("error_dump")
-		f.WriteString(stack)
+		f.WriteString(fmt.Sprintf("%s\n%s", v, stack))
 		stack += "\n\ndumped to file"
 	}
 	return fmt.Sprintf("%s\n%s", v, stack)

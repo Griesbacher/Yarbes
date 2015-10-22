@@ -94,7 +94,7 @@ func (collector *Collector) work() {
 					} else {
 						queryRunning = false
 					}
-				case <-time.After(time.Duration(15) * time.Second):
+				case <-time.After(time.Duration(30) * time.Second):
 					collector.logger.Debug("Livestatus collector timed out")
 				case <-collector.quit:
 					collector.quit <- true

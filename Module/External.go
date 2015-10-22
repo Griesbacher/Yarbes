@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/Event"
 	"io/ioutil"
 	"os/exec"
 	"path"
@@ -37,7 +36,7 @@ func NewExternalModule() *ExternalModule {
 }
 
 //Call tries to execute the given Module with the given Event and returns the whole output as Result
-func (external ExternalModule) Call(moduleName string, event Event.Event) (*Result, error) {
+func (external ExternalModule) Call(moduleName string, event string) (*Result, error) {
 	if !external.doesModuleExist(moduleName) {
 		external.searchModules()
 		if !external.doesModuleExist(moduleName) {
@@ -45,7 +44,7 @@ func (external ExternalModule) Call(moduleName string, event Event.Event) (*Resu
 		}
 	}
 
-	cmd := exec.Command(external.modules[moduleName], event.String())
+	cmd := exec.Command(external.modules[moduleName], event)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	runtimeErr := cmd.Run()

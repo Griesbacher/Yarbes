@@ -79,7 +79,7 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 
 		fmt.Println(valid)
 		if valid {
-			moduleResult, err := rule.externalModule.Call(line.command, currentEvent)
+			moduleResult, err := rule.externalModule.Call(line.command, currentEvent.String())
 			if err != nil {
 				rule.LogClient.Error(err)
 			} else {

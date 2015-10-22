@@ -1,15 +1,1 @@
-[TLS]
-    Cert     = "certs/client.crt"
-    Key      = "certs/client.key"
-    CaCert   = "certs/ca.crt"
-
-[Backend]
-    RPCInterface = "127.0.0.1:8000"
-
-[LogServer]
-    RPCInterface = "127.0.0.1:8000"
-
-[Livestatus]
-    Enable  = true
-    Type    = "tcp"
-    Address = "10.0.15.239:6555"
+[TLS]    Cert     = "certs/client.crt"    Key      = "certs/client.key"    CaCert   = "certs/ca.crt"[Backend]    RPCInterface = "127.0.0.1:8000"[LogServer]    RPCInterface = "127.0.0.1:8000"[Livestatus]    Enable  = true    Type    = "tcp"    Address = "10.0.15.239:6555"
