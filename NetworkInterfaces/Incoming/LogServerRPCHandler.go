@@ -12,6 +12,12 @@ type LogServerRPCHandler struct {
 
 //SendMessages takes a list of LogMessages
 func (handler *LogServerRPCHandler) SendMessages(messages *[]*LogServer.LogMessage, result *NetworkInterfaces.RPCResult) error {
+	if messages == nil {
+		return ErrorInputWasNil
+	} else if result == nil {
+		return ErrorResultWasNil
+	}
+
 	for _, message := range *messages {
 		handler.SendMessage(message, result)
 	}

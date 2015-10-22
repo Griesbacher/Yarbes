@@ -1,31 +1,20 @@
 package bin
 
 import (
-	"flag"
 	"fmt"
 	"github.com/griesbacher/SystemX/Client/Livestatus"
 	"github.com/griesbacher/SystemX/Config"
 	"github.com/griesbacher/SystemX/Logging"
 	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
-	"os"
-	"time"
 	"log"
-"runtime/pprof"
+	"os"
+	"runtime/pprof"
+	"time"
 )
 
 //Client starts a example client
-func Client() {
-	var configPath string
-	var cpuProfile string
-	flag.Usage = func() {
-		fmt.Println(`SystemX by Philip Griesbacher @ 2015
-Commandline Parameter:
--configPath Path to the config file. If no file path is given the default is ./serverConfig.gcfg.
-		`)
-	}
-	flag.StringVar(&configPath, "configPath", "clientConfig.gcfg", "path to the config file")
-	flag.StringVar(&cpuProfile, "cpuprofile", "", "write cpu profile to file")
-	flag.Parse()
+func Client(configPath, cpuProfile string) {
+
 	if cpuProfile != "" {
 		f, err := os.Create(cpuProfile)
 		if err != nil {

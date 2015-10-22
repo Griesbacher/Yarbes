@@ -71,7 +71,7 @@ func (rpcI *RPCInterface) serve() {
 			if isClientOnBlackList(sub.CommonName) {
 				fmt.Println(sub.CommonName, " is blacklisted")
 				conn.Close()
-				break
+				continue
 			}
 		}
 		go func() {

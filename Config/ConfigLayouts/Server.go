@@ -19,4 +19,9 @@ type Server struct {
 		Enabled      bool
 		RPCInterface string
 	}
+	Proxy struct {
+		Enabled      bool
+		RPCInterface string
+		ModuleFolder string
+	}
 }

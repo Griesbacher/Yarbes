@@ -6,6 +6,7 @@ import (
 	"github.com/griesbacher/SystemX/Config"
 	"github.com/griesbacher/SystemX/Event"
 	"github.com/griesbacher/SystemX/Logging"
+	"github.com/griesbacher/SystemX/Tools/Strings"
 	"time"
 )
 
@@ -78,7 +79,7 @@ func (collector *Collector) work() {
 				case line, alive := <-result:
 					if alive {
 						newCache = append(newCache, fmt.Sprint(line))
-						if !contains(oldCache, fmt.Sprint(line)) {
+						if !Strings.Contains(oldCache, fmt.Sprint(line)) {
 							fmt.Println("-->", line)
 							jsonEvent := collector.convertQueryResultToJSON(line)
 							collector.sendEvent(jsonEvent)
@@ -117,15 +118,6 @@ func (collector Collector) sendEvent(event []byte) {
 
 func addTimestampToLivestatusQuery(query string, durration time.Duration) string {
 	return fmt.Sprintf(query, time.Now().Add((durration+time.Duration(1)*time.Second)*-2).Unix())
-}
-
-func contains(hay []string, needle string) bool {
-	for _, a := range hay {
-		if a == needle {
-			return true
-		}
-	}
-	return false
 }
 
 func (collector Collector) convertQueryResultToJSON(queryLine []string) []byte {
