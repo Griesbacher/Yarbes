@@ -51,7 +51,6 @@ func (external ExternalModule) Call(moduleName string, event Event.Event) (*Resu
 	runtimeErr := cmd.Run()
 	var moduleResult Result
 
-	//TODO: get returncode
 	if len(out.Bytes()) != 0 {
 		if err := json.Unmarshal(out.Bytes(), &moduleResult); err != nil {
 			return nil, err

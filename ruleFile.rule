@@ -14,4 +14,4 @@
 
 Regel1;_[`source`] != `nagios`;echo;last=true
 Regel2;_[`type`] &^ `.*ALERT`;echo;last=false
-                            ;;mail;last=true
+#                            ;;mail;last=true

@@ -12,12 +12,15 @@ import (
 	"reflect"
 	"syscall"
 	"time"
+	"log"
+	"runtime/pprof"
 )
 
 //Server start a server config depending on the config file
 func Server() {
 	var serverConfigPath string
 	var clientConfigPath string
+	var cpuProfile string
 	flag.Usage = func() {
 		fmt.Println(`SystemX by Philip Griesbacher @ 2015
 Commandline Parameter:
@@ -27,7 +30,16 @@ Commandline Parameter:
 	}
 	flag.StringVar(&serverConfigPath, "serverConfigPath", "serverConfig.gcfg", "path to the server config file")
 	flag.StringVar(&clientConfigPath, "clientConfigPath", "clientConfig.gcfg", "path to the client config file")
+	flag.StringVar(&cpuProfile, "cpuprofile", "", "write cpu profile to file")
 	flag.Parse()
+	if cpuProfile != "" {
+		f, err := os.Create(cpuProfile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
 	Config.InitServerConfig(serverConfigPath)
 	Config.InitClientConfig(clientConfigPath)
 
@@ -71,16 +83,17 @@ Commandline Parameter:
 	interruptChannel := make(chan os.Signal, 1)
 	signal.Notify(interruptChannel, syscall.SIGINT)
 	signal.Notify(interruptChannel, syscall.SIGTERM)
+	quit := make(chan bool)
 	go func() {
 		<-interruptChannel
 		cleanUp(stoppables)
-		os.Exit(1)
+		quit <- true
 	}()
 	fmt.Println("Everything's ready!")
 	//wait for the end to come
-	for {
-		time.Sleep(time.Duration(5) * time.Second)
-	}
+	<-quit
+	pprof.StopCPUProfile()
+	fmt.Println("Bye")
 }
 
 func cleanUp(itemsToStop []Stoppable) {

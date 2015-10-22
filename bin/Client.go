@@ -9,11 +9,14 @@ import (
 	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
 	"os"
 	"time"
+	"log"
+"runtime/pprof"
 )
 
 //Client starts a example client
 func Client() {
 	var configPath string
+	var cpuProfile string
 	flag.Usage = func() {
 		fmt.Println(`SystemX by Philip Griesbacher @ 2015
 Commandline Parameter:
@@ -21,7 +24,16 @@ Commandline Parameter:
 		`)
 	}
 	flag.StringVar(&configPath, "configPath", "clientConfig.gcfg", "path to the config file")
+	flag.StringVar(&cpuProfile, "cpuprofile", "", "write cpu profile to file")
 	flag.Parse()
+	if cpuProfile != "" {
+		f, err := os.Create(cpuProfile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
 	Config.InitClientConfig(configPath)
 
 	var logger *Logging.Client
