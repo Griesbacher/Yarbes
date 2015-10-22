@@ -12,6 +12,7 @@ import (
 	"time"
 )
 
+//Server to test https
 func Server() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(time.Duration(200) * time.Millisecond)

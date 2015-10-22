@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+//Client to test https
 func Client() *http.Client {
 	cert, err := tls.LoadX509KeyPair("certs/client.crt", "certs/client.key")
 	if err != nil {
@@ -37,6 +38,7 @@ func Client() *http.Client {
 
 }
 
+//Request with client
 func Request(client *http.Client, data string) {
 	req, err := http.NewRequest("POST", "https://127.0.0.1:8090/", bytes.NewBuffer([]byte(data)))
 	if err != nil {

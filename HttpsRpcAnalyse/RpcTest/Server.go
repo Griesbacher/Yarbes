@@ -12,6 +12,7 @@ import (
 	"reflect"
 )
 
+//Server to test rpc
 func Server() {
 	if err := rpc.Register(new(Foo)); err != nil {
 		log.Fatal("Failed to register RPC method")
@@ -72,12 +73,14 @@ func handleClient(conn net.Conn) {
 	log.Println("server: conn: closed")
 }
 
+//Result struct
 type Result struct {
 	Data string
 }
-
+//Foo handler
 type Foo bool
 
+//Bar handlerfunction
 func (f *Foo) Bar(args *string, res *Result) error {
 	res.Data = *args
 	log.Printf("Received %q, send %s", *args, res.Data)

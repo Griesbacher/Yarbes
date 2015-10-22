@@ -25,7 +25,6 @@ func Server(serverConfigPath, clientConfigPath, cpuProfile string) {
 			log.Fatal(err)
 		}
 		pprof.StartCPUProfile(f)
-		defer pprof.StopCPUProfile()
 	}
 	Config.InitServerConfig(serverConfigPath)
 	Config.InitClientConfig(clientConfigPath)

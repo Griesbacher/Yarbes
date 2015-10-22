@@ -8,6 +8,7 @@ import (
 	"net/rpc"
 )
 
+//Client to test RPC
 func Client(amountRequests int) {
 	cert, err := tls.LoadX509KeyPair("certs/client.crt", "certs/client.key")
 	if err != nil {
