@@ -32,7 +32,7 @@ func Client(amountRequests int) {
 		log.Fatalf("client: dial: %s", err)
 	}
 	defer conn.Close()
-	log.Println("client: connected to: ", conn.RemoteAddr())
+	//log.Println("client: connected to: ", conn.RemoteAddr())
 	rpcClient := rpc.NewClient(conn)
 	res := new(Result)
 	for i := 0; i < amountRequests; i++ {
@@ -40,5 +40,4 @@ func Client(amountRequests int) {
 			log.Fatal("Failed to call RPC", err)
 		}
 	}
-	log.Printf("Returned result is %s", res.Data)
 }

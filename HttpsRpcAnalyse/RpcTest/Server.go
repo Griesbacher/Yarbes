@@ -4,12 +4,10 @@ import (
 	"crypto/rand"
 	"crypto/tls"
 	"crypto/x509"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net"
 	"net/rpc"
-	"reflect"
 )
 
 //Server to test rpc
@@ -41,36 +39,19 @@ func Server() {
 	if err != nil {
 		log.Fatalf("server: listen: %s", err)
 	}
-	log.Print("server: listening")
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
 			log.Printf("server: accept: %s", err)
 			break
 		}
-		log.Printf("server: accepted from %s", conn.RemoteAddr())
-		/*		tlsconn,ok := conn.(*tls.Conn)
-				if ok{
-					buf := make([]byte, 512)
-					conn.Read(buf)
-					fmt.Println(tlsconn.ConnectionState().PeerCertificates[0].Subject)
-				}
-		*/go handleClient(conn)
+		go handleClient(conn)
 	}
 }
 
 func handleClient(conn net.Conn) {
 	defer conn.Close()
 	rpc.ServeConn(conn)
-	fmt.Println("---")
-	fmt.Println(reflect.TypeOf(conn))
-	tlsconn, ok := conn.(*tls.Conn)
-	if ok {
-		//			buf := make([]byte, 512)
-		//			conn.Read(buf)
-		fmt.Println(tlsconn.ConnectionState())
-	}
-	log.Println("server: conn: closed")
 }
 
 //Result struct
@@ -84,7 +65,5 @@ type Foo bool
 //Bar handlerfunction
 func (f *Foo) Bar(args *string, res *Result) error {
 	res.Data = *args
-	log.Printf("Received %q, send %s", *args, res.Data)
-	//return fmt.Errorf("Whoops, error happened")
 	return nil
 }

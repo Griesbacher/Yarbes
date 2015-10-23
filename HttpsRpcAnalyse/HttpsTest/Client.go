@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/tls"
 	"crypto/x509"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -45,11 +44,10 @@ func Request(client *http.Client, data string) {
 		log.Fatal(err)
 	}
 	resp, err := client.Do(req)
-	robots, err := ioutil.ReadAll(resp.Body)
+	_, err = ioutil.ReadAll(resp.Body)
 	time.Sleep(time.Duration(400) * time.Millisecond)
 	resp.Body.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("<- %s", robots)
 }

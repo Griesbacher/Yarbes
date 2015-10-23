@@ -3,10 +3,8 @@ package HttpsTest
 import (
 	"crypto/tls"
 	"net/http"
-
 	"crypto/rand"
 	"crypto/x509"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"time"
@@ -16,12 +14,11 @@ import (
 func Server() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(time.Duration(200) * time.Millisecond)
-		robots, err := ioutil.ReadAll(r.Body)
+		_, err := ioutil.ReadAll(r.Body)
 		r.Body.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Fprintf(w, string(robots))
 	})
 	cert, err := tls.LoadX509KeyPair("certs/server.crt", "certs/server.key")
 	if err != nil {
