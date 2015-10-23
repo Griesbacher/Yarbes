@@ -1,12 +1,12 @@
 package HttpsTest
 
 import (
-	"crypto/tls"
-	"net/http"
 	"crypto/rand"
+	"crypto/tls"
 	"crypto/x509"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"time"
 )
 

@@ -7,11 +7,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 )
 
 //Client to test https
-func Client() *http.Client {
+func Client(loops int) {
 	cert, err := tls.LoadX509KeyPair("certs/client.crt", "certs/client.key")
 	if err != nil {
 		log.Fatalf("client: loadkeys: %s", err)
@@ -33,21 +32,21 @@ func Client() *http.Client {
 		TLSClientConfig:    &config,
 		DisableCompression: true,
 	}
-	return &http.Client{Transport: tr}
-
-}
-
-//Request with client
-func Request(client *http.Client, data string) {
-	req, err := http.NewRequest("POST", "https://127.0.0.1:8090/", bytes.NewBuffer([]byte(data)))
-	if err != nil {
-		log.Fatal(err)
-	}
-	resp, err := client.Do(req)
-	_, err = ioutil.ReadAll(resp.Body)
-	time.Sleep(time.Duration(400) * time.Millisecond)
-	resp.Body.Close()
-	if err != nil {
-		log.Fatal(err)
+	client := &http.Client{Transport: tr}
+	data := "test string"
+	for i := 0; i < loops; i++ {
+		req, err := http.NewRequest("POST", "https://127.0.0.1:8090/", bytes.NewBuffer([]byte(data)))
+		if err != nil {
+			panic(err)
+		}
+		resp, err := client.Do(req)
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+		_, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
