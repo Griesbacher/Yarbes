@@ -1,14 +1,15 @@
 package main
 
 import (
-	"os"
-	"fmt"
-	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
-	"strings"
+	"encoding/gob"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/griesbacher/SystemX/Config"
-	"encoding/gob"
+	"github.com/griesbacher/SystemX/Module"
+	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
+	"os"
+	"strings"
 )
 
 func main() {
@@ -27,11 +28,12 @@ func main() {
 	}
 	rpcClient.Connect()
 
-	err, result := rpcClient.MakeCall(args[2], []byte(jsonString))
+	result, err := rpcClient.MakeCall(args[2], []byte(jsonString))
 	if err != nil {
 		panic(err)
 	}
 	rpcClient.Disconnect()
+	result.Messages = append(result.Messages, Module.Message{Severity: "debug", Message: fmt.Sprintf("This event was sent over rpc: %s", result.Event), Source: "RPC Module"})
 	jsonBytes, err := json.Marshal(result)
 	if err != nil {
 		panic(err)

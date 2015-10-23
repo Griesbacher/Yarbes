@@ -36,7 +36,7 @@ func NewExternalModule() *ExternalModule {
 }
 
 //Call tries to execute the given Module with the given Event and returns the whole output as Result
-func (external ExternalModule) Call(moduleName string, event string) (*Result, error) {
+func (external ExternalModule) Call(moduleName, args, event string) (*Result, error) {
 	if !external.doesModuleExist(moduleName) {
 		external.searchModules()
 		if !external.doesModuleExist(moduleName) {
@@ -44,7 +44,7 @@ func (external ExternalModule) Call(moduleName string, event string) (*Result, e
 		}
 	}
 
-	cmd := exec.Command(external.modules[moduleName], event)
+	cmd := exec.Command(external.modules[moduleName], event, args)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	runtimeErr := cmd.Run()
@@ -55,7 +55,6 @@ func (external ExternalModule) Call(moduleName string, event string) (*Result, e
 			return nil, err
 		}
 	}
-
 	if runtimeErr != nil {
 		returnCode := runtimeErr.(*exec.ExitError).Sys().(syscall.WaitStatus).ExitStatus()
 		if &moduleResult == nil {

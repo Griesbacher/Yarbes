@@ -5,11 +5,11 @@ import (
 	"errors"
 	"github.com/griesbacher/SystemX/Config"
 	"github.com/griesbacher/SystemX/Logging/LogServer"
+	"github.com/griesbacher/SystemX/Module"
 	"github.com/griesbacher/SystemX/NetworkInterfaces"
 	"github.com/griesbacher/SystemX/TLS"
 	"net/rpc"
 	"time"
-	"github.com/griesbacher/SystemX/Module"
 )
 
 //RPCInterface represents a outgoing RPC connection, with which a rpc.Client can be created
@@ -107,14 +107,14 @@ func (rpcI RPCInterface) SendMessages(messages *[]*LogServer.LogMessage) (err er
 }
 
 //MakeCall executes a given Module on the other side
-func (rpcI RPCInterface) MakeCall(command string, event []byte) (err error, result *Module.Result) {
+func (rpcI RPCInterface) MakeCall(command string, event []byte) (result *Module.Result, err error) {
 	defer func() {
 		if rec := recover(); rec != nil {
 			err = rec.(error)
 		}
 	}()
 	result = new(Module.Result)
-	call := &NetworkInterfaces.RPCCall{RPCEvent:&NetworkInterfaces.RPCEvent{EventAsString:string(event)}, Module:command}
+	call := &NetworkInterfaces.RPCCall{RPCEvent: &NetworkInterfaces.RPCEvent{EventAsString: string(event)}, Module: command}
 	err = rpcI.client.Call("ProxyRPCHandler.Call", call, &result)
 	return err, result
 

@@ -77,6 +77,7 @@ func handleClient(conn net.Conn) {
 type Result struct {
 	Data string
 }
+
 //Foo handler
 type Foo bool
 

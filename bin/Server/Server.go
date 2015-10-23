@@ -22,5 +22,5 @@ Commandline Parameter:
 	flag.StringVar(&cpuProfile, "pprof", "", "write cpu profile to given file")
 	flag.Parse()
 
-	bin.Server(serverConfigPath, clientConfigPath, clientConfigPath)
+	bin.Server(serverConfigPath, clientConfigPath, cpuProfile)
 }

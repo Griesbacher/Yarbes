@@ -17,10 +17,10 @@ func (handler *ProxyRPCHandler) Call(call *NetworkInterfaces.RPCCall, result *Mo
 	} else if result == nil {
 		return ErrorResultWasNil
 	}
-	callResult, err := handler.external.Call(call.Module, call.EventAsString)
+	callResult, err := handler.external.Call(call.Module, "", call.EventAsString)
 	result.Event = callResult.Event
 
-	result.ReturnCode = callResult.ReturnCode
-	result.LogMessages = callResult.LogMessages
+	result.RemoteReturnCode = callResult.ReturnCode
+	result.Messages = callResult.Messages
 	return err
 }

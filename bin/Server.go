@@ -1,6 +1,7 @@
 package bin
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/griesbacher/SystemX/Config"
 	"github.com/griesbacher/SystemX/Logging/LogServer"
@@ -14,7 +15,6 @@ import (
 	"runtime/pprof"
 	"syscall"
 	"time"
-	"encoding/gob"
 )
 
 //Server start a server config depending on the config file

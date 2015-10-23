@@ -37,6 +37,11 @@ func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
 
 	lines := []RuleLine{}
 	for _, elements := range records {
+		command, args, err := parseCommand(elements[2])
+		if err != nil {
+			return nil, err
+		}
+
 		if len(elements[0]) == 0 && len(elements[1]) == 0 {
 			if len(lines) == 0 {
 				return nil, fmt.Errorf("The first rule can not referance back")
@@ -44,14 +49,16 @@ func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
 			lastRule := lines[len(lines)-1]
 			lines = append(lines, RuleLine{name: lastRule.name,
 				condition: lastRule.condition,
-				command:   elements[2],
+				command:   command,
+				args:      args,
 				flags:     helper.StringToMap(elements[3], ",", "="),
 			})
 		} else {
 			lines = append(lines,
 				RuleLine{name: elements[0],
 					condition: elements[1],
-					command:   elements[2],
+					command:   command,
+					args:      args,
 					flags:     helper.StringToMap(elements[3], ",", "="),
 				})
 		}
@@ -79,12 +86,12 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 
 		fmt.Println(valid)
 		if valid {
-			moduleResult, err := rule.externalModule.Call(line.command, currentEvent.String())
+			moduleResult, err := rule.externalModule.Call(line.command, line.args, currentEvent.String())
 			if err != nil {
 				rule.LogClient.Error(err)
 			} else {
 				if moduleResult != nil {
-					rule.LogClient.Debug(*moduleResult)
+					rule.LogClient.Debug("Module Result: ", *moduleResult)
 					//If the module provides a new Event replace the old one
 					if moduleResult.Event != nil {
 						var newEvent *Event.Event

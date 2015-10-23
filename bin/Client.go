@@ -38,10 +38,10 @@ func Client(configPath, cpuProfile string) {
 		logger.Error(err)
 		os.Exit(2)
 	}
-	/*delay := time.Duration(5) * time.Second
+	delay := time.Duration(5) * time.Second
 	var event = []byte(`{"Hallo": "Delayed", "Start":"` + time.Now().Format(time.RFC3339) + `"}`)
 	eventRPC.CreateDelayedEvent(event, &delay)
-	*/
+
 	logger.Debug("Start")
 	livestatus := Livestatus.NewCollector(*logger, eventRPC)
 	livestatus.Start()
