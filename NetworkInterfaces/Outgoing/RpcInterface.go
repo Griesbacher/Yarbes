@@ -116,6 +116,6 @@ func (rpcI RPCInterface) MakeCall(command string, event []byte) (result *Module.
 	result = new(Module.Result)
 	call := &NetworkInterfaces.RPCCall{RPCEvent: &NetworkInterfaces.RPCEvent{EventAsString: string(event)}, Module: command}
 	err = rpcI.client.Call("ProxyRPCHandler.Call", call, &result)
-	return err, result
+	return  result, err
 
 }
