@@ -17,13 +17,13 @@ func main() {
 	if len(os.Args) > 1 {
 		Config.InitMailConfig("Module/External/Mail/mail.gcfg")
 		con := Config.GetMailConfig()
-		Sendmail(mail.Address{"philip", "griesbacher@consol.de"}, "mail by SystemX", os.Args[1], con, true)
+		Sendmail(mail.Address{Name: "philip", Address: "griesbacher@consol.de"}, "mail by SystemX", os.Args[1], con, true)
 	}
 }
 
 //Sendmail sends a email to the given address, useTLS can be used for encryption
 func Sendmail(to mail.Address, subj, body string, config *ConfigLayouts.Mail, useTLS bool) {
-	from := mail.Address{config.Mail.FromName, config.Mail.FromAddress}
+	from := mail.Address{Name: config.Mail.FromName, Address: config.Mail.FromAddress}
 	headers := make(map[string]string)
 	headers["From"] = from.String()
 	headers["To"] = to.String()
