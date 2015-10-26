@@ -11,17 +11,21 @@ import (
 )
 
 func main() {
-
 	if len(os.Args) < 3 {
 		panic("arg1: http|rpc|server ,arg2:rounds, cpuprofile")
 	}
 
 	if len(os.Args) > 3 && os.Args[3] != "" {
-		f, err := os.Create(os.Args[3])
+		cpu, err := os.Create(os.Args[3] + ".cpu")
 		if err != nil {
 			log.Fatal(err)
 		}
-		pprof.StartCPUProfile(f)
+		heap, err := os.Create(os.Args[3] + ".heap")
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(cpu)
+		pprof.WriteHeapProfile(heap)
 		defer pprof.StopCPUProfile()
 	}
 
