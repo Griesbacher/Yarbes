@@ -71,13 +71,3 @@ func GenerateClientTLSConfig(clientCrt, clientKey, caCert string) *tls.Config {
 	config.BuildNameToCertificate()
 	return &config
 }
-
-func findTlsCipherSuites() (result []uint16) {
-	result = []uint16{}
-	defer func() {
-		if rec := recover(); rec != nil {
-		}
-	}()
-
-	return result
-}
