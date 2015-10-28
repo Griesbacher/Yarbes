@@ -15,8 +15,8 @@ type ConditionParser struct {
 }
 
 //ParseStringChannel parses the string and communicates through channels, if there is an error the result is irrelevant
-func (p ConditionParser) ParseStringChannel(condition string, jsonData interface{}, output chan bool, errors chan error) {
-	result, err := p.ParseString(condition, jsonData)
+func (p ConditionParser) ParseStringChannel(condition string, jsonData interface{}, eventMetadata map[string]interface{}, output chan bool, errors chan error) {
+	result, err := p.ParseString(condition, jsonData, eventMetadata)
 	for i := 0; i < 2; i++ {
 		select {
 		case output <- result:
@@ -26,8 +26,8 @@ func (p ConditionParser) ParseStringChannel(condition string, jsonData interface
 }
 
 //ParseString parses the string and JSON object, if there is an error the result is irrelevant
-func (p ConditionParser) ParseString(condition string, jsonData interface{}) (bool, error) {
-	data := &dataStore{data: jsonData, stack: []ast.Node{}, result: []bool{}, ignoreNextX: 0}
+func (p ConditionParser) ParseString(condition string, jsonData interface{}, eventMetadata map[string]interface{}) (bool, error) {
+	data := &dataStore{data: jsonData, eventMetadata: eventMetadata, stack: []ast.Node{}, result: []bool{}, ignoreNextX: 0}
 	tree, err := parser.ParseExpr(condition)
 	if err != nil {
 		return false, err

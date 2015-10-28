@@ -73,9 +73,10 @@ func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
 //EvaluateJSON will be called if a new Event occurred an the rulefile will be executed
 func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 	currentEvent := event
+	eventMetadata := map[string]interface{}{"executedLines": 0}
 	for _, line := range rule.lines {
 		fmt.Print(line.name + " ")
-		valid, err := line.EvaluateLine(currentEvent)
+		valid, err := line.EvaluateLine(currentEvent, eventMetadata)
 		if err != nil {
 			if err == ConditionParser.ErrElementNotFound {
 				valid = false
@@ -86,6 +87,7 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 
 		fmt.Println(valid)
 		if valid {
+			eventMetadata["executedLines"] = eventMetadata["executedLines"].(int) + 1
 			moduleResult, err := rule.externalModule.Call(line.command, line.args, currentEvent.String())
 			if err != nil {
 				rule.LogClient.Error(err)

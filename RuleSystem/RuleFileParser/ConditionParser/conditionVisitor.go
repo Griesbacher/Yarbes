@@ -157,38 +157,40 @@ func (v conditionVisitor) compareBasicLitNumber(lit1, lit2 *ast.BasicLit, op str
 }
 
 func (v conditionVisitor) genBasicLitFromIndexExpr(ident *ast.Ident) *ast.BasicLit {
-	if ident.Name != "" { //TODO: Namen für datenstrucktur überlegen
-		currentLevel, err := v.searchForData()
-		if err != nil {
-			v.store.err = err
-			return nil
+	currentLevel, err := v.searchForData(ident.Name)
+	if err != nil {
+		v.store.err = err
+		return nil
+	}
+	switch value := currentLevel.(type) {
+	case string:
+		return &ast.BasicLit{ValuePos: token.NoPos, Kind: token.STRING, Value: "\"" + value + "\""}
+	case int, float32, float64:
+		asString := fmt.Sprint(value)
+		if strings.Contains(asString, ".") {
+			return &ast.BasicLit{ValuePos: token.NoPos, Kind: token.FLOAT, Value: asString}
 		}
-		switch value := currentLevel.(type) {
-		case string:
-			return &ast.BasicLit{ValuePos: token.NoPos, Kind: token.STRING, Value: "\"" + value + "\""}
-		case int, float32, float64:
-			asString := fmt.Sprint(value)
-			if strings.Contains(asString, ".") {
-				return &ast.BasicLit{ValuePos: token.NoPos, Kind: token.FLOAT, Value: asString}
-			}
 
-			return &ast.BasicLit{ValuePos: token.NoPos, Kind: token.INT, Value: asString}
-		case nil:
-			v.store.err = ErrElementNotFound
-			return nil
-		default:
-			v.store.err = fmt.Errorf("No suitable type found... %s", reflect.TypeOf(currentLevel))
-			return nil
-		}
-	} else {
-		v.store.err = fmt.Errorf("Given datastructure name is wrong. Given: %s Expected", ident.Name)
+		return &ast.BasicLit{ValuePos: token.NoPos, Kind: token.INT, Value: asString}
+	case nil:
+		v.store.err = ErrElementNotFound
+		return nil
+	default:
+		v.store.err = fmt.Errorf("No suitable type found... %s", reflect.TypeOf(currentLevel))
 		return nil
 	}
 }
 
-func (v conditionVisitor) searchForData() (interface{}, error) {
+func (v conditionVisitor) searchForData(dataType string) (interface{}, error) {
 	var currentLevel interface{}
-	currentLevel = v.store.data
+	switch dataType {
+	case "_":
+		currentLevel = v.store.data
+	case "e":
+		currentLevel = v.store.eventMetadata
+	default:
+		return nil, fmt.Errorf("Given datastructure name is wrong. Given: %s Expected", dataType)
+	}
 	stackSize := len(v.store.stack) - 1
 	for i := stackSize; i >= 0; i-- {
 		switch s := v.store.stack[i].(type) {

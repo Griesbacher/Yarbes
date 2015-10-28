@@ -28,29 +28,30 @@ var ParseStringData = []struct {
 	{`"a" != "b"`, true},
 	{`"a" != "a"`, false},
 	{`"abba" &^ "a.+a"`, true},
-	{`data["k1"] &^ "v\\d"`, true},
-	{`data["k1"] == "v1"`, true},
-	{`data["k2"] == 10`, true},
-	{`data["k3"][0] == "v4"`, true},
-	{`data["k3"][1] == 12.5`, true},
-	{`data["k3"][2]["k11"] == "v11"`, true},
+	{`_["k1"] &^ "v\\d"`, true},
+	{`_["k1"] == "v1"`, true},
+	{`_["k2"] == 10`, true},
+	{`_["k3"][0] == "v4"`, true},
+	{`_["k3"][1] == 12.5`, true},
+	{`_["k3"][2]["k11"] == "v11"`, true},
 	{`_["k3"][2]["k22"] == "v22"`, true},
-	{`data["k1"]`, true},
-	{`data["zzz"]`, false},
+	{`_["k1"]`, true},
+	{`_["zzz"]`, false},
 	{"`a` == `a`", true},
 	{"`a` == `b`", false},
 	{"`a` != `b`", true},
 	{"`a` != `a`", false},
 	{"`abba` &^ `a.+a`", true},
-	{"data[`k1`] &^ `v\\d`", true},
-	{"data[`k1`] == `v1`", true},
-	{"data[`k2`] == 10", true},
-	{"data[`k3`][0] == `v4`", true},
-	{"data[`k3`][1] == 12.5", true},
-	{"data[`k3`][2][`k11`] == `v11`", true},
+	{"_[`k1`] &^ `v\\d`", true},
+	{"_[`k1`] == `v1`", true},
+	{"_[`k2`] == 10", true},
+	{"_[`k3`][0] == `v4`", true},
+	{"_[`k3`][1] == 12.5", true},
+	{"_[`k3`][2][`k11`] == `v11`", true},
 	{"_[`k3`][2][`k22`] == `v22`", true},
-	{"data[`k1`]", true},
-	{"data[`zzz`]", false},
+	{"_[`k1`]", true},
+	{"_[`zzz`]", false},
+	{"e[`executedLines`] == 0", true},
 }
 
 func TestParseString(t *testing.T) {
@@ -65,10 +66,11 @@ func TestParseString(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	currentMetaData := map[string]interface{}{"executedLines": 0}
 
 	parser := ConditionParser{}
 	for _, data := range ParseStringData {
-		actual, err := parser.ParseString(data.input, jsonData)
+		actual, err := parser.ParseString(data.input, jsonData, currentMetaData)
 		if actual != data.output && err != nil {
 			t.Errorf("ParseStringData(%s): expected: %t, actual: %t. Err: %s", data.input, data.output, actual, err)
 		}
@@ -87,6 +89,7 @@ func TestParseStringChannel(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	currentMetaData := map[string]interface{}{"executedLines": 0}
 
 	parser := ConditionParser{}
 	var outputData []chan bool
@@ -96,7 +99,7 @@ func TestParseStringChannel(t *testing.T) {
 		e := make(chan error, 1)
 		outputData = append(outputData, c)
 		outputErr = append(outputErr, e)
-		go parser.ParseStringChannel(data.input, jsonData, c, e)
+		go parser.ParseStringChannel(data.input, jsonData, currentMetaData, c, e)
 	}
 	for i, data := range ParseStringData {
 		actual := <-outputData[i]

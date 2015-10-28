@@ -7,11 +7,12 @@ import (
 )
 
 type dataStore struct {
-	data        interface{}
-	stack       []ast.Node
-	result      []bool
-	ignoreNextX int
-	err         error
+	data          interface{}
+	eventMetadata map[string]interface{}
+	stack         []ast.Node
+	result        []bool
+	ignoreNextX   int
+	err           error
 }
 
 func (d *dataStore) appendToStack(node ast.Node) {

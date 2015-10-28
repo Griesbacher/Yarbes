@@ -22,8 +22,8 @@ type RuleLine struct {
 var commandLayout = regexp.MustCompile("(.*?)\\((.*?)\\)")
 
 //EvaluateLine returns if state of the condition and an error if the result is not valid
-func (line RuleLine) EvaluateLine(event Event.Event) (bool, error) {
-	return line.parser.ParseString(line.condition, event.GetDataAsInterface())
+func (line RuleLine) EvaluateLine(event Event.Event, eventMetadata map[string]interface{}) (bool, error) {
+	return line.parser.ParseString(line.condition, event.GetDataAsInterface(), eventMetadata)
 }
 
 //LastLine returns true if the current line is the last line to check
