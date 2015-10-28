@@ -2,7 +2,7 @@ package Config
 
 import (
 	"errors"
-	"github.com/griesbacher/SystemX/Config/ConfigLayouts"
+	"github.com/griesbacher/Yarbes/Config/ConfigLayouts"
 	"gopkg.in/gcfg.v1"
 	"sync"
 )

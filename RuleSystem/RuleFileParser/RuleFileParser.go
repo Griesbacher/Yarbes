@@ -3,11 +3,11 @@ package RuleFileParser
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/Event"
-	"github.com/griesbacher/SystemX/Logging"
-	"github.com/griesbacher/SystemX/Module"
-	"github.com/griesbacher/SystemX/RuleSystem/RuleFileParser/ConditionParser"
+	"github.com/griesbacher/Yarbes/Config"
+	"github.com/griesbacher/Yarbes/Event"
+	"github.com/griesbacher/Yarbes/Logging"
+	"github.com/griesbacher/Yarbes/Module"
+	"github.com/griesbacher/Yarbes/RuleSystem/RuleFileParser/ConditionParser"
 	"github.com/griesbacher/nagflux/helper"
 	"os"
 )

@@ -2,10 +2,10 @@ package bin
 
 import (
 	"fmt"
-	"github.com/griesbacher/SystemX/Client/Livestatus"
-	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/Logging"
-	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
+	"github.com/griesbacher/Yarbes/Client/Livestatus"
+	"github.com/griesbacher/Yarbes/Config"
+	"github.com/griesbacher/Yarbes/Logging"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces/Outgoing"
 	"log"
 	"os"
 	"runtime/pprof"

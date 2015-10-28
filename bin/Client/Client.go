@@ -3,14 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/griesbacher/SystemX/bin"
+	"github.com/griesbacher/Yarbes/bin"
 )
 
 func main() {
 	var configPath string
 	var cpuProfile string
 	flag.Usage = func() {
-		fmt.Println(`SystemX by Philip Griesbacher @ 2015
+		fmt.Println(`Yarbes by Philip Griesbacher @ 2015
 Commandline Parameter:
 -configPath Path to the config file. If no file path is given the default is ./serverConfig.gcfg.
 		`)

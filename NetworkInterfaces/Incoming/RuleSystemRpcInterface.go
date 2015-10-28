@@ -1,8 +1,8 @@
 package Incoming
 
 import (
-	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/RuleSystem"
+	"github.com/griesbacher/Yarbes/Config"
+	"github.com/griesbacher/Yarbes/RuleSystem"
 )
 
 //RuleSystemRPCInterface offers a RPC interface to creates Events

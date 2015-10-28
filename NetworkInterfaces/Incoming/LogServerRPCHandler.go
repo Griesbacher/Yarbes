@@ -1,8 +1,8 @@
 package Incoming
 
 import (
-	"github.com/griesbacher/SystemX/Logging/LogServer"
-	"github.com/griesbacher/SystemX/NetworkInterfaces"
+	"github.com/griesbacher/Yarbes/Logging/LogServer"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces"
 )
 
 //LogServerRPCHandler is a RPC handler which accepts LogMessages

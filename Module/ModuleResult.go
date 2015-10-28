@@ -1,7 +1,7 @@
 package Module
 
 import (
-	"github.com/griesbacher/SystemX/Logging/LogServer"
+	"github.com/griesbacher/Yarbes/Logging/LogServer"
 	"github.com/kdar/factorlog"
 	"strings"
 	"time"

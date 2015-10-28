@@ -1,8 +1,8 @@
 package Incoming
 
 import (
-	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/Logging/LogServer"
+	"github.com/griesbacher/Yarbes/Config"
+	"github.com/griesbacher/Yarbes/Logging/LogServer"
 )
 
 //LogServerRPCInterface is RPC interface which offers logging

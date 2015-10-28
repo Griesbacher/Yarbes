@@ -2,9 +2,9 @@ package Logging
 
 import (
 	"fmt"
-	"github.com/griesbacher/SystemX/Logging/Local"
-	"github.com/griesbacher/SystemX/Logging/LogServer"
-	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
+	"github.com/griesbacher/Yarbes/Logging/Local"
+	"github.com/griesbacher/Yarbes/Logging/LogServer"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces/Outgoing"
 	"github.com/kdar/factorlog"
 	"os"
 	"runtime"

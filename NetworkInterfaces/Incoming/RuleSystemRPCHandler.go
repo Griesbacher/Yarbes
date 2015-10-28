@@ -1,8 +1,8 @@
 package Incoming
 
 import (
-	"github.com/griesbacher/SystemX/Event"
-	"github.com/griesbacher/SystemX/NetworkInterfaces"
+	"github.com/griesbacher/Yarbes/Event"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces"
 )
 
 //RuleSystemRPCHandler RPC handler to create Events

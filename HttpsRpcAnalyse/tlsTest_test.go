@@ -1,8 +1,8 @@
 package main_test
 
 import (
-	"github.com/griesbacher/SystemX/HttpsRpcAnalyse/HttpsTest"
-	"github.com/griesbacher/SystemX/HttpsRpcAnalyse/RpcTest"
+	"github.com/griesbacher/Yarbes/HttpsRpcAnalyse/HttpsTest"
+	"github.com/griesbacher/Yarbes/HttpsRpcAnalyse/RpcTest"
 	"testing"
 )
 

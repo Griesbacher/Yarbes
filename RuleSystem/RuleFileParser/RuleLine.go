@@ -2,8 +2,8 @@ package RuleFileParser
 
 import (
 	"fmt"
-	"github.com/griesbacher/SystemX/Event"
-	"github.com/griesbacher/SystemX/RuleSystem/RuleFileParser/ConditionParser"
+	"github.com/griesbacher/Yarbes/Event"
+	"github.com/griesbacher/Yarbes/RuleSystem/RuleFileParser/ConditionParser"
 	"regexp"
 	"strconv"
 	"strings"

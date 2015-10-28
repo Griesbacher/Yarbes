@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/Module"
-	"github.com/griesbacher/SystemX/NetworkInterfaces/Outgoing"
+	"github.com/griesbacher/Yarbes/Config"
+	"github.com/griesbacher/Yarbes/Module"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces/Outgoing"
 	"os"
 	"strings"
 )

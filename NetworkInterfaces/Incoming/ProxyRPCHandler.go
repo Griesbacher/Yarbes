@@ -1,8 +1,8 @@
 package Incoming
 
 import (
-	"github.com/griesbacher/SystemX/Module"
-	"github.com/griesbacher/SystemX/NetworkInterfaces"
+	"github.com/griesbacher/Yarbes/Module"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces"
 )
 
 //ProxyRPCHandler is a RPC handler which accepts LogMessages

@@ -1,8 +1,8 @@
 package Incoming
 
 import (
-	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/Module"
+	"github.com/griesbacher/Yarbes/Config"
+	"github.com/griesbacher/Yarbes/Module"
 )
 
 //ProxyRPCInterface is RPC interface which offers module execution

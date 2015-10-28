@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/griesbacher/SystemX/bin"
+	"github.com/griesbacher/Yarbes/bin"
 	"time"
 )
 

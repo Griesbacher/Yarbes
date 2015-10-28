@@ -3,11 +3,11 @@ package Outgoing
 import (
 	"crypto/tls"
 	"errors"
-	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/Logging/LogServer"
-	"github.com/griesbacher/SystemX/Module"
-	"github.com/griesbacher/SystemX/NetworkInterfaces"
-	"github.com/griesbacher/SystemX/TLS"
+	"github.com/griesbacher/Yarbes/Config"
+	"github.com/griesbacher/Yarbes/Logging/LogServer"
+	"github.com/griesbacher/Yarbes/Module"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces"
+	"github.com/griesbacher/Yarbes/TLS"
 	"net/rpc"
 	"time"
 )

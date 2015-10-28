@@ -3,8 +3,8 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/Config/ConfigLayouts"
+	"github.com/griesbacher/Yarbes/Config"
+	"github.com/griesbacher/Yarbes/Config/ConfigLayouts"
 	"log"
 	"net"
 	"net/mail"
@@ -17,7 +17,7 @@ func main() {
 	if len(os.Args) > 1 {
 		Config.InitMailConfig("Module/External/Mail/mail.gcfg")
 		con := Config.GetMailConfig()
-		Sendmail(mail.Address{Name: "philip", Address: "griesbacher@consol.de"}, "mail by SystemX", os.Args[1], con, true)
+		Sendmail(mail.Address{Name: "philip", Address: "griesbacher@consol.de"}, "mail by Yarbes", os.Args[1], con, true)
 	}
 }
 

@@ -3,8 +3,8 @@ package Incoming
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/TLS"
+	"github.com/griesbacher/Yarbes/Config"
+	"github.com/griesbacher/Yarbes/TLS"
 	"io"
 	"log"
 	"net/rpc"

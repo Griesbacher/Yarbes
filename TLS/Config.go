@@ -81,4 +81,3 @@ func findTlsCipherSuites() (result []uint16) {
 
 	return result
 }
-

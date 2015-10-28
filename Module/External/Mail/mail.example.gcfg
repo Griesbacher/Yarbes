@@ -1,6 +1,6 @@
 [Mail]
-FromName    = "SystemX"
+FromName    = "Yarbes"
 FromAddress = "systemx@example.com"
 Server      = "smtp.example.com:465"
-Username    = "SystemX"
+Username    = "Yarbes"
 Password    = "0123456789"

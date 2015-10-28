@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/griesbacher/SystemX/Config"
+	"github.com/griesbacher/Yarbes/Config"
 	"io/ioutil"
 	"os/exec"
 	"path"

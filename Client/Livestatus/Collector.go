@@ -2,11 +2,11 @@ package Livestatus
 
 import (
 	"fmt"
-	"github.com/griesbacher/SystemX/Client"
-	"github.com/griesbacher/SystemX/Config"
-	"github.com/griesbacher/SystemX/Event"
-	"github.com/griesbacher/SystemX/Logging"
-	"github.com/griesbacher/SystemX/Tools/Strings"
+	"github.com/griesbacher/Yarbes/Client"
+	"github.com/griesbacher/Yarbes/Config"
+	"github.com/griesbacher/Yarbes/Event"
+	"github.com/griesbacher/Yarbes/Logging"
+	"github.com/griesbacher/Yarbes/Tools/Strings"
 	"time"
 )
 
