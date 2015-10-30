@@ -43,8 +43,9 @@ func (external ExternalModule) Call(moduleName, args, event string) (*Result, er
 			return nil, fmt.Errorf("Module: %s not found", moduleName)
 		}
 	}
-
-	cmd := exec.Command(external.modules[moduleName], event, strings.Split(args, ","))
+	arguments := []string{event}
+	arguments = append(arguments,strings.Split(args, ",")...)
+	cmd := exec.Command(external.modules[moduleName], arguments... )
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	runtimeErr := cmd.Run()
