@@ -1,0 +1,4 @@
+[InfluxDB]
+Server      = "10.0.15.239:8086"
+Username    = "root"
+Password    = "root"

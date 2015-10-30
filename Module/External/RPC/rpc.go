@@ -9,7 +9,6 @@ import (
 	"github.com/griesbacher/Yarbes/Module"
 	"github.com/griesbacher/Yarbes/NetworkInterfaces/Outgoing"
 	"os"
-	"strings"
 )
 
 func main() {
@@ -18,9 +17,8 @@ func main() {
 		os.Exit(1)
 	}
 	jsonString := os.Args[1]
-	args := strings.Split(os.Args[2], ",")
 
-	serverAddress := fmt.Sprintf("%s:%s", args[0], args[1])
+	serverAddress := fmt.Sprintf("%s:%s", os.Args[2], os.Args[3])
 	Config.InitClientConfig("clientConfig.gcfg")
 	rpcClient := Outgoing.NewRPCInterface(serverAddress)
 	if rpcClient == nil {
@@ -28,7 +26,7 @@ func main() {
 	}
 	rpcClient.Connect()
 
-	result, err := rpcClient.MakeCall(args[2], []byte(jsonString))
+	result, err := rpcClient.MakeCall(os.Args[4], []byte(jsonString))
 	if err != nil {
 		panic(err)
 	}

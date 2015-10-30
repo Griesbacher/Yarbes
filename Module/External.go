@@ -44,7 +44,7 @@ func (external ExternalModule) Call(moduleName, args, event string) (*Result, er
 		}
 	}
 
-	cmd := exec.Command(external.modules[moduleName], event, args)
+	cmd := exec.Command(external.modules[moduleName], event, strings.Split(args, ","))
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	runtimeErr := cmd.Run()
@@ -93,5 +93,5 @@ func (external *ExternalModule) searchModules() {
 
 func getFilename(filename string) string {
 	extension := filepath.Ext(filename)
-	return strings.ToLower(filename[0 : len(filename)-len(extension)])
+	return strings.ToLower(filename[0 : len(filename) - len(extension)])
 }
