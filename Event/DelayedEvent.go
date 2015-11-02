@@ -2,7 +2,7 @@ package Event
 
 import "time"
 
-//DelayedEvent is a Event which waits a certain time and then sends itself in the given queue
+//DelayedEvent is an Event which waits a certain time and then sends itself in the given queue
 type DelayedEvent struct {
 	*Event
 	delay       time.Duration
@@ -17,28 +17,28 @@ func NewDelayedEvent(event *Event, delay time.Duration, resultQueue chan Event) 
 }
 
 //Start starts waiting
-func (delayed *DelayedEvent) Start() {
-	go delayed.wait()
+func (dEvent DelayedEvent) Start() {
+	go dEvent.wait()
 }
 
 //Stop cancels the event
-func (delayed DelayedEvent) Stop() {
-	delayed.quit <- true
-	<-delayed.quit
+func (dEvent DelayedEvent) Stop() {
+	dEvent.quit <- true
+	<-dEvent.quit
 }
 
 //IsWaiting returns true if the DelayedEvent has not been sent to the event queue
-func (delayed DelayedEvent) IsWaiting() bool {
-	return delayed.isWaiting
+func (dEvent DelayedEvent) IsWaiting() bool {
+	return dEvent.isWaiting
 }
 
-func (delayed DelayedEvent) wait() {
+func (dEvent *DelayedEvent) wait() {
 	select {
-	case <-delayed.quit:
-		delayed.quit <- true
+	case <-dEvent.quit:
+		dEvent.quit <- true
 		return
-	case <-time.After(delayed.delay):
-		delayed.resultQueue <- *delayed.Event
-		delayed.isWaiting = false
+	case <-time.After(dEvent.delay):
+		dEvent.resultQueue <- *dEvent.Event
+		dEvent.isWaiting = false
 	}
 }
