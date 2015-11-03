@@ -18,6 +18,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"path"
 )
 
 //TablePrefix is the prefix for all new influxdb tables
@@ -48,7 +49,7 @@ Commandline Parameter:
 	flag.StringVar(&clientConfigPath, "clienteConfigPath", "clientConfig.gcfg", "path to the client config file")
 	flag.StringVar(&tableName, "tableName", "t", "tablenamen which will be used to save the statistics")
 	flag.Int64Var(&delay, "delay", 5, "delay in seconds")
-	flag.Int64Var(&level, "level", 2, "when this level is reached a composit event will be created, events per delay")
+	flag.Int64Var(&level, "level", 5, "when this level is reached a composit event will be created, events per delay")
 	flag.BoolVar(&save, "save", false, "true for the original event false for the dummy delay event")
 	flag.StringVar(&messageField, "messageField", "message", "references the filed in which the message can be found")
 	flag.StringVar(&timestampField, "timestampField", "time", "references the filed in which the unixtimestamp can be found")
@@ -106,7 +107,9 @@ Commandline Parameter:
 		os.Exit(10)
 	}
 
-	//TODO: durch filelock absichern
+	lockFilePath := path.Join(os.TempDir(), "EventsPerTime")
+	waitTillFileIsRemoved(lockFilePath)
+
 	if save {
 		eventRPC := Outgoing.NewRPCInterface(Config.GetClientConfig().Backend.RPCInterface)
 		err = eventRPC.Connect()
@@ -118,9 +121,19 @@ Commandline Parameter:
 		addEvent(c, eventTimestamp, eventMessage)
 
 		delay := time.Duration(delay) * time.Second
-		eventRPC.CreateDelayedEvent([]byte(`{"type":"EventsPerTime","`+timestampField+`":`+fmt.Sprint(eventTimestamp)+`}`), &delay)
+		eventRPC.CreateDelayedEvent([]byte(`{"type":"EventsPerTime","` + timestampField + `":` + fmt.Sprint(eventTimestamp) + `}`), &delay)
 	} else {
 		handlePoint(c, eventTimestamp, int(delay), int(level))
+	}
+	os.Remove(lockFilePath)
+}
+
+func waitTillFileIsRemoved(lockFilePath string) {
+	if _, err := os.Stat(lockFilePath); err == nil {
+		time.Sleep(time.Duration(100) * time.Millisecond)
+		waitTillFileIsRemoved(lockFilePath)
+	}else {
+		return
 	}
 }
 
@@ -156,7 +169,7 @@ func notify(a ...interface{}) {
 	}
 	msg += `"`
 	jsonMap[resultField] = msg
-	jsonMap[resultField+"count"] = globalCount
+	jsonMap[resultField + "count"] = globalCount
 	jsonBytes, err := json.Marshal(jsonMap)
 	if err != nil {
 		panic(err)
@@ -225,7 +238,7 @@ func setPointRangeHandled(c client.Client, row models.Row) {
 }
 
 func genEvents(c client.Client) {
-	queryDB(c, "DROP SERIES FROM "+table)
+	queryDB(c, "DROP SERIES FROM " + table)
 	for _, i := range genRange() {
 		for j := 0; j < 2; j++ {
 			addEvent(c, i, "Hallo")
@@ -253,12 +266,12 @@ func addEvent(c client.Client, timestamp int, msg string) {
 func genRange() []int {
 	result := []int{}
 	for j := 0.0; j < 32; j += 2 {
-		diff := math.Sin(j/10) * 100
+		diff := math.Sin(j / 10) * 100
 		length := len(result)
 		if length == 0 {
 			result = append(result, 1)
 		} else {
-			result = append(result, result[length-1]+int(math.Abs(diff-float64(result[length-1]))))
+			result = append(result, result[length - 1] + int(math.Abs(diff - float64(result[length - 1]))))
 		}
 	}
 	return result

@@ -39,10 +39,12 @@ func Client(configPath, cpuProfile string) {
 		os.Exit(2)
 	}
 
-	delayed(eventRPC, 1)
+	//delayed(eventRPC, 1)
+	//delayed(eventRPC, 1)
 
 	logger.Debug("Start")
-	useLivestatus(logger, eventRPC)
+	//useLivestatus(logger, eventRPC)
+	multipleEvents(eventRPC)
 	logger.Debug("Fertig")
 	logger.Disconnect()
 	eventRPC.Disconnect()
@@ -60,4 +62,25 @@ func delayed(eventRPC *Outgoing.RPCInterface, wait int) {
 	var event = []byte(`{"Hallo": "Delayed", "Start":"` + time.Now().Format(time.RFC3339) + `", "hostname":"localhost", "type":"ALERT", "time":` + fmt.Sprintf("%d", time.Now().Unix()) + `}`)
 	eventRPC.CreateDelayedEvent(event, &delay)
 	time.Sleep(delay * 2)
+}
+
+func multipleEvents(eventRPC *Outgoing.RPCInterface) {
+	for i := 0; i < 3; i++ {
+		var event = []byte(`{"hostname":"localhost` + fmt.Sprintf("%d", i) + `", "type":"ALERT", "time":` + fmt.Sprintf("%d", time.Now().Unix()) + `}`)
+		err := eventRPC.CreateEvent(event)
+		if err != nil {
+			panic(err)
+		}
+		time.Sleep(time.Duration(1) * time.Second)
+	}
+	time.Sleep(time.Duration(6) * time.Second)
+	for i := 0; i < 6; i++ {
+		var event = []byte(`{"hostname":"localhost` + fmt.Sprintf("%d", i) + `", "type":"ALERT", "time":` + fmt.Sprintf("%d", time.Now().Unix()) + `}`)
+		err := eventRPC.CreateEvent(event)
+		if err != nil {
+			panic(err)
+		}
+		time.Sleep(time.Duration(500) * time.Millisecond)
+	}
+	time.Sleep(time.Duration(10) * time.Second)
 }

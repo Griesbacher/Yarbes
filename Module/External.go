@@ -54,8 +54,8 @@ func (external ExternalModule) Call(moduleName, args, event string) (*Result, er
 	cmd.Stdout = &out
 	runtimeErr := cmd.Run()
 	var moduleResult Result
-	fmt.Println("in:", external.modules[moduleName], arguments)
-	fmt.Println("out:", string(out.Bytes()))
+	//fmt.Println("in:", external.modules[moduleName], arguments)
+	//fmt.Println("out:", string(out.Bytes()))
 	if len(out.Bytes()) != 0 {
 		if err := json.Unmarshal(out.Bytes(), &moduleResult); err != nil {
 			return nil, err

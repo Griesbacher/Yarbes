@@ -12,12 +12,12 @@
 #it is possible to leave Rulename and Condition empty,
 #in this case the last Rulename and Condition are taken from the last line
 
+ECHO;1==1;echo;
 #Regel1;_[`source`] != `nagios`;echo;last=true
 #Regel2;_[`type`] &^ `.*ALERT`;echo;last=false
 #Regel3;1==1;rpc(127.0.0.1,8000,echo);last=false
 #                            ;;mail;last=true
-ECHO;1==1;echo;
-SaveToDB;_[`type`] &^ `.*ALERT`;eventspertime(-save,-messageField,hostname);
-Delayed;_[`type`] == `EventsPerTime`;eventspertime();
-ECHO-Delayed;_[`type`] == `EventsPerTime`;echo;
-ECHO-ENDE;1==1;echo;
+
+#Make Correlation
+#SaveToDB;_[`type`] &^ `.*ALERT`;eventspertime(-save,-messageField,hostname);
+#Delayed;_[`type`] == `EventsPerTime`;eventspertime();
