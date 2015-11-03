@@ -68,7 +68,7 @@ func (rpcI *RPCInterface) serve() {
 		if tlscon, ok := conn.(*tls.Conn); bytesRead == 1 && ok {
 			state := tlscon.ConnectionState()
 			sub := state.PeerCertificates[0].Subject
-			if isCommonNameOnBlackList(sub.CommonName) || isDnsNameOnBlackList(state.PeerCertificates[0].DNSNames){
+			if isCommonNameOnBlackList(sub.CommonName) || isDnsNameOnBlackList(state.PeerCertificates[0].DNSNames) {
 				fmt.Println(sub.CommonName, " is blacklisted")
 				conn.Close()
 				continue
@@ -99,7 +99,7 @@ func isCommonNameOnBlackList(clientName string) bool {
 
 func isDnsNameOnBlackList(dnsNames []string) bool {
 	for _, dnsName := range dnsNames {
-		if isCommonNameOnBlackList(dnsName){
+		if isCommonNameOnBlackList(dnsName) {
 			return true
 		}
 	}

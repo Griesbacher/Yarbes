@@ -29,4 +29,6 @@ _testmain.go
 zzz_playground
 profile
 Module/External/Mail/mail.gcfg
+Module/External/EventsPerTime/EventsPerTime.gcfg
 HttpsRpcAnalyse/certs
+External/*

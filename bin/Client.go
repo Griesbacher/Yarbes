@@ -38,17 +38,26 @@ func Client(configPath, cpuProfile string) {
 		logger.Error(err)
 		os.Exit(2)
 	}
-	delay := time.Duration(5) * time.Second
-	var event = []byte(`{"Hallo": "Delayed", "Start":"` + time.Now().Format(time.RFC3339) + `"}`)
-	eventRPC.CreateDelayedEvent(event, &delay)
+
+	delayed(eventRPC, 1)
 
 	logger.Debug("Start")
+	useLivestatus(logger, eventRPC)
+	logger.Debug("Fertig")
+	logger.Disconnect()
+	eventRPC.Disconnect()
+}
+
+func useLivestatus(logger *Logging.Client, eventRPC *Outgoing.RPCInterface) {
 	livestatus := Livestatus.NewCollector(*logger, eventRPC)
 	livestatus.Start()
 	time.Sleep(time.Duration(30) * time.Second)
 	livestatus.Stop()
-	logger.Debug("Fertig")
-	logger.Disconnect()
+}
 
-	eventRPC.Disconnect()
+func delayed(eventRPC *Outgoing.RPCInterface, wait int) {
+	delay := time.Duration(wait) * time.Second
+	var event = []byte(`{"Hallo": "Delayed", "Start":"` + time.Now().Format(time.RFC3339) + `", "hostname":"localhost", "type":"ALERT", "time":` + fmt.Sprintf("%d", time.Now().Unix()) + `}`)
+	eventRPC.CreateDelayedEvent(event, &delay)
+	time.Sleep(delay * 2)
 }

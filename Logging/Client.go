@@ -134,7 +134,7 @@ func appendStackToMessage(v ...interface{}) string {
 	if stackSize > 1000 {
 		f, _ := os.Create("error_dump")
 		f.WriteString(fmt.Sprintf("%s\n%s", v, stack))
-		stack += "\n\ndumped to file"
+		return fmt.Sprintf("%s\ndumped to file", v)
 	}
 	return fmt.Sprintf("%s\n%s", v, stack)
 }

@@ -9,3 +9,13 @@ func Contains(hay []string, needle string) bool {
 	}
 	return false
 }
+
+//IndexOf returns the index of a string in a string slice or -1 if not found
+func IndexOf(hay []string, needle string) int {
+	for i, a := range hay {
+		if a == needle {
+			return i
+		}
+	}
+	return -1
+}
