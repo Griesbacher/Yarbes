@@ -15,10 +15,10 @@ import (
 	"math/rand"
 	"net/url"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
-	"path"
 )
 
 //TablePrefix is the prefix for all new influxdb tables
@@ -80,7 +80,7 @@ Commandline Parameter:
 		panic(err)
 	}
 
-	logger, err = Logging.NewClient(Config.GetClientConfig().LogServer.RPCInterface)
+	logger, err = Logging.NewClientOwnName(Config.GetClientConfig().LogServer.RPCInterface, "EventsPerTime")
 	if err != nil {
 		logger = Logging.NewLocalClient()
 	}
@@ -88,7 +88,7 @@ Commandline Parameter:
 	var jsonInterface interface{}
 	err = json.Unmarshal([]byte(event), &jsonInterface)
 	if err != nil {
-		panic(err)
+		logger.Error(err)
 	}
 	jsonMap = jsonInterface.(map[string]interface{})
 	var eventTimestamp int
@@ -121,7 +121,7 @@ Commandline Parameter:
 		addEvent(c, eventTimestamp, eventMessage)
 
 		delay := time.Duration(delay) * time.Second
-		eventRPC.CreateDelayedEvent([]byte(`{"type":"EventsPerTime","` + timestampField + `":` + fmt.Sprint(eventTimestamp) + `}`), &delay)
+		eventRPC.CreateDelayedEvent([]byte(`{"type":"EventsPerTime","`+timestampField+`":`+fmt.Sprint(eventTimestamp)+`}`), &delay)
 	} else {
 		handlePoint(c, eventTimestamp, int(delay), int(level))
 	}
@@ -132,7 +132,7 @@ func waitTillFileIsRemoved(lockFilePath string) {
 	if _, err := os.Stat(lockFilePath); err == nil {
 		time.Sleep(time.Duration(100) * time.Millisecond)
 		waitTillFileIsRemoved(lockFilePath)
-	}else {
+	} else {
 		return
 	}
 }
@@ -149,7 +149,8 @@ func handlePoint(c client.Client, eventTimestamp, timerange, level int) {
 	q := fmt.Sprintf("Select handled, msg from %s WHERE time = %ds; Select handled, msg, count from %s WHERE time > %ds and time < %ds", table, eventTimestamp, table, min, max)
 	res, err := queryDB(c, q)
 	if err != nil {
-		panic(err)
+		logger.Error(err)
+		os.Exit(12)
 	} else {
 		globalCount = len(res[1].Series[0].Values)
 		if !res[0].Series[0].Values[0][1].(bool) {
@@ -169,10 +170,11 @@ func notify(a ...interface{}) {
 	}
 	msg += `"`
 	jsonMap[resultField] = msg
-	jsonMap[resultField + "count"] = globalCount
+	jsonMap[resultField+"count"] = globalCount
 	jsonBytes, err := json.Marshal(jsonMap)
 	if err != nil {
-		panic(err)
+		logger.Error(err)
+		os.Exit(13)
 	}
 	fmt.Println(`{"Event": ` + string(jsonBytes) + `}`)
 }
@@ -188,7 +190,8 @@ func setOwnPointsHandled(c client.Client, row models.Row, eventTimestamp time.Ti
 		}
 		timeStamp, err := time.Parse(time.RFC3339, fmt.Sprint(value[0]))
 		if err != nil {
-			panic(err)
+			logger.Error(err)
+			os.Exit(14)
 		}
 		if timeStamp == eventTimestamp {
 			fields := map[string]interface{}{
@@ -197,7 +200,8 @@ func setOwnPointsHandled(c client.Client, row models.Row, eventTimestamp time.Ti
 			}
 			point, err := client.NewPoint(table, map[string]string{"count": fmt.Sprint(value[countID])}, fields, timeStamp)
 			if err != nil {
-				panic(err)
+				logger.Error(err)
+				os.Exit(15)
 			}
 			bp.AddPoint(point)
 			notify(value[2])
@@ -223,11 +227,12 @@ func setPointRangeHandled(c client.Client, row models.Row) {
 		}
 		timeStamp, err := time.Parse(time.RFC3339, fmt.Sprint(value[0]))
 		if err != nil {
-			panic(err)
+			logger.Error(err)
 		}
 		point, err := client.NewPoint(table, map[string]string{"count": fmt.Sprint(value[countID])}, fields, timeStamp)
 		if err != nil {
-			panic(err)
+			logger.Error(err)
+			os.Exit(16)
 		}
 		bp.AddPoint(point)
 		message = append(message, value[msgID])
@@ -238,7 +243,7 @@ func setPointRangeHandled(c client.Client, row models.Row) {
 }
 
 func genEvents(c client.Client) {
-	queryDB(c, "DROP SERIES FROM " + table)
+	queryDB(c, "DROP SERIES FROM "+table)
 	for _, i := range genRange() {
 		for j := 0; j < 2; j++ {
 			addEvent(c, i, "Hallo")
@@ -255,7 +260,8 @@ func addEvent(c client.Client, timestamp int, msg string) {
 	}
 	point, err := client.NewPoint(table, map[string]string{"count": count}, fields, time.Unix(int64(timestamp), int64(0)))
 	if err != nil {
-		panic(err)
+		logger.Error(err)
+		os.Exit(17)
 	}
 	bp.AddPoint(point)
 
@@ -266,12 +272,12 @@ func addEvent(c client.Client, timestamp int, msg string) {
 func genRange() []int {
 	result := []int{}
 	for j := 0.0; j < 32; j += 2 {
-		diff := math.Sin(j / 10) * 100
+		diff := math.Sin(j/10) * 100
 		length := len(result)
 		if length == 0 {
 			result = append(result, 1)
 		} else {
-			result = append(result, result[length - 1] + int(math.Abs(diff - float64(result[length - 1]))))
+			result = append(result, result[length-1]+int(math.Abs(diff-float64(result[length-1]))))
 		}
 	}
 	return result
@@ -279,7 +285,8 @@ func genRange() []int {
 
 func writePoints(c client.Client, bp client.BatchPoints) {
 	if c.Write(bp) != nil {
-		panic(bp)
+		logger.Error(bp)
+		os.Exit(17)
 	}
 }
 
@@ -300,7 +307,8 @@ func queryDB(clnt client.Client, cmd string) (res []client.Result, err error) {
 func genBatchPoints() client.BatchPoints {
 	bp, err := client.NewBatchPoints(client.BatchPointsConfig{Database: Config.GetEventsPerTimeConfig().InfluxDB.Database, Precision: "us"})
 	if err != nil {
-		panic(err)
+		logger.Error(err)
+		os.Exit(19)
 	}
 	return bp
 }

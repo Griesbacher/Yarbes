@@ -23,8 +23,8 @@ func NewLocalClient() *Client {
 	return &Client{localLogger: Local.GetLogger()}
 }
 
-//NewClient creates a localClient or a RPC if a address is given
-func NewClient(target string) (*Client, error) {
+//NewClientOwnName creates a localClient or a RPC if a address is given and uses the given name as source
+func NewClientOwnName(target, name string) (*Client, error) {
 	if target == "" {
 		//use local logger
 		return NewLocalClient(), nil
@@ -36,16 +36,20 @@ func NewClient(target string) (*Client, error) {
 	}
 
 	var clientName string
-	for name := range logRPC.Config.NameToCertificate {
-		clientName = name
-		break
-	}
-	if clientName == "" {
-		var err error
-		clientName, err = os.Hostname()
-		if err != nil {
-			return nil, err
+	if name == "" {
+		for name := range logRPC.Config.NameToCertificate {
+			clientName = name
+			break
 		}
+		if clientName == "" {
+			var err error
+			clientName, err = os.Hostname()
+			if err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		clientName = name
 	}
 	err := logRPC.SendMessage(LogServer.NewDebugLogMessage(clientName, "connected"))
 	if err != nil {
@@ -53,7 +57,11 @@ func NewClient(target string) (*Client, error) {
 	}
 
 	return &Client{logRPC: logRPC, name: clientName, localLogger: Local.GetLogger(), logLocal: logLocal}, nil
+}
 
+//NewClient creates a localClient or a RPC if a address is given
+func NewClient(target string) (*Client, error) {
+	return NewClientOwnName(target, "")
 }
 
 //LogMultiple sends the logMessages to the remote logServer, log an error to stdout
@@ -119,7 +127,6 @@ func (client Client) Warn(v ...interface{}) {
 //Error logs the message local/remote to on error level
 func (client Client) Error(v ...interface{}) {
 	message := appendStackToMessage(v)
-
 	if client.logLocal {
 		client.localLogger.Error(message)
 	} else {
