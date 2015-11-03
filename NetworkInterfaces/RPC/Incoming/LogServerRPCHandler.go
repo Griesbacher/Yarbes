@@ -2,7 +2,7 @@ package Incoming
 
 import (
 	"github.com/griesbacher/Yarbes/Logging/LogServer"
-	"github.com/griesbacher/Yarbes/NetworkInterfaces"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces/RPC"
 )
 
 //LogServerRPCHandler is a RPC handler which accepts LogMessages
@@ -11,7 +11,7 @@ type LogServerRPCHandler struct {
 }
 
 //SendMessages takes a list of LogMessages
-func (handler *LogServerRPCHandler) SendMessages(messages *[]*LogServer.LogMessage, result *NetworkInterfaces.RPCResult) error {
+func (handler *LogServerRPCHandler) SendMessages(messages *[]*LogServer.LogMessage, result *RPC.Result) error {
 	if messages == nil {
 		return ErrorInputWasNil
 	} else if result == nil {
@@ -25,7 +25,7 @@ func (handler *LogServerRPCHandler) SendMessages(messages *[]*LogServer.LogMessa
 }
 
 //SendMessage takes a single LogMessage
-func (handler *LogServerRPCHandler) SendMessage(message *LogServer.LogMessage, result *NetworkInterfaces.RPCResult) error {
+func (handler *LogServerRPCHandler) SendMessage(message *LogServer.LogMessage, result *RPC.Result) error {
 	handler.inter.logQueue <- *message
 	return nil
 }

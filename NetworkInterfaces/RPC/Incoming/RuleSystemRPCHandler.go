@@ -2,7 +2,7 @@ package Incoming
 
 import (
 	"github.com/griesbacher/Yarbes/Event"
-	"github.com/griesbacher/Yarbes/NetworkInterfaces"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces/RPC"
 )
 
 //RuleSystemRPCHandler RPC handler to create Events
@@ -11,7 +11,7 @@ type RuleSystemRPCHandler struct {
 }
 
 //CreateEvent creates a event from the given string and sends it to the RuleSystem
-func (handler *RuleSystemRPCHandler) CreateEvent(rpcEvent *NetworkInterfaces.RPCEvent, result *NetworkInterfaces.RPCResult) error {
+func (handler *RuleSystemRPCHandler) CreateEvent(rpcEvent *RPC.Event, result *RPC.Result) error {
 	if rpcEvent == nil {
 		return ErrorInputWasNil
 	} else if result == nil {

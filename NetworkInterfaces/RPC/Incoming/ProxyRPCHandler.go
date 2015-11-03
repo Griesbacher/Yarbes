@@ -2,7 +2,7 @@ package Incoming
 
 import (
 	"github.com/griesbacher/Yarbes/Module"
-	"github.com/griesbacher/Yarbes/NetworkInterfaces"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces/RPC"
 )
 
 //ProxyRPCHandler is a RPC handler which accepts LogMessages
@@ -11,7 +11,7 @@ type ProxyRPCHandler struct {
 }
 
 //Call executes the given script and returns the result
-func (handler *ProxyRPCHandler) Call(call *NetworkInterfaces.RPCCall, result *Module.Result) error {
+func (handler *ProxyRPCHandler) Call(call *RPC.Call, result *Module.Result) error {
 	if call == nil {
 		return ErrorInputWasNil
 	} else if result == nil {

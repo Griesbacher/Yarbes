@@ -6,7 +6,7 @@ import (
 	"github.com/griesbacher/Yarbes/Config"
 	"github.com/griesbacher/Yarbes/Logging/LogServer"
 	"github.com/griesbacher/Yarbes/Module"
-	"github.com/griesbacher/Yarbes/NetworkInterfaces"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces/RPC"
 	"github.com/griesbacher/Yarbes/TLS"
 	"net/rpc"
 	"time"
@@ -55,9 +55,9 @@ func (rpcI RPCInterface) CreateEvent(event []byte) (err error) {
 			err = rec.(error)
 		}
 	}()
-	result := new(NetworkInterfaces.RPCResult)
-	rpcEvent := NetworkInterfaces.RPCEvent{string(event), nil}
-	if err := rpcI.client.Call("RuleSystemRPCHandler.CreateEvent", &rpcEvent, &result); err != nil {
+	result := new(RPC.Result)
+	Event := RPC.Event{string(event), nil}
+	if err := rpcI.client.Call("RuleSystemRPCHandler.CreateEvent", &Event, &result); err != nil {
 		return err
 	}
 	return result.Err
@@ -70,9 +70,9 @@ func (rpcI RPCInterface) CreateDelayedEvent(event []byte, delay *time.Duration) 
 			err = rec.(error)
 		}
 	}()
-	result := new(NetworkInterfaces.RPCResult)
-	rpcEvent := NetworkInterfaces.RPCEvent{string(event), delay}
-	if err := rpcI.client.Call("RuleSystemRPCHandler.CreateEvent", &rpcEvent, &result); err != nil {
+	result := new(RPC.Result)
+	Event := RPC.Event{string(event), delay}
+	if err := rpcI.client.Call("RuleSystemRPCHandler.CreateEvent", &Event, &result); err != nil {
 		return err
 	}
 	return result.Err
@@ -85,7 +85,7 @@ func (rpcI RPCInterface) SendMessage(message *LogServer.LogMessage) (err error) 
 			err = rec.(error)
 		}
 	}()
-	result := new(NetworkInterfaces.RPCResult)
+	result := new(RPC.Result)
 	if err := rpcI.client.Call("LogServerRPCHandler.SendMessage", message, &result); err != nil {
 		return err
 	}
@@ -99,7 +99,7 @@ func (rpcI RPCInterface) SendMessages(messages *[]*LogServer.LogMessage) (err er
 			err = rec.(error)
 		}
 	}()
-	result := new(NetworkInterfaces.RPCResult)
+	result := new(RPC.Result)
 	if err := rpcI.client.Call("LogServerRPCHandler.SendMessages", messages, &result); err != nil {
 		return err
 	}
@@ -114,7 +114,7 @@ func (rpcI RPCInterface) MakeCall(command string, event []byte) (result *Module.
 		}
 	}()
 	result = new(Module.Result)
-	call := &NetworkInterfaces.RPCCall{RPCEvent: &NetworkInterfaces.RPCEvent{EventAsString: string(event)}, Module: command}
+	call := &RPC.Call{Event: &RPC.Event{EventAsString: string(event)}, Module: command}
 	err = rpcI.client.Call("ProxyRPCHandler.Call", call, &result)
 	return result, err
 
