@@ -19,6 +19,7 @@ type Server struct {
 		Enabled        bool
 		RPCInterface   string
 		HTTPInterface  string
+		HtpasswdPath   string
 		InfluxAddress  string
 		InfluxDatabase string
 		InfluxUsername string

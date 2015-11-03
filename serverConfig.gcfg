@@ -15,6 +15,7 @@
     Enabled         = true
     RPCInterface    = "127.0.0.1:8000"
     HTTPInterface   = "127.0.0.1:9000"
+    HtpasswdPath    = "htpasswd"
     #Leave empty to disable persistent store
     InfluxAddress  = "http://10.0.15.239:8086"
     InfluxDatabase = "Yarbes"
