@@ -166,11 +166,11 @@ func notify(a ...interface{}) {
 
 func setOwnPointsHandled(c client.Client, row models.Row, eventTimestamp time.Time) {
 	bp := genBatchPoints()
-	countId := Strings.IndexOf(row.Columns, "count")
-	msgId := Strings.IndexOf(row.Columns, "msg")
-	handledId := Strings.IndexOf(row.Columns, "handled")
+	countID := Strings.IndexOf(row.Columns, "count")
+	msgID := Strings.IndexOf(row.Columns, "msg")
+	handledID := Strings.IndexOf(row.Columns, "handled")
 	for _, value := range row.Values {
-		if value[handledId] == true {
+		if value[handledID] == true {
 			continue
 		}
 		timeStamp, err := time.Parse(time.RFC3339, fmt.Sprint(value[0]))
@@ -180,9 +180,9 @@ func setOwnPointsHandled(c client.Client, row models.Row, eventTimestamp time.Ti
 		if timeStamp == eventTimestamp {
 			fields := map[string]interface{}{
 				"handled": true,
-				"msg":     value[msgId],
+				"msg":     value[msgID],
 			}
-			bp.AddPoint(client.NewPoint(table, map[string]string{"count": fmt.Sprint(value[countId])}, fields, timeStamp))
+			bp.AddPoint(client.NewPoint(table, map[string]string{"count": fmt.Sprint(value[countID])}, fields, timeStamp))
 			notify(value[2])
 		}
 		break
@@ -192,24 +192,24 @@ func setOwnPointsHandled(c client.Client, row models.Row, eventTimestamp time.Ti
 
 func setPointRangeHandled(c client.Client, row models.Row) {
 	bp := genBatchPoints()
-	countId := Strings.IndexOf(row.Columns, "count")
-	msgId := Strings.IndexOf(row.Columns, "msg")
-	handledId := Strings.IndexOf(row.Columns, "handled")
+	countID := Strings.IndexOf(row.Columns, "count")
+	msgID := Strings.IndexOf(row.Columns, "msg")
+	handledID := Strings.IndexOf(row.Columns, "handled")
 	message := []interface{}{}
 	for _, value := range row.Values {
-		if value[handledId] == true {
+		if value[handledID] == true {
 			continue
 		}
 		fields := map[string]interface{}{
 			"handled": true,
-			"msg":     value[msgId],
+			"msg":     value[msgID],
 		}
 		timeStamp, err := time.Parse(time.RFC3339, fmt.Sprint(value[0]))
 		if err != nil {
 			panic(err)
 		}
-		bp.AddPoint(client.NewPoint(table, map[string]string{"count": fmt.Sprint(value[countId])}, fields, timeStamp))
-		message = append(message, value[msgId])
+		bp.AddPoint(client.NewPoint(table, map[string]string{"count": fmt.Sprint(value[countID])}, fields, timeStamp))
+		message = append(message, value[msgID])
 
 	}
 	writePoints(c, bp)
