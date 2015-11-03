@@ -26,7 +26,7 @@ func Client(configPath, cpuProfile string) {
 	Config.InitClientConfig(configPath)
 
 	var logger *Logging.Client
-	logger, err := Logging.NewClient(Config.GetClientConfig().LogServer.RPCInterface)
+	logger, err := Logging.NewClientOwnName(Config.GetClientConfig().LogServer.RPCInterface, "Dummy Client")
 	if err != nil {
 		fmt.Println("using local logger")
 		logger = Logging.NewLocalClient()
@@ -40,11 +40,11 @@ func Client(configPath, cpuProfile string) {
 	}
 
 	//delayed(eventRPC, 1)
-	//delayed(eventRPC, 1)
+	delayed(eventRPC, 1)
 
 	logger.Debug("Start")
 	//useLivestatus(logger, eventRPC)
-	multipleEvents(eventRPC)
+	//multipleEvents(eventRPC)
 	logger.Debug("Fertig")
 	logger.Disconnect()
 	eventRPC.Disconnect()

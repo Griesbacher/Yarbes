@@ -2,6 +2,7 @@ package Logging
 
 import (
 	"fmt"
+	"github.com/griesbacher/Yarbes/Event"
 	"github.com/griesbacher/Yarbes/Logging/Local"
 	"github.com/griesbacher/Yarbes/Logging/LogServer"
 	"github.com/griesbacher/Yarbes/NetworkInterfaces/Outgoing"
@@ -32,6 +33,7 @@ func NewClientOwnName(target, name string) (*Client, error) {
 	logLocal := false
 	logRPC := Outgoing.NewRPCInterface(target)
 	if err := logRPC.Connect(); err != nil {
+		fmt.Println(err)
 		logLocal = true
 	}
 
@@ -51,8 +53,9 @@ func NewClientOwnName(target, name string) (*Client, error) {
 	} else {
 		clientName = name
 	}
-	err := logRPC.SendMessage(LogServer.NewDebugLogMessage(clientName, "connected"))
+	err := logRPC.SendMessage(LogServer.NewDebugLogMessage(clientName, clientName+"-connected"))
 	if err != nil {
+		fmt.Println(err)
 		logLocal = true
 	}
 
@@ -79,10 +82,13 @@ func (client Client) LogMultiple(messages *[]*LogServer.LogMessage) {
 }
 
 //Log sends the logMessage to the remote logServer, log an error to stdout
-func (client Client) Log(message *LogServer.LogMessage) {
+func (client Client) Log(event *Event.Event, message *LogServer.LogMessage) {
 	if client.logLocal {
 		client.localLogger.Println(message)
 	} else {
+		if event != nil {
+			message.Event = *event
+		}
 		err := client.logRPC.SendMessage(message)
 		if err != nil {
 			client.localLogger.Error(appendStackToMessage(err))
@@ -97,13 +103,18 @@ func (client Client) Disconnect() {
 	}
 }
 
-//Debug logs the message local/remote to on debug level
-func (client Client) Debug(v ...interface{}) {
+//DebugEvent logs the event and the message local/remote to on debug level
+func (client Client) DebugEvent(event *Event.Event, v ...interface{}) {
 	if client.logLocal {
 		client.localLogger.Debug(v)
 	} else {
-		client.Log(LogServer.NewDebugLogMessage(client.name, fmt.Sprint(v)))
+		client.Log(event, LogServer.NewDebugLogMessage(client.name, fmt.Sprint(v)))
 	}
+}
+
+//Debug logs the message local/remote to on debug level
+func (client Client) Debug(v ...interface{}) {
+	client.DebugEvent(nil, v)
 }
 
 //Info logs the message local/remote to on info level
@@ -111,7 +122,7 @@ func (client Client) Info(v ...interface{}) {
 	if client.logLocal {
 		client.localLogger.Info(v)
 	} else {
-		client.Log(LogServer.NewInfoLogMessage(client.name, fmt.Sprint(v)))
+		client.Log(nil, LogServer.NewInfoLogMessage(client.name, fmt.Sprint(v)))
 	}
 }
 
@@ -120,7 +131,7 @@ func (client Client) Warn(v ...interface{}) {
 	if client.logLocal {
 		client.localLogger.Warn(v)
 	} else {
-		client.Log(LogServer.NewWarnLogMessage(client.name, fmt.Sprint(v)))
+		client.Log(nil, LogServer.NewWarnLogMessage(client.name, fmt.Sprint(v)))
 	}
 }
 
@@ -130,7 +141,7 @@ func (client Client) Error(v ...interface{}) {
 	if client.logLocal {
 		client.localLogger.Error(message)
 	} else {
-		client.Log(LogServer.NewErrorLogMessage(client.name, message))
+		client.Log(nil, LogServer.NewErrorLogMessage(client.name, message))
 	}
 }
 

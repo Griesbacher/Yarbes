@@ -63,7 +63,7 @@ func NewRuleFileParser(ruleFile string) (*RuleFileParser, error) {
 				})
 		}
 	}
-	client, err := Logging.NewClient(Config.GetClientConfig().LogServer.RPCInterface)
+	client, err := Logging.NewClientOwnName(Config.GetClientConfig().LogServer.RPCInterface, "RuleSystem")
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,8 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 				rule.LogClient.Error(err)
 			} else {
 				if moduleResult != nil {
-					rule.LogClient.Debug("Module Result: ", *moduleResult)
+					event, _ := Event.NewEventFromInterface(moduleResult.Event)
+					rule.LogClient.DebugEvent(event, "Module Result: ", *moduleResult)
 					//If the module provides a new Event replace the old one
 					if moduleResult.Event != nil {
 						var newEvent *Event.Event

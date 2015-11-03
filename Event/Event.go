@@ -9,15 +9,15 @@ import (
 
 //Event represents a JSON event
 type Event struct {
-	dataRaw []byte
-	data    map[string]interface{}
-	created time.Time
+	DataRaw []byte
+	Data    map[string]interface{}
+	Created time.Time
 }
 
 func newEvent(jsonBytes []byte, jsonInterface interface{}) (*Event, error) {
 	switch data := jsonInterface.(type) {
 	case map[string]interface{}:
-		return &Event{dataRaw: jsonBytes, data: data, created: time.Now()}, nil
+		return &Event{DataRaw: jsonBytes, Data: data, Created: time.Now()}, nil
 	default:
 		return nil, errors.New("Given Jsondata is not in the format: map[string]interface{}")
 	}
@@ -44,15 +44,15 @@ func NewEventFromInterface(jsonInterface interface{}) (*Event, error) {
 
 //GetDataAsInterface returns the internal data as object
 func (event Event) GetDataAsInterface() map[string]interface{} {
-	return event.data
+	return event.Data
 }
 
 //GetDataAsBytes returns the internal data as bytes
 func (event Event) GetDataAsBytes() []byte {
-	return event.dataRaw
+	return event.DataRaw
 }
 
 //String returns the internal data as string
 func (event Event) String() string {
-	return strings.TrimSpace(string(event.dataRaw))
+	return strings.TrimSpace(string(event.DataRaw))
 }

@@ -242,15 +242,6 @@ func setPointRangeHandled(c client.Client, row models.Row) {
 	notify(message)
 }
 
-func genEvents(c client.Client) {
-	queryDB(c, "DROP SERIES FROM "+table)
-	for _, i := range genRange() {
-		for j := 0; j < 2; j++ {
-			addEvent(c, i, "Hallo")
-		}
-	}
-}
-
 func addEvent(c client.Client, timestamp int, msg string) {
 	count := fmt.Sprintf("%d%d", time.Now().UnixNano(), rand.Int63())
 	bp := genBatchPoints()
@@ -269,6 +260,17 @@ func addEvent(c client.Client, timestamp int, msg string) {
 
 }
 
+//genEvent is a test method
+func genEvents(c client.Client) {
+	queryDB(c, "DROP SERIES FROM "+table)
+	for _, i := range genRange() {
+		for j := 0; j < 2; j++ {
+			addEvent(c, i, "Hallo")
+		}
+	}
+}
+
+//genRange is a test method
 func genRange() []int {
 	result := []int{}
 	for j := 0.0; j < 32; j += 2 {
@@ -284,8 +286,8 @@ func genRange() []int {
 }
 
 func writePoints(c client.Client, bp client.BatchPoints) {
-	if c.Write(bp) != nil {
-		logger.Error(bp)
+	if err := c.Write(bp); err != nil {
+		logger.Error(err)
 		os.Exit(17)
 	}
 }

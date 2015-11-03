@@ -2,6 +2,7 @@ package LogServer
 
 import (
 	"fmt"
+	"github.com/griesbacher/Yarbes/Event"
 	"github.com/kdar/factorlog"
 	"time"
 )
@@ -12,6 +13,7 @@ type LogMessage struct {
 	Source    string
 	Severity  factorlog.Severity
 	Message   string
+	Event     Event.Event
 }
 
 //NewLogMessage constructs a new LogMessage
