@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/griesbacher/Yarbes/Config"
 	"github.com/griesbacher/Yarbes/Logging/LogServer"
-	"github.com/griesbacher/Yarbes/NetworkInterfaces/RPC/Incoming"
+	httpIncoming "github.com/griesbacher/Yarbes/NetworkInterfaces/HTTP/Incoming"
+	rpcIncoming "github.com/griesbacher/Yarbes/NetworkInterfaces/RPC/Incoming"
 	"github.com/griesbacher/Yarbes/RuleSystem"
 	"github.com/griesbacher/Yarbes/Tools/Strings"
 	"log"
@@ -33,6 +34,7 @@ func Server(serverConfigPath, clientConfigPath, cpuProfile string) {
 	stoppables := []Stoppable{}
 
 	rpcInterfaces := []string{}
+	httpInterfaces := []string{}
 
 	if Config.GetServerConfig().LogServer.Enabled {
 		logServer := LogServer.NewLogServer()
@@ -41,10 +43,17 @@ func Server(serverConfigPath, clientConfigPath, cpuProfile string) {
 		fmt.Println("Starting: LogServer")
 		if Config.GetServerConfig().LogServer.RPCInterface != "" {
 			fmt.Println("Starting: LogServer - RPC Interface")
-			logServerRPCI := Incoming.NewLogServerRPCInterface(logServer.LogQueue)
+			logServerRPCI := rpcIncoming.NewLogServerRPCInterface(logServer.LogQueue)
 			logServerRPCI.Start()
 			stoppables = append(stoppables, logServerRPCI)
 			rpcInterfaces = append(rpcInterfaces, Config.GetServerConfig().LogServer.RPCInterface)
+		}
+		if Config.GetServerConfig().LogServer.HTTPInterface != "" {
+			fmt.Println("Starting: LogServer - HTTP Interface")
+			logServerRPCI := httpIncoming.NewLogServerHTTPInterface()
+			logServerRPCI.Start()
+			stoppables = append(stoppables, logServerRPCI)
+			httpInterfaces = append(httpInterfaces, Config.GetServerConfig().LogServer.HTTPInterface)
 		}
 		time.Sleep(time.Duration(100) * time.Millisecond)
 	}
@@ -56,7 +65,7 @@ func Server(serverConfigPath, clientConfigPath, cpuProfile string) {
 		fmt.Println("Starting: RuleSystem")
 		if Config.GetServerConfig().RuleSystem.RPCInterface != "" {
 			fmt.Println("Starting: RuleSystem - RPC Interface")
-			ruleSystemRPCI := Incoming.NewRuleSystemRPCInterface(ruleSystem)
+			ruleSystemRPCI := rpcIncoming.NewRuleSystemRPCInterface(ruleSystem)
 			if !Strings.Contains(rpcInterfaces, Config.GetServerConfig().RuleSystem.RPCInterface) {
 				fmt.Println("Starting: RPC")
 				ruleSystemRPCI.Start()
@@ -67,7 +76,7 @@ func Server(serverConfigPath, clientConfigPath, cpuProfile string) {
 
 	if Config.GetServerConfig().Proxy.Enabled {
 		fmt.Println("Starting: Proxy - RPC Interface")
-		proxyRPCI := Incoming.NewProxyRPCInterface()
+		proxyRPCI := rpcIncoming.NewProxyRPCInterface()
 		if !Strings.Contains(rpcInterfaces, Config.GetServerConfig().RuleSystem.RPCInterface) {
 			fmt.Println("Starting: RPC")
 			proxyRPCI.Start()
