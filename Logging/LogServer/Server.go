@@ -3,6 +3,7 @@ package LogServer
 import (
 	"fmt"
 	"github.com/griesbacher/Yarbes/Config"
+	"github.com/griesbacher/Yarbes/Tools/Influx"
 	"github.com/influxdb/influxdb/client/v2"
 	"net/url"
 )
@@ -12,7 +13,7 @@ type Server struct {
 	LogQueue     chan LogMessage
 	quit         chan bool
 	isRunning    bool
-	influxClient client.Client
+	InfluxClient client.Client
 }
 
 //TableName is the name of the table within influxdb
@@ -31,12 +32,12 @@ func NewLogServer() *Server {
 			Username: Config.GetServerConfig().LogServer.InfluxUsername,
 			Password: Config.GetServerConfig().LogServer.InfluxPassword,
 		})
-		_, err = queryDB(influxClient, fmt.Sprintf("CREATE DATABASE %s", Config.GetServerConfig().LogServer.InfluxDatabase))
+		_, err = Influx.QueryDB(influxClient, fmt.Sprintf("CREATE DATABASE %s", Config.GetServerConfig().LogServer.InfluxDatabase), Config.GetServerConfig().LogServer.InfluxDatabase)
 		if err != nil {
 			panic(err)
 		}
 	}
-	return &Server{LogQueue: make(chan LogMessage, 100), quit: make(chan bool), isRunning: false, influxClient: influxClient}
+	return &Server{LogQueue: make(chan LogMessage, 100), quit: make(chan bool), isRunning: false, InfluxClient: influxClient}
 }
 
 //Start starts the LogServer
@@ -75,7 +76,7 @@ func (log *Server) handleLog() {
 }
 
 func (log Server) logToInfluxDB(message LogMessage) {
-	if &log.influxClient == nil {
+	if &log.InfluxClient == nil {
 		return
 	}
 	bp, err := genBatchPoints()
@@ -94,24 +95,10 @@ func (log Server) logToInfluxDB(message LogMessage) {
 	}
 	bp.AddPoint(point)
 
-	err = log.influxClient.Write(bp)
+	err = log.InfluxClient.Write(bp)
 	if err != nil {
 		fmt.Println(err)
 	}
-}
-
-func queryDB(clnt client.Client, cmd string) (res []client.Result, err error) {
-	q := client.Query{
-		Command:  cmd,
-		Database: Config.GetEventsPerTimeConfig().InfluxDB.Database,
-	}
-	if response, err := clnt.Query(q); err == nil {
-		if response.Error() != nil {
-			return res, response.Error()
-		}
-		res = response.Results
-	}
-	return res, nil
 }
 
 func genBatchPoints() (client.BatchPoints, error) {

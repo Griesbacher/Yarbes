@@ -54,5 +54,5 @@ func (event Event) GetDataAsBytes() []byte {
 
 //String returns the internal data as string
 func (event Event) String() string {
-	return strings.TrimSpace(string(event.DataRaw))
+	return strings.Replace(strings.TrimSpace(string(event.DataRaw)), `","`, `", "`, -1)
 }

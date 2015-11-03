@@ -66,7 +66,7 @@ func delayed(eventRPC *Outgoing.RPCInterface, wait int) {
 
 func multipleEvents(eventRPC *Outgoing.RPCInterface) {
 	for i := 0; i < 3; i++ {
-		var event = []byte(`{"hostname":"localhost` + fmt.Sprintf("%d", i) + `", "type":"ALERT", "time":` + fmt.Sprintf("%d", time.Now().Unix()) + `}`)
+		var event = []byte(fmt.Sprintf(`{"hostname":"localhost-%d", "type":"ALERT", "time":%d}`, i, time.Now().Unix()))
 		err := eventRPC.CreateEvent(event)
 		if err != nil {
 			panic(err)
@@ -75,7 +75,7 @@ func multipleEvents(eventRPC *Outgoing.RPCInterface) {
 	}
 	time.Sleep(time.Duration(6) * time.Second)
 	for i := 0; i < 6; i++ {
-		var event = []byte(`{"hostname":"localhost` + fmt.Sprintf("%d", i) + `", "type":"ALERT", "time":` + fmt.Sprintf("%d", time.Now().Unix()) + `}`)
+		var event = []byte(fmt.Sprintf(`{"hostname":"localhost-%d", "type":"ALERT", "time":%d}`, i, time.Now().Unix()))
 		err := eventRPC.CreateEvent(event)
 		if err != nil {
 			panic(err)

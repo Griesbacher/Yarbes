@@ -50,7 +50,7 @@ func Server(serverConfigPath, clientConfigPath, cpuProfile string) {
 		}
 		if Config.GetServerConfig().LogServer.HTTPInterface != "" {
 			fmt.Println("Starting: LogServer - HTTP Interface")
-			logServerRPCI := httpIncoming.NewLogServerHTTPInterface()
+			logServerRPCI := httpIncoming.NewLogServerHTTPInterface(logServer.InfluxClient)
 			logServerRPCI.Start()
 			stoppables = append(stoppables, logServerRPCI)
 			httpInterfaces = append(httpInterfaces, Config.GetServerConfig().LogServer.HTTPInterface)
