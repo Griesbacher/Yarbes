@@ -1,4 +1,5 @@
 [InfluxDB]
-Server      = "10.0.15.239:8086"
+Server      = "http://10.0.15.239:8086"
+Database    = "Yarbes"
 Username    = "root"
 Password    = "root"

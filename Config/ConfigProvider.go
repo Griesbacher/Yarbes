@@ -1,7 +1,6 @@
 package Config
 
 import (
-	"errors"
 	"github.com/griesbacher/Yarbes/Config/ConfigLayouts"
 	"gopkg.in/gcfg.v1"
 	"sync"
@@ -10,6 +9,7 @@ import (
 var singleServerConfig ConfigLayouts.Server
 var singleClientConfig ConfigLayouts.Client
 var singleMailConfig ConfigLayouts.Mail
+var singleEventsPerTimeConfig ConfigLayouts.EventsPerTime
 var mutex = &sync.Mutex{}
 
 //InitServerConfig parses the server config file
@@ -27,14 +27,17 @@ func InitMailConfig(configPath string) {
 	initConfig(configPath, &singleMailConfig)
 }
 
+//InitEventsPerTimeConfig parses the EventsPerTime config file
+func InitEventsPerTimeConfig(configPath string) {
+	initConfig(configPath, &singleEventsPerTimeConfig)
+}
+
 func initConfig(configPath string, config interface{}) {
 	var err error
 	mutex.Lock()
 	switch real := config.(type) {
-	case *ConfigLayouts.Server, *ConfigLayouts.Client, *ConfigLayouts.Mail:
-		err = gcfg.ReadFileInto(real, configPath)
 	default:
-		err = errors.New("Unkown config layout")
+		err = gcfg.ReadFileInto(real, configPath)
 	}
 	mutex.Unlock()
 	if err != nil {
@@ -64,4 +67,12 @@ func GetMailConfig() *ConfigLayouts.Mail {
 		panic("Call InitMailConfig first!")
 	}
 	return &singleMailConfig
+}
+
+//GetEventsPerTimeConfig simple getter for the EventsPerTime config, panics if not initialized
+func GetEventsPerTimeConfig() *ConfigLayouts.EventsPerTime {
+	if &singleEventsPerTimeConfig == nil {
+		panic("Call InitMailConfig first!")
+	}
+	return &singleEventsPerTimeConfig
 }

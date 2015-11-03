@@ -1,12 +1,11 @@
 package ConfigLayouts
 
-//Mail file layout
-type Mail struct {
-	Mail struct {
-		FromName    string
-		FromAddress string
-		Server      string
-		Username    string
-		Password    string
+//EventsPerTime file layout
+type EventsPerTime struct {
+	InfluxDB struct {
+		Server   string
+		Database string
+		Username string
+		Password string
 	}
 }

@@ -43,14 +43,19 @@ func (external ExternalModule) Call(moduleName, args, event string) (*Result, er
 			return nil, fmt.Errorf("Module: %s not found", moduleName)
 		}
 	}
-	arguments := []string{event}
-	arguments = append(arguments,strings.Split(args, ",")...)
-	cmd := exec.Command(external.modules[moduleName], arguments... )
+	arguments := []string{}
+	arguments = append(arguments, "-event")
+	arguments = append(arguments, event)
+	if len(args) > 0 {
+		arguments = append(arguments, strings.Split(args, ",")...)
+	}
+	cmd := exec.Command(external.modules[moduleName], arguments...)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	runtimeErr := cmd.Run()
 	var moduleResult Result
-
+	fmt.Println("in:", external.modules[moduleName], arguments)
+	fmt.Println("out:", string(out.Bytes()))
 	if len(out.Bytes()) != 0 {
 		if err := json.Unmarshal(out.Bytes(), &moduleResult); err != nil {
 			return nil, err
@@ -94,5 +99,5 @@ func (external *ExternalModule) searchModules() {
 
 func getFilename(filename string) string {
 	extension := filepath.Ext(filename)
-	return strings.ToLower(filename[0 : len(filename) - len(extension)])
+	return strings.ToLower(filename[0 : len(filename)-len(extension)])
 }

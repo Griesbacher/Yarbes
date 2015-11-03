@@ -16,9 +16,9 @@ func main() {
 	if len(os.Args) < 2 {
 		os.Exit(1)
 	}
-	jsonString := os.Args[1]
+	jsonString := os.Args[4]
 
-	serverAddress := fmt.Sprintf("%s:%s", os.Args[2], os.Args[3])
+	serverAddress := fmt.Sprintf("%s:%s", os.Args[1], os.Args[2])
 	Config.InitClientConfig("clientConfig.gcfg")
 	rpcClient := Outgoing.NewRPCInterface(serverAddress)
 	if rpcClient == nil {
@@ -26,7 +26,7 @@ func main() {
 	}
 	rpcClient.Connect()
 
-	result, err := rpcClient.MakeCall(os.Args[4], []byte(jsonString))
+	result, err := rpcClient.MakeCall(os.Args[3], []byte(jsonString))
 	if err != nil {
 		panic(err)
 	}
