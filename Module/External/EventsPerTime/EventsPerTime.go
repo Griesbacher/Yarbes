@@ -182,7 +182,11 @@ func setOwnPointsHandled(c client.Client, row models.Row, eventTimestamp time.Ti
 				"handled": true,
 				"msg":     value[msgID],
 			}
-			bp.AddPoint(client.NewPoint(table, map[string]string{"count": fmt.Sprint(value[countID])}, fields, timeStamp))
+			point, err := client.NewPoint(table, map[string]string{"count": fmt.Sprint(value[countID])}, fields, timeStamp)
+			if err != nil {
+				panic(err)
+			}
+			bp.AddPoint(point)
 			notify(value[2])
 		}
 		break
@@ -208,7 +212,11 @@ func setPointRangeHandled(c client.Client, row models.Row) {
 		if err != nil {
 			panic(err)
 		}
-		bp.AddPoint(client.NewPoint(table, map[string]string{"count": fmt.Sprint(value[countID])}, fields, timeStamp))
+		point, err := client.NewPoint(table, map[string]string{"count": fmt.Sprint(value[countID])}, fields, timeStamp)
+		if err != nil {
+			panic(err)
+		}
+		bp.AddPoint(point)
 		message = append(message, value[msgID])
 
 	}
@@ -232,7 +240,12 @@ func addEvent(c client.Client, timestamp int, msg string) {
 		"msg":     msg,
 		"handled": false,
 	}
-	bp.AddPoint(client.NewPoint(table, map[string]string{"count": count}, fields, time.Unix(int64(timestamp), int64(0))))
+	point, err := client.NewPoint(table, map[string]string{"count": count}, fields, time.Unix(int64(timestamp), int64(0)))
+	if err != nil {
+		panic(err)
+	}
+	bp.AddPoint(point)
+
 	writePoints(c, bp)
 
 }
