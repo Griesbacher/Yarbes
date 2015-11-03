@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/griesbacher/Yarbes/Config"
 	"github.com/griesbacher/Yarbes/Logging/LogServer"
-	"github.com/griesbacher/Yarbes/NetworkInterfaces/Incoming"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces/RPC/Incoming"
 	"github.com/griesbacher/Yarbes/RuleSystem"
 	"github.com/griesbacher/Yarbes/Tools/Strings"
 	"log"

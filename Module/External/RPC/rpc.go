@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/griesbacher/Yarbes/Config"
 	"github.com/griesbacher/Yarbes/Module"
-	"github.com/griesbacher/Yarbes/NetworkInterfaces/Outgoing"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces/RPC/Outgoing"
 	"os"
 )
 

@@ -5,7 +5,7 @@ import (
 	"github.com/griesbacher/Yarbes/Event"
 	"github.com/griesbacher/Yarbes/Logging/Local"
 	"github.com/griesbacher/Yarbes/Logging/LogServer"
-	"github.com/griesbacher/Yarbes/NetworkInterfaces/Outgoing"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces/RPC/Outgoing"
 	"github.com/kdar/factorlog"
 	"os"
 	"runtime"

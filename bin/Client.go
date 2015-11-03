@@ -5,7 +5,7 @@ import (
 	"github.com/griesbacher/Yarbes/Client/Livestatus"
 	"github.com/griesbacher/Yarbes/Config"
 	"github.com/griesbacher/Yarbes/Logging"
-	"github.com/griesbacher/Yarbes/NetworkInterfaces/Outgoing"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces/RPC/Outgoing"
 	"log"
 	"os"
 	"runtime/pprof"

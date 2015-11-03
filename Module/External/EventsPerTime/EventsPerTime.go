@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/griesbacher/Yarbes/Config"
 	"github.com/griesbacher/Yarbes/Logging"
-	"github.com/griesbacher/Yarbes/NetworkInterfaces/Outgoing"
+	"github.com/griesbacher/Yarbes/NetworkInterfaces/RPC/Outgoing"
 	"github.com/griesbacher/Yarbes/Tools/Strings"
 	"github.com/influxdb/influxdb/client/v2"
 	"github.com/influxdb/influxdb/models"
