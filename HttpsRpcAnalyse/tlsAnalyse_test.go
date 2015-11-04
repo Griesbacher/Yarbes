@@ -13,3 +13,7 @@ func BenchmarkRPC(b *testing.B) {
 func BenchmarkHTTP(b *testing.B) {
 	HttpsTest.Client(b.N)
 }
+
+func TestMain(m *testing.M){
+
+}
