@@ -2,16 +2,16 @@
 
 PackageRoot='github.com/griesbacher/Yarbes/'
 
-echo "mode: count" > profile.cov
+echo "mode: count" > cover.out
 for dir in $(find `ls` -type d);
 do
 if ls $dir/*.go &> /dev/null; then
 	echo $dir
-	go test -v -race -covermode=count -coverprofile=profile.tmp $PackageRoot$dir
-	if [ -f profile.tmp ]
+	go test -v -covermode=count -coverprofile=cover.tmp $PackageRoot$dir
+	if [ -f cover.tmp ]
     then
-        cat profile.tmp | tail -n +2 >> profile.cov
-        rm profile.tmp
+        cat cover.tmp | tail -n +2 >> cover.out
+        rm cover.tmp
     fi
 fi
 done
