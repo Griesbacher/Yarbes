@@ -32,3 +32,4 @@ Module/External/Mail/mail.gcfg
 Module/External/EventsPerTime/EventsPerTime.gcfg
 HttpsRpcAnalyse/certs
 External/*
+cover.out
