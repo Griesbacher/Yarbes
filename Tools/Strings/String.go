@@ -1,4 +1,8 @@
 package Strings
+import (
+	"bytes"
+	"encoding/json"
+)
 
 //Contains returns true if the given string is within the array
 func Contains(hay []string, needle string) bool {
@@ -18,4 +22,13 @@ func IndexOf(hay []string, needle string) int {
 		}
 	}
 	return -1
+}
+
+//FormatJSON formats the given string in pretty json
+func FormatJSON(jsonString string) string {
+	var out bytes.Buffer
+	if json.Indent(&out, []byte(jsonString), "", "  ") != nil {
+		return ""
+	}
+	return string(out.Bytes())
 }

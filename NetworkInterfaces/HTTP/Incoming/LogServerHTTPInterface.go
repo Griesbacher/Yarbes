@@ -16,5 +16,6 @@ func NewLogServerHTTPInterface(influxClient client.Client) *LogServerHTTPInterfa
 	logHandler := LogServerHTTPHandler{influxClient}
 	ruleHTTP := &LogServerHTTPInterface{HTTPInterface: httpI}
 	ruleHTTP.HTTPInterface.PublishHandler("/logs", logHandler.LogView)
+	ruleHTTP.HTTPInterface.PublishHandler("/resend", logHandler.ResendEvent)
 	return ruleHTTP
 }
