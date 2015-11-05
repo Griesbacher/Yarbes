@@ -8,6 +8,8 @@ import (
 	"go/ast"
 )
 
+//go tool cover -html=cover.out
+
 var ParseStringData = []struct {
 	input  string
 	output bool
