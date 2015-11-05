@@ -18,6 +18,7 @@ func main() {
 	var addressField string
 	var address string
 	var event string
+	var useTLS bool
 	addresses := []mail.Address{}
 	flag.Usage = func() {
 		fmt.Println(`Yarbes-Mail by Philip Griesbacher @ 2015`)
@@ -25,6 +26,7 @@ func main() {
 	flag.StringVar(&addressField, "addressField", "address", "references the filed in which the emailaddress can be found")
 	flag.StringVar(&address, "address", "root@example.net", "address to send mail to")
 	flag.StringVar(&event, "event", "", "the event")
+	flag.BoolVar(&useTLS, "useTLS", true, "use TLS to connect, default is enable")
 	flag.Parse()
 
 	if addressField != "" {
@@ -37,7 +39,7 @@ func main() {
 
 	Config.InitMailConfig("Module/External/Mail/mail.gcfg")
 	con := Config.GetMailConfig()
-	Sendmail("mail by Yarbes", event, con, true, addresses...)
+	Sendmail("mail by Yarbes", event, con, useTLS, addresses...)
 
 }
 
