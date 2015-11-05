@@ -67,13 +67,14 @@ var ParseStringData = []struct {
 	{`1 == 1,1`, false, errors.New("not a valid float")},
 }
 
-func TestParseString(t *testing.T) {
-	t.Parallel()
-	b := []byte(`{
+var b = []byte(`{
    "k1" : "v1",
    "k2" : 10,
    "k3" : ["v4",12.3,{"k11" : "v11", "k22" : "v22"}]
 	}`)
+
+func TestParseString(t *testing.T) {
+	t.Parallel()
 	var jsonData interface{}
 	err := json.Unmarshal(b, &jsonData)
 	if err != nil {
@@ -93,11 +94,6 @@ func TestParseStringChannel(t *testing.T) {
 	t.Parallel()
 	_, w, _ := os.Pipe()
 	os.Stdout = w
-	b := []byte(`{
-   "k1" : "v1",
-   "k2" : 10,
-   "k3" : ["v4",12.3,{"k11" : "v11", "k22" : "v22"}]
-	}`)
 	var jsonData interface{}
 	err := json.Unmarshal(b, &jsonData)
 	if err != nil {
@@ -134,6 +130,27 @@ func TestPrintNode(t *testing.T) {
 	for _, n := range nodes {
 		printNode(n, "")
 	}
+	writeFile.Close()
+	os.Stdout = oldStdout
+}
+
+//TestPrintAst is a dummy test because the PrintNode is just for debugging
+func TestPrintAst(t *testing.T) {
+	t.Parallel()
+	oldStdout := os.Stdout
+	_, writeFile, _ := os.Pipe()
+	os.Stdout = writeFile
+
+	parser := ConditionParser{Debug:true}
+	var jsonData interface{}
+	err := json.Unmarshal(b, &jsonData)
+	if err != nil {
+		panic(err)
+	}
+	currentMetaData := map[string]interface{}{"executedLines": 0, "42": true}
+
+	parser.ParseString("1==1", jsonData, currentMetaData)
+
 	writeFile.Close()
 	os.Stdout = oldStdout
 }
