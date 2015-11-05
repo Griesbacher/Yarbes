@@ -33,3 +33,10 @@ func FormatJSON(jsonString string) string {
 	}
 	return string(out.Bytes())
 }
+
+//UnmarshalJSONEvent expects a jsonstring and tries to create a object from it
+func UnmarshalJSONEvent(jsonString string) map[string]interface{} {
+	var jsonInterface interface{}
+	json.Unmarshal([]byte(jsonString), &jsonInterface)
+	return jsonInterface.(map[string]interface{})
+}

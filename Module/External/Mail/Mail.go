@@ -2,31 +2,53 @@ package main
 
 import (
 	"crypto/tls"
+	"flag"
 	"fmt"
 	"github.com/griesbacher/Yarbes/Config"
 	"github.com/griesbacher/Yarbes/Config/ConfigLayouts"
+	"github.com/griesbacher/Yarbes/Tools/Strings"
 	"log"
 	"net"
 	"net/mail"
 	"net/smtp"
-	"os"
 )
 
 //TODO: Client log bib schreiben
 func main() {
-	if len(os.Args) > 1 {
-		Config.InitMailConfig("Module/External/Mail/mail.gcfg")
-		con := Config.GetMailConfig()
-		Sendmail(mail.Address{Name: "philip", Address: "griesbacher@consol.de"}, "mail by Yarbes", os.Args[1], con, true)
+	var addressField string
+	var address string
+	var event string
+	addresses := []mail.Address{}
+	flag.Usage = func() {
+		fmt.Println(`Yarbes-Mail by Philip Griesbacher @ 2015`)
 	}
+	flag.StringVar(&addressField, "addressField", "address", "references the filed in which the emailaddress can be found")
+	flag.StringVar(&address, "address", "root@example.net", "address to send mail to")
+	flag.StringVar(&event, "event", "", "the event")
+	flag.Parse()
+
+	if addressField != "" {
+		jsonMap := Strings.UnmarshalJSONEvent(event)
+		addresses = append(addresses, mail.Address{Address: jsonMap[addressField]})
+	}
+	if address != "" {
+		addresses = append(addresses, mail.Address{Address: addressField})
+	}
+
+	Config.InitMailConfig("Module/External/Mail/mail.gcfg")
+	con := Config.GetMailConfig()
+	Sendmail("mail by Yarbes", event, con, true, addresses)
+
 }
 
 //Sendmail sends a email to the given address, useTLS can be used for encryption
-func Sendmail(to mail.Address, subj, body string, config *ConfigLayouts.Mail, useTLS bool) {
+func Sendmail(subj, body string, config *ConfigLayouts.Mail, useTLS bool, to ...mail.Address) {
 	from := mail.Address{Name: config.Mail.FromName, Address: config.Mail.FromAddress}
 	headers := make(map[string]string)
 	headers["From"] = from.String()
-	headers["To"] = to.String()
+	for _, address := range to {
+		headers["To"] += address.String()
+	}
 	headers["Subject"] = subj
 
 	message := ""
@@ -60,9 +82,10 @@ func Sendmail(to mail.Address, subj, body string, config *ConfigLayouts.Mail, us
 		if err = c.Mail(from.Address); err != nil {
 			log.Panic(err)
 		}
-
-		if err = c.Rcpt(to.Address); err != nil {
-			log.Panic(err)
+		for _, address := range to {
+			if err = c.Rcpt(address.Address); err != nil {
+				log.Panic(err)
+			}
 		}
 
 		w, err := c.Data()
@@ -76,11 +99,15 @@ func Sendmail(to mail.Address, subj, body string, config *ConfigLayouts.Mail, us
 			log.Panic(err)
 		}
 	} else {
+		sendTo := []string{}
+		for _, address := range to {
+			sendTo = append(sendTo, address.Address)
+		}
 		err := smtp.SendMail(
 			config.Mail.Server,
 			auth,
 			from.Address,
-			[]string{to.Address},
+			sendTo,
 			[]byte(message),
 		)
 		if err != nil {

@@ -85,12 +85,7 @@ Commandline Parameter:
 		logger = Logging.NewLocalClient()
 	}
 
-	var jsonInterface interface{}
-	err = json.Unmarshal([]byte(event), &jsonInterface)
-	if err != nil {
-		logger.Error(err)
-	}
-	jsonMap = jsonInterface.(map[string]interface{})
+	jsonMap = Strings.UnmarshalJSONEvent(event)
 	var eventTimestamp int
 	switch value := jsonMap[timestampField].(type) {
 	case string:
