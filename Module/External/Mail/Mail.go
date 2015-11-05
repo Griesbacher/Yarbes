@@ -29,7 +29,7 @@ func main() {
 
 	if addressField != "" {
 		jsonMap := Strings.UnmarshalJSONEvent(event)
-		addresses = append(addresses, mail.Address{Address: jsonMap[addressField]})
+		addresses = append(addresses, mail.Address{Address: fmt.Sprint(jsonMap[addressField])})
 	}
 	if address != "" {
 		addresses = append(addresses, mail.Address{Address: addressField})
@@ -37,7 +37,7 @@ func main() {
 
 	Config.InitMailConfig("Module/External/Mail/mail.gcfg")
 	con := Config.GetMailConfig()
-	Sendmail("mail by Yarbes", event, con, true, addresses)
+	Sendmail("mail by Yarbes", event, con, true, addresses...)
 
 }
 
