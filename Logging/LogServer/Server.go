@@ -70,9 +70,7 @@ func (log *Server) handleLog() {
 			return
 		case message = <-log.LogQueue:
 			fmt.Println(message.String())
-			if message.Message != "RuleSystem-connected" {
-				go log.logToInfluxDB(message)
-			}
+			go log.logToInfluxDB(message)
 		}
 	}
 }

@@ -26,7 +26,7 @@ func Client(configPath, cpuProfile string) {
 	Config.InitClientConfig(configPath)
 
 	var logger *Logging.Client
-	logger, err := Logging.NewClientOwnName(Config.GetClientConfig().LogServer.RPCInterface, "Dummy Client")
+	logger, err := Logging.NewClientOwnName(Config.GetClientConfig().LogServer.RPCInterface, "Nagios Client")
 	if err != nil {
 		fmt.Println("using local logger")
 		logger = Logging.NewLocalClient()
@@ -39,11 +39,11 @@ func Client(configPath, cpuProfile string) {
 		os.Exit(2)
 	}
 
-	//delayed(eventRPC, 1)
+	delayed(eventRPC, 10)
 	delayed(eventRPC, 1)
 
 	logger.Debug("Start")
-	//useLivestatus(logger, eventRPC)
+	useLivestatus(logger, eventRPC)
 	//multipleEvents(eventRPC)
 	logger.Debug("Fertig")
 	logger.Disconnect()
@@ -53,7 +53,7 @@ func Client(configPath, cpuProfile string) {
 func useLivestatus(logger *Logging.Client, eventRPC *Outgoing.RPCInterface) {
 	livestatus := Livestatus.NewCollector(*logger, eventRPC)
 	livestatus.Start()
-	time.Sleep(time.Duration(30) * time.Second)
+	time.Sleep(time.Duration(90) * time.Second)
 	livestatus.Stop()
 }
 

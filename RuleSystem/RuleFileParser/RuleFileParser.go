@@ -94,7 +94,7 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 			} else {
 				if moduleResult != nil {
 					event, _ := Event.NewEventFromInterface(moduleResult.Event)
-					rule.LogClient.DebugEvent(event, "Module Result: ", *moduleResult)
+					rule.LogClient.DebugEvent(event, "Event after:", line.name)
 					//If the module provides a new Event replace the old one
 					if moduleResult.Event != nil {
 						var newEvent *Event.Event

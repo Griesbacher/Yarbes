@@ -33,3 +33,4 @@ Module/External/EventsPerTime/EventsPerTime.gcfg
 HttpsRpcAnalyse/certs
 External/*
 cover.out
+error_dump
