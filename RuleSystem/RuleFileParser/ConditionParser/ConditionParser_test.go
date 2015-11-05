@@ -2,10 +2,10 @@ package ConditionParser
 
 import (
 	"encoding/json"
-	"testing"
-	"os"
 	"errors"
 	"go/ast"
+	"os"
+	"testing"
 )
 
 //go tool cover -html=cover.out
@@ -15,56 +15,56 @@ var ParseStringData = []struct {
 	output bool
 	err    error
 }{
-	{"1==1", true, nil },
-	{"1==2", false, nil },
-	{"1!=2", true, nil },
-	{"1!=1", false, nil },
-	{"1>=1", true, nil },
-	{"2>=1", true, nil },
-	{"1>=2", false, nil },
-	{"1<=1", true, nil },
-	{"1<=2", true, nil },
-	{"2<=1", false, nil },
-	{"2>1", true, nil },
-	{"2>2", false, nil },
-	{"1<2", true, nil },
-	{"2<2", false, nil },
-	{`"a" == "a"`, true, nil },
-	{`"a" == "b"`, false, nil },
-	{`"a" != "b"`, true, nil },
-	{`"a" != "a"`, false, nil },
-	{`"abba" &^ "a.+a"`, true, nil },
-	{`_["k1"] &^ "v\\d"`, true, nil },
-	{`_["k1"] == "v1"`, true, nil },
-	{`_["k2"] == 10`, true, nil },
-	{`_["k3"][0] == "v4"`, true, nil },
-	{`_["k3"][1] == 12.5`, true, nil },
-	{`_["k3"][2]["k11"] == "v11"`, true, nil },
-	{`_["k3"][2]["k22"] == "v22"`, true, nil },
-	{`_["k1"]`, true, nil },
-	{`_["zzz"]`, false, nil },
-	{"`a` == `a`", true, nil },
-	{"`a` == `b`", false, nil },
-	{"`a` != `b`", true, nil },
-	{"`a` != `a`", false, nil },
-	{"`abba` &^ `a.+a`", true, nil },
-	{"_[`k1`] &^ `v\\d`", true, nil },
-	{"_[`k1`] == `v1`", true, nil },
-	{"_[`k2`] == 10", true, nil },
-	{"_[`k3`][0] == `v4`", true, nil },
-	{"_[`k3`][1] == 12.5", true, nil },
-	{"_[`k3`][2][`k11`] == `v11`", true, nil },
-	{"_[`k3`][2][`k22`] == `v22`", true, nil },
-	{"_[`k1`]", true, nil },
-	{"_[`zzz`]", false, nil },
-	{"e[`executedLines`] == 0", true, nil },
+	{"1==1", true, nil},
+	{"1==2", false, nil},
+	{"1!=2", true, nil},
+	{"1!=1", false, nil},
+	{"1>=1", true, nil},
+	{"2>=1", true, nil},
+	{"1>=2", false, nil},
+	{"1<=1", true, nil},
+	{"1<=2", true, nil},
+	{"2<=1", false, nil},
+	{"2>1", true, nil},
+	{"2>2", false, nil},
+	{"1<2", true, nil},
+	{"2<2", false, nil},
+	{`"a" == "a"`, true, nil},
+	{`"a" == "b"`, false, nil},
+	{`"a" != "b"`, true, nil},
+	{`"a" != "a"`, false, nil},
+	{`"abba" &^ "a.+a"`, true, nil},
+	{`_["k1"] &^ "v\\d"`, true, nil},
+	{`_["k1"] == "v1"`, true, nil},
+	{`_["k2"] == 10`, true, nil},
+	{`_["k3"][0] == "v4"`, true, nil},
+	{`_["k3"][1] == 12.5`, true, nil},
+	{`_["k3"][2]["k11"] == "v11"`, true, nil},
+	{`_["k3"][2]["k22"] == "v22"`, true, nil},
+	{`_["k1"]`, true, nil},
+	{`_["zzz"]`, false, nil},
+	{"`a` == `a`", true, nil},
+	{"`a` == `b`", false, nil},
+	{"`a` != `b`", true, nil},
+	{"`a` != `a`", false, nil},
+	{"`abba` &^ `a.+a`", true, nil},
+	{"_[`k1`] &^ `v\\d`", true, nil},
+	{"_[`k1`] == `v1`", true, nil},
+	{"_[`k2`] == 10", true, nil},
+	{"_[`k3`][0] == `v4`", true, nil},
+	{"_[`k3`][1] == 12.5", true, nil},
+	{"_[`k3`][2][`k11`] == `v11`", true, nil},
+	{"_[`k3`][2][`k22`] == `v22`", true, nil},
+	{"_[`k1`]", true, nil},
+	{"_[`zzz`]", false, nil},
+	{"e[`executedLines`] == 0", true, nil},
 	//{"e[`42`] == true", true, nil },
-	{`_["k2"] == 10 && _["k2"] == 10`, true, nil },
-	{`_["k2"] == 10 || _["k2"] == 11`, true, nil },
-	{`10 == "10"`, false, errors.New("string and int compare") },
-	{`10 &^ "\y"`, false, errors.New("not a valid regex") },
-	{`1,1 == 1`, false, errors.New("not a valid float") },
-	{`1 == 1,1`, false, errors.New("not a valid float") },
+	{`_["k2"] == 10 && _["k2"] == 10`, true, nil},
+	{`_["k2"] == 10 || _["k2"] == 11`, true, nil},
+	{`10 == "10"`, false, errors.New("string and int compare")},
+	{`10 &^ "\y"`, false, errors.New("not a valid regex")},
+	{`1,1 == 1`, false, errors.New("not a valid float")},
+	{`1 == 1,1`, false, errors.New("not a valid float")},
 }
 
 func TestParseString(t *testing.T) {
@@ -79,7 +79,7 @@ func TestParseString(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	currentMetaData := map[string]interface{}{"executedLines": 0, "42" : true}
+	currentMetaData := map[string]interface{}{"executedLines": 0, "42": true}
 
 	parser := ConditionParser{}
 	for _, data := range ParseStringData {

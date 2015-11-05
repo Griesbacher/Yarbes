@@ -1,4 +1,5 @@
 package Strings
+
 import (
 	"bytes"
 	"encoding/json"
