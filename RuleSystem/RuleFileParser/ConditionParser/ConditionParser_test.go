@@ -61,10 +61,16 @@ var ParseStringData = []struct {
 	//{"e[`42`] == true", true, nil },
 	{`_["k2"] == 10 && _["k2"] == 10`, true, nil},
 	{`_["k2"] == 10 || _["k2"] == 11`, true, nil},
+	{`(1==1)`, true, nil},
+	{`(1==1) && (2==2)`, true, nil},
 	{`10 == "10"`, false, errors.New("string and int compare")},
-	{`10 &^ "\y"`, false, errors.New("not a valid regex")},
+	{`10 &^ "(d"`, false, errors.New("not a valid regex")},
 	{`1,1 == 1`, false, errors.New("not a valid float")},
 	{`1 == 1,1`, false, errors.New("not a valid float")},
+	{`->`, false, errors.New("valid go but not allowed")},
+	{`"a" < "a"`, false, errors.New("string operator not allowed")},
+	{`1 &^ 1`, false, errors.New("number operator not allowed")},
+	{`_["1"] == 1`, false, errors.New("number operator not allowed")},
 }
 
 var b = []byte(`{
@@ -90,6 +96,7 @@ func TestParseString(t *testing.T) {
 		}
 	}
 }
+
 func TestParseStringChannel(t *testing.T) {
 	t.Parallel()
 	_, w, _ := os.Pipe()
@@ -120,7 +127,6 @@ func TestParseStringChannel(t *testing.T) {
 	}
 }
 
-//TestPrintNode is a dummy test because the PrintNode is just for debugging
 func TestPrintNode(t *testing.T) {
 	t.Parallel()
 	oldStdout := os.Stdout
@@ -134,7 +140,6 @@ func TestPrintNode(t *testing.T) {
 	os.Stdout = oldStdout
 }
 
-//TestPrintAst is a dummy test because the PrintNode is just for debugging
 func TestPrintAst(t *testing.T) {
 	t.Parallel()
 	oldStdout := os.Stdout

@@ -56,7 +56,7 @@ func (v conditionVisitor) handleNode(node ast.Node) {
 			op := v.store.popFromStack().(*ast.BinaryExpr).Op.String()
 			v.store.appendToResult(v.compareBasicLit(nstack, n, op))
 		case *ast.IndexExpr, *ast.Ident:
-			panic("should not happen")
+			v.store.err = errors.New("should not happen")
 		default:
 			v.store.appendToStack(node)
 		}
