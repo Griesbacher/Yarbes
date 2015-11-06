@@ -64,13 +64,14 @@ var ParseStringData = []struct {
 	{`(1==1)`, true, nil},
 	{`(1==1) && (2==2)`, true, nil},
 	{`10 == "10"`, false, errors.New("string and int compare")},
-	{`10 &^ "(d"`, false, errors.New("not a valid regex")},
+	{`"10" &^ ")10"`, false, errors.New("not a valid regex")},
 	{`1,1 == 1`, false, errors.New("not a valid float")},
 	{`1 == 1,1`, false, errors.New("not a valid float")},
 	{`->`, false, errors.New("valid go but not allowed")},
 	{`"a" < "a"`, false, errors.New("string operator not allowed")},
 	{`1 &^ 1`, false, errors.New("number operator not allowed")},
 	{`_["1"] == 1`, false, errors.New("number operator not allowed")},
+	{`foo["k1"] == 10`, false, errors.New("datastructurename is not allowed")},
 }
 
 var b = []byte(`{
