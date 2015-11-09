@@ -22,7 +22,7 @@ func (d *dataStore) appendToStack(node ast.Node) {
 func (d *dataStore) popFromStack() ast.Node {
 	var last ast.Node
 	if len(d.stack) > 0 {
-		last, d.stack = d.stack[len(d.stack) - 1], d.stack[:len(d.stack) - 1]
+		last, d.stack = d.stack[len(d.stack)-1], d.stack[:len(d.stack)-1]
 	}
 	return last
 }
@@ -35,7 +35,7 @@ func (d *dataStore) appendToResult(result bool) {
 }
 
 func (d *dataStore) evaluateResultQueue() {
-	switch d.stack[len(d.stack) - 1].(*ast.BinaryExpr).Op.String() {
+	switch d.stack[len(d.stack)-1].(*ast.BinaryExpr).Op.String() {
 	case "&&":
 		d.result = []bool{d.result[0] && d.result[1]}
 	case "||":
@@ -47,8 +47,8 @@ func (d *dataStore) evaluateResultQueue() {
 func (d *dataStore) returnResult() bool {
 	if len(d.result) == 1 {
 		return d.result[0]
-	}else if len(d.stack) > 0 {
-		switch lastToken := d.stack[len(d.stack) - 1].(type) {
+	} else if len(d.stack) > 0 {
+		switch lastToken := d.stack[len(d.stack)-1].(type) {
 		case *ast.BasicLit:
 			if lastToken.Kind == token.ILLEGAL {
 				return false

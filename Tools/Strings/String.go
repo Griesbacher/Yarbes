@@ -5,16 +5,6 @@ import (
 	"encoding/json"
 )
 
-//Contains returns true if the given string is within the array
-func Contains(hay []string, needle string) bool {
-	for _, a := range hay {
-		if a == needle {
-			return true
-		}
-	}
-	return false
-}
-
 //IndexOf returns the index of a string in a string slice or -1 if not found
 func IndexOf(hay []string, needle string) int {
 	for i, a := range hay {
@@ -23,6 +13,14 @@ func IndexOf(hay []string, needle string) int {
 		}
 	}
 	return -1
+}
+
+//Contains returns true if the given string is within the array
+func Contains(hay []string, needle string) bool {
+	if IndexOf(hay, needle) < 0 {
+		return false
+	}
+	return true
 }
 
 //FormatJSON formats the given string in pretty json

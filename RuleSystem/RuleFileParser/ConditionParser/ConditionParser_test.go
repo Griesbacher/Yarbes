@@ -81,7 +81,6 @@ var b = []byte(`{
 	}`)
 
 func TestParseString(t *testing.T) {
-	t.Parallel()
 	var jsonData interface{}
 	err := json.Unmarshal(b, &jsonData)
 	if err != nil {
@@ -99,7 +98,6 @@ func TestParseString(t *testing.T) {
 }
 
 func TestParseStringChannel(t *testing.T) {
-	t.Parallel()
 	_, w, _ := os.Pipe()
 	os.Stdout = w
 	var jsonData interface{}
@@ -147,7 +145,7 @@ func TestPrintAst(t *testing.T) {
 	_, writeFile, _ := os.Pipe()
 	os.Stdout = writeFile
 
-	parser := ConditionParser{Debug:true}
+	parser := ConditionParser{Debug: true}
 	var jsonData interface{}
 	err := json.Unmarshal(b, &jsonData)
 	if err != nil {

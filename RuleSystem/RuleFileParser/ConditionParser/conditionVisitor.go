@@ -50,7 +50,7 @@ func (v conditionVisitor) Visit(node ast.Node) ast.Visitor {
 func (v conditionVisitor) handleNode(node ast.Node) {
 	switch n := node.(type) { //Current element
 	case *ast.BasicLit:
-		switch nstack := v.store.stack[len(v.store.stack) - 1].(type) { //Last element
+		switch nstack := v.store.stack[len(v.store.stack)-1].(type) { //Last element
 		case *ast.BasicLit:
 			v.store.popFromStack()
 			op := v.store.popFromStack().(*ast.BinaryExpr).Op.String()
