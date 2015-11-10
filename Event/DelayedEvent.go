@@ -17,7 +17,7 @@ func NewDelayedEvent(event *Event, delay time.Duration, resultQueue chan Event) 
 }
 
 //Start starts waiting
-func (dEvent DelayedEvent) Start() {
+func (dEvent *DelayedEvent) Start() {
 	go dEvent.wait()
 }
 
@@ -35,10 +35,10 @@ func (dEvent DelayedEvent) IsWaiting() bool {
 func (dEvent *DelayedEvent) wait() {
 	select {
 	case <-dEvent.quit:
-		dEvent.quit <- true
-		return
-	case <-time.After(dEvent.delay):
-		dEvent.resultQueue <- *dEvent.Event
 		dEvent.isWaiting = false
+		dEvent.quit <- true
+	case <-time.After(dEvent.delay):
+		dEvent.isWaiting = false
+		dEvent.resultQueue <- *dEvent.Event
 	}
 }

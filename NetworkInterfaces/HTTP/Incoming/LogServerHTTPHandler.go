@@ -66,7 +66,7 @@ func (handler LogServerHTTPHandler) ResendEvent(w http.ResponseWriter, r *auth.A
 	if address == "" {
 		page = fmt.Sprintf(
 			`<form action="%s">
-			Where should the event sent to?
+			Where should the event sent be to?
 			<input name="%s">
 			<input type="hidden" name='%s' value='%s'>
 			<input type="submit" value="send">
