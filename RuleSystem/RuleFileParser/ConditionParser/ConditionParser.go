@@ -17,11 +17,11 @@ type ConditionParser struct {
 //ParseStringChannel parses the string and communicates through channels, if there is an error the result is irrelevant
 func (p ConditionParser) ParseStringChannel(condition string, jsonData interface{}, eventMetadata map[string]interface{}, output chan bool, errors chan error) {
 	result, err := p.ParseString(condition, jsonData, eventMetadata)
-	for i := 0; i < 2; i++ {
-		select {
-		case output <- result:
-		case errors <- err:
-		}
+	select {
+	case output <- result:
+		errors <- err
+	case errors <- err:
+		output <- result
 	}
 }
 
