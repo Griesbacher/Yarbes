@@ -39,22 +39,30 @@ func Client(configPath, cpuProfile string) {
 		os.Exit(2)
 	}
 
-	delayed(eventRPC, 10)
-	delayed(eventRPC, 1)
+	//delayed(eventRPC, 10)
+	//delayed(eventRPC, 1)
 
 	logger.Debug("Start")
 	useLivestatus(logger, eventRPC)
 	//multipleEvents(eventRPC)
+	var event = []byte(fmt.Sprintf(`{"hostname":"localhost-%d", "type":"ALERT", "hourOfDay":%d}`, 123, time.Now().Hour()))
+	err = eventRPC.CreateEvent(event)
+	if err != nil {
+		panic(err)
+	}
+	time.Sleep(time.Duration(2) * time.Second)
 	logger.Debug("Fertig")
 	logger.Disconnect()
 	eventRPC.Disconnect()
 }
 
 func useLivestatus(logger *Logging.Client, eventRPC *Outgoing.RPCInterface) {
-	livestatus := Livestatus.NewCollector(*logger, eventRPC)
-	livestatus.Start()
-	time.Sleep(time.Duration(90) * time.Second)
-	livestatus.Stop()
+	if Config.GetClientConfig().Livestatus.Enable {
+		livestatus := Livestatus.NewCollector(*logger, eventRPC)
+		livestatus.Start()
+		time.Sleep(time.Duration(90) * time.Second)
+		livestatus.Stop()
+	}
 }
 
 func delayed(eventRPC *Outgoing.RPCInterface, wait int) {
