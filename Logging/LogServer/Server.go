@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/griesbacher/Yarbes/Config"
 	"github.com/griesbacher/Yarbes/Tools/Influx"
-	"github.com/influxdb/influxdb/client/v2"
+	"github.com/influxdata/influxdb/client/v2"
 	"net/url"
 )
 
@@ -27,11 +27,14 @@ func NewLogServer() *Server {
 		if err != nil {
 			panic(err)
 		}
-		influxClient = client.NewClient(client.Config{
-			URL:      u,
+		influxClient, err = client.NewHTTPClient(client.HTTPConfig{
+			Addr:     u.String(),
 			Username: Config.GetServerConfig().LogServer.InfluxUsername,
 			Password: Config.GetServerConfig().LogServer.InfluxPassword,
 		})
+		if err != nil {
+			panic(err)
+		}
 		_, err = Influx.QueryDB(influxClient, fmt.Sprintf("CREATE DATABASE %s", Config.GetServerConfig().LogServer.InfluxDatabase), Config.GetServerConfig().LogServer.InfluxDatabase)
 		if err != nil {
 			panic(err)
@@ -76,7 +79,7 @@ func (log *Server) handleLog() {
 }
 
 func (log Server) logToInfluxDB(message LogMessage) {
-	if &log.InfluxClient == nil {
+	if log.InfluxClient == nil {
 		return
 	}
 	bp, err := genBatchPoints()

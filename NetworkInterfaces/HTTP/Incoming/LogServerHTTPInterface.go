@@ -2,7 +2,7 @@ package Incoming
 
 import (
 	"github.com/griesbacher/Yarbes/Config"
-	"github.com/influxdb/influxdb/client/v2"
+	"github.com/influxdata/influxdb/client/v2"
 )
 
 //LogServerHTTPInterface is HTTP interface which offers log access

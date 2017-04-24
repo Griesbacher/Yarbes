@@ -1,6 +1,6 @@
 package Influx
 
-import "github.com/influxdb/influxdb/client/v2"
+import "github.com/influxdata/influxdb/client/v2"
 
 //QueryDB need a influxdb client and a command which will be send to the inflxdb
 func QueryDB(clnt client.Client, cmd, db string) (res []client.Result, err error) {

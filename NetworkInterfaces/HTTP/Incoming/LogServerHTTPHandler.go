@@ -8,7 +8,7 @@ import (
 	"github.com/griesbacher/Yarbes/NetworkInterfaces/RPC/Outgoing"
 	"github.com/griesbacher/Yarbes/Tools/Influx"
 	"github.com/griesbacher/Yarbes/Tools/Strings"
-	"github.com/influxdb/influxdb/client/v2"
+	"github.com/influxdata/influxdb/client/v2"
 	"io"
 	"net/http"
 	"net/url"
