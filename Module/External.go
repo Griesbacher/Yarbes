@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/griesbacher/Yarbes/Config"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
@@ -62,7 +63,13 @@ func (external ExternalModule) Call(moduleName, args, event string) (*Result, er
 		}
 	}
 	if runtimeErr != nil {
-		returnCode := runtimeErr.(*exec.ExitError).Sys().(syscall.WaitStatus).ExitStatus()
+		var returnCode int
+		switch err := runtimeErr.(type) {
+		case *exec.ExitError:
+			returnCode = err.Sys().(syscall.WaitStatus).ExitStatus()
+		case *os.PathError:
+			return nil, err.Err
+		}
 		if &moduleResult == nil {
 			moduleResult = Result{ReturnCode: returnCode}
 		} else {
