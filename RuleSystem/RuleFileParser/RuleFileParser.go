@@ -75,7 +75,6 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 	currentEvent := event
 	eventMetadata := map[string]interface{}{"executedLines": 0}
 	for _, line := range rule.lines {
-		fmt.Print(line.name + " ")
 		valid, err := line.EvaluateLine(currentEvent, eventMetadata)
 		if err != nil {
 			if err == ConditionParser.ErrElementNotFound {
@@ -85,7 +84,6 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 			}
 		}
 
-		fmt.Println(valid)
 		if valid {
 			eventMetadata["executedLines"] = eventMetadata["executedLines"].(int) + 1
 			moduleResult, err := rule.externalModule.Call(line.command, line.args, currentEvent.String())
