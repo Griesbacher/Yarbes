@@ -86,7 +86,12 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 
 		if valid {
 			eventMetadata["executedLines"] = eventMetadata["executedLines"].(int) + 1
-			moduleResult, err := rule.externalModule.Call(line.command, line.args, currentEvent.String())
+			var moduleResult *Module.Result
+			var err error
+			if line.command != ""{
+				moduleResult, err = rule.externalModule.Call(line.command, line.args, currentEvent.String())
+			}
+
 			if err != nil {
 				rule.LogClient.Error(err)
 			} else {
@@ -109,9 +114,9 @@ func (rule RuleFileParser) EvaluateJSON(event Event.Event) {
 					}
 				}
 
-				if line.LastLine() {
-					break
-				}
+			}
+			if line.LastLine() {
+				break
 			}
 		}
 	}
