@@ -31,7 +31,6 @@ func (v conditionVisitor) Visit(node ast.Node) ast.Visitor {
 	}
 	if v.debug {
 		fmt.Println("-------------------------")
-		fmt.Print(">")
 		printNode(node, " - ")
 		fmt.Println(reflect.TypeOf(node))
 		v.printNodes(v.store.stack)
@@ -228,8 +227,8 @@ func (v conditionVisitor) searchForData(dataType string) (interface{}, error) {
 }
 
 func (v conditionVisitor) printNodes(node []ast.Node) {
-	fmt.Print(">> ")
-	for _, v := range v.store.stack {
+	fmt.Print("stack: ")
+	for _, v := range node {
 		printNode(v, ", ")
 	}
 	fmt.Print("\n")
