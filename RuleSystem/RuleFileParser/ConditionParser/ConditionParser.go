@@ -6,6 +6,7 @@ import (
 	"go/parser"
 	"go/token"
 	"reflect"
+	"strings"
 )
 
 //ConditionParser parses a given string which should contain a go like condition, conditions can reference on a given JSON struct
@@ -27,7 +28,8 @@ func (p ConditionParser) ParseStringChannel(condition string, jsonData interface
 
 //ParseString parses the string and JSON object, if there is an error the result is irrelevant
 func (p ConditionParser) ParseString(condition string, jsonData interface{}, eventMetadata map[string]interface{}) (bool, error) {
-	data := &dataStore{data: jsonData, eventMetadata: eventMetadata, stack: []ast.Node{}, result: []bool{}, ignoreNextX: 0}
+	condition = strings.Replace(condition, " ", "", -1)
+	dataStore := NewDataStore(jsonData, eventMetadata, len(condition)+1, p.Debug)
 	tree, err := parser.ParseExpr(condition)
 	if err != nil {
 		return false, err
@@ -36,10 +38,14 @@ func (p ConditionParser) ParseString(condition string, jsonData interface{}, eve
 		ast.Print(token.NewFileSet(), tree)
 	}
 
-	visitor := conditionVisitor{p.Debug, data}
+	visitor := conditionVisitor{p.Debug, dataStore}
 	ast.Walk(visitor, tree)
 
-	return visitor.store.returnResult(), data.err
+	if visitor.store.err != nil {
+		return false, visitor.store.err
+	}
+
+	return visitor.store.returnResult()
 }
 
 func printNode(node ast.Node, appendix string) {
@@ -53,9 +59,13 @@ func printNode(node ast.Node, appendix string) {
 		fmt.Print(n.Index, appendix)
 	case *ast.Ident:
 		fmt.Print(n.Name, appendix)
+	case *Lparen, *Rparen:
+		fmt.Print(n, appendix)
 	default:
 		if n != nil {
 			fmt.Print("ERROR - ", reflect.TypeOf(node), ", ")
+		} else {
+			fmt.Print("nil", appendix)
 		}
 	}
 }
