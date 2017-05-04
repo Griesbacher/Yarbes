@@ -56,7 +56,7 @@ func (rpcI RPCInterface) CreateEvent(event []byte) (err error) {
 		}
 	}()
 	result := new(RPC.Result)
-	Event := RPC.Event{EventAsString:string(event)}
+	Event := RPC.Event{EventAsString: string(event)}
 	if err := rpcI.client.Call("RuleSystemRPCHandler.CreateEvent", &Event, &result); err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (rpcI RPCInterface) CreateDelayedEvent(event []byte, delay *time.Duration) 
 		}
 	}()
 	result := new(RPC.Result)
-	Event := RPC.Event{EventAsString:string(event), Delay:delay}
+	Event := RPC.Event{EventAsString: string(event), Delay: delay}
 	if err := rpcI.client.Call("RuleSystemRPCHandler.CreateEvent", &Event, &result); err != nil {
 		return err
 	}
