@@ -12,4 +12,4 @@
 [Livestatus]
     Enable  = false
     Type    = "tcp"
-    Address = "10.0.15.239:6555"
+    Address = "127.0.0.1:6555"
