@@ -1,4 +1,5 @@
 [TLS]
+    Enable   = false
     Cert     = "certs/client.crt"
     Key      = "certs/client.key"
     CaCert   = "certs/ca.crt"

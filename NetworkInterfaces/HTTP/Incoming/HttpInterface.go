@@ -17,8 +17,7 @@ type HTTPInterface struct {
 //NewHTTPInterface creates a new HTTPInterface
 func NewHTTPInterface(listenTo string) *HTTPInterface {
 	authenticator := auth.NewBasicAuthenticator("Yarbes", auth.HtpasswdFileProvider(Config.GetServerConfig().LogServer.HtpasswdPath))
-	http := &HTTPInterface{quit: make(chan bool), isRunning: false, HTTPListenTo: listenTo, authenticator: authenticator}
-	return http
+	return &HTTPInterface{quit: make(chan bool), isRunning: false, HTTPListenTo: listenTo, authenticator: authenticator}
 }
 
 //Start starts listening for requests
@@ -40,7 +39,12 @@ func (httpI HTTPInterface) IsRunning() bool {
 }
 
 func (httpI *HTTPInterface) serve() {
-	err := http.ListenAndServeTLS(httpI.HTTPListenTo, Config.GetServerConfig().TLS.Cert, Config.GetServerConfig().TLS.Key, nil)
+	var err error
+	if Config.GetServerConfig().TLS.Enable {
+		err = http.ListenAndServeTLS(httpI.HTTPListenTo, Config.GetServerConfig().TLS.Cert, Config.GetServerConfig().TLS.Key, nil)
+	} else {
+		err = http.ListenAndServe(httpI.HTTPListenTo, nil)
+	}
 	if err != nil {
 		panic(err)
 	}

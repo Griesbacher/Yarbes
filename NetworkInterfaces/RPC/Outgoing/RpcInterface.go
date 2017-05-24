@@ -3,12 +3,15 @@ package Outgoing
 import (
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"github.com/griesbacher/Yarbes/Config"
 	"github.com/griesbacher/Yarbes/Logging/LogServer"
 	"github.com/griesbacher/Yarbes/Module"
 	"github.com/griesbacher/Yarbes/NetworkInterfaces/RPC"
 	"github.com/griesbacher/Yarbes/TLS"
+	"net"
 	"net/rpc"
+	"reflect"
 	"time"
 )
 
@@ -16,25 +19,38 @@ import (
 type RPCInterface struct {
 	serverAddress string
 	Config        *tls.Config
-	conn          *tls.Conn
+	conn          interface{}
 	client        *rpc.Client
 }
 
 //NewRPCInterface constructs a new RPCInterface
 func NewRPCInterface(serverAddress string) *RPCInterface {
-	config := TLS.GenerateClientTLSConfig(Config.GetClientConfig().TLS.Cert, Config.GetClientConfig().TLS.Key, Config.GetClientConfig().TLS.CaCert)
+	var config *tls.Config
+	if Config.GetClientConfig().TLS.Enable {
+		config = TLS.GenerateClientTLSConfig(Config.GetClientConfig().TLS.Cert, Config.GetClientConfig().TLS.Key, Config.GetClientConfig().TLS.CaCert)
+	}
 	return &RPCInterface{serverAddress: serverAddress, Config: config}
 }
 
 //Connect establishes a tcp connection and single byte for authentication and creates a rpc.Client
 func (rpcI *RPCInterface) Connect() error {
-	conn, err := tls.Dial("tcp", rpcI.serverAddress, rpcI.Config)
-	if err != nil {
-		return err
+	if Config.GetClientConfig().TLS.Enable {
+		conn, err := tls.Dial("tcp", rpcI.serverAddress, rpcI.Config)
+		if err != nil {
+			return err
+		}
+		conn.Write([]byte("a"))
+		rpcI.client = rpc.NewClient(conn)
+		rpcI.conn = conn
+	} else {
+		conn, err := net.Dial("tcp", rpcI.serverAddress)
+		if err != nil {
+			return err
+		}
+		conn.Write([]byte("a"))
+		rpcI.client = rpc.NewClient(conn)
+		rpcI.conn = conn
 	}
-	rpcI.conn = conn
-	rpcI.conn.Write([]byte("a"))
-	rpcI.client = rpc.NewClient(rpcI.conn)
 	if rpcI.client == nil {
 		return errors.New("Could not create rpc.Client")
 	}
@@ -44,7 +60,17 @@ func (rpcI *RPCInterface) Connect() error {
 //Disconnect closes the tcp connection
 func (rpcI RPCInterface) Disconnect() {
 	if rpcI.conn != nil {
-		rpcI.conn.Close()
+		switch conn := rpcI.conn.(type) {
+		case *tls.Conn:
+			(*conn).Close()
+		case *net.Conn:
+			(*conn).Close()
+		case *net.TCPConn:
+			(*conn).Close()
+		default:
+			fmt.Println("Diconnect error")
+			fmt.Println(reflect.TypeOf(conn))
+		}
 	}
 }
 

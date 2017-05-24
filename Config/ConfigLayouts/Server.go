@@ -3,6 +3,7 @@ package ConfigLayouts
 //Server file layout
 type Server struct {
 	TLS struct {
+		Enable    bool
 		Cert      string
 		Key       string
 		CaCert    string

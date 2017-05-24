@@ -7,6 +7,7 @@ import (
 	"github.com/griesbacher/Yarbes/TLS"
 	"io"
 	"log"
+	"net"
 	"net/rpc"
 )
 
@@ -42,8 +43,14 @@ func (rpcI RPCInterface) IsRunning() bool {
 }
 
 func (rpcI *RPCInterface) serve() {
-	config := TLS.GenerateServerTLSConfig(Config.GetServerConfig().TLS.Cert, Config.GetServerConfig().TLS.Key, Config.GetServerConfig().TLS.CaCert)
-	listener, err := tls.Listen("tcp", rpcI.RPCListenTo, config)
+	var listener net.Listener
+	var err error
+	if Config.GetServerConfig().TLS.Enable {
+		config := TLS.GenerateServerTLSConfig(Config.GetServerConfig().TLS.Cert, Config.GetServerConfig().TLS.Key, Config.GetServerConfig().TLS.CaCert)
+		listener, err = tls.Listen("tcp", rpcI.RPCListenTo, config)
+	} else {
+		listener, err = net.Listen("tcp", rpcI.RPCListenTo)
+	}
 	if err != nil {
 		fmt.Println("listener")
 		panic(err)
